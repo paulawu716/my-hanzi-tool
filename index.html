@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>通用多语言汉字字源演变与语法描红系统</title>
+  <title>通用多语言汉字多音字精校与语音字帖系统</title>
   <!-- 引入汉字笔顺库与拼音库 -->
   <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.18.3/dist/index.js"></script>
@@ -68,14 +68,14 @@
       box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     }
 
-    /* 词组/短语/句子单元块 */
+    /* 词组/短语/句子卡片 */
     .word-block {
       margin-bottom: 22px;
       padding-bottom: 14px;
       border-bottom: 2px dashed #eaeaea;
     }
 
-    /* 词条顶部：整词/句型拼音与目标语言翻译 */
+    /* 词条头部：拼音 + 发音提示 + 目标语言翻译 */
     .word-header {
       display: flex;
       align-items: center;
@@ -95,6 +95,22 @@
       font-size: 15px;
       color: #1890ff;
       font-weight: bold;
+    }
+    .btn-audio {
+      background: #e6f7ff;
+      border: 1px solid #91d5ff;
+      color: #096dd9;
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 500;
+    }
+    .btn-audio:hover {
+      background: #bae7ff;
     }
     .word-trans {
       font-size: 13.5px;
@@ -120,7 +136,7 @@
       padding: 10px 12px;
     }
 
-    /* 第一行：配图 + 字源演变(甲金篆楷) + 动态词性与语法解析 */
+    /* 第一行：配图 + 字源演变(甲金篆楷) + 语法解析 */
     .char-info-row {
       display: flex;
       align-items: center;
@@ -132,7 +148,7 @@
       padding: 8px 10px;
     }
 
-    /* 具象/象形插图徽章 */
+    /* 具象/象形插图 */
     .pic-badge {
       width: 52px;
       height: 52px;
@@ -149,7 +165,7 @@
       height: 44px;
     }
 
-    /* 汉字演变轨迹 (甲骨文 -> 金文 -> 小篆 -> 楷书) */
+    /* 汉字演变轨迹 */
     .etymology-box {
       display: flex;
       align-items: center;
@@ -179,9 +195,8 @@
     }
     .evo-glyph-text {
       font-size: 15px;
-      font-family: "KaiTi", "STKaiti", "FangSong", serif;
+      font-family: "KaiTi", "STKaiti", serif;
       color: #334155;
-      font-weight: 500;
     }
     .evo-label {
       font-size: 10px;
@@ -207,7 +222,6 @@
       gap: 6px;
       flex-wrap: wrap;
     }
-    /* HSK 标签 */
     .hsk-badge {
       background: #ff4d4f;
       color: #fff;
@@ -216,7 +230,6 @@
       padding: 1px 5px;
       border-radius: 3px;
     }
-    /* 词性徽章 */
     .pos-badge {
       background: #8b5cf6;
       color: #fff;
@@ -225,7 +238,6 @@
       padding: 1px 6px;
       border-radius: 3px;
     }
-    /* 中文句型公式 */
     .grammar-pattern-tag {
       background: #e0f2fe;
       color: #0369a1;
@@ -234,49 +246,55 @@
       font-size: 11.5px;
       font-weight: bold;
     }
-    /* 目标语言语法释义 */
     .grammar-meaning-target {
       font-size: 11.5px;
       color: #334155;
       line-height: 1.35;
     }
-    .grammar-example-tag {
-      font-size: 11px;
-      color: #059669;
-      background: #ecfdf5;
-      padding: 2px 6px;
-      border-radius: 4px;
-      width: fit-content;
-      margin-top: 1px;
-    }
 
-    /* 第二行：笔顺与米字格描红 */
+    /* 第二行：单字读音 + 笔顺 + 米字格描红 */
     .char-practice-row {
       display: flex;
       align-items: center;
       gap: 10px;
     }
     .char-badge {
-      width: 48px;
+      width: 60px;
       text-align: center;
       font-size: 14px;
       color: #1e293b;
       font-weight: bold;
       flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
     }
     .char-pinyin-small {
       color: #1890ff;
       font-size: 13px;
     }
+    .btn-action-group {
+      display: flex;
+      gap: 3px;
+    }
+    .btn-small-audio {
+      padding: 2px 4px;
+      font-size: 10px;
+      background: #52c41a;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
     .btn-animate {
-      padding: 2px 6px;
+      padding: 2px 4px;
       font-size: 10px;
       background: #fa8c16;
       color: #fff;
       border: none;
       border-radius: 3px;
       cursor: pointer;
-      margin-top: 3px;
     }
 
     /* 米字格布局 */
@@ -303,7 +321,7 @@
       body { background: transparent; padding: 0; }
       .controls { display: none !important; }
       .sheet-page { box-shadow: none; width: 100%; margin: 0; padding: 0; }
-      .btn-animate { display: none; }
+      .btn-animate, .btn-audio, .btn-small-audio { display: none !important; }
       .word-trans { border: none; background: transparent; padding: 0; }
       .char-info-row { background: #fff !important; border: 1px solid #cbd5e1; }
       .char-card { border: 1px solid #94a3b8; }
@@ -314,7 +332,7 @@
 
   <!-- 控制工具栏 -->
   <div class="controls">
-    <input type="text" id="textInput" value="太大了, 喝咖啡, 老师, 去看电影" placeholder="输入任意词语、短语或句子，用逗号或空格隔开..." />
+    <input type="text" id="textInput" value="中国银行, 去看电影, 睡觉, 觉得太好了" placeholder="输入任意词语或句子（已精准支持多音字语境识别）..." />
     
     <select id="langSelect" onchange="generateSheet()">
       <option value="de">🇩🇪 德语 (Deutsch)</option>
@@ -336,7 +354,7 @@
   <script>
     const { pinyin } = pinyinPro;
 
-    // 1. 各语种词性国际标准名称对照表
+    // 1. 各语种词性国际标准对照表
     const POS_I18N = {
       noun: { de: 'Nomen (名词)', en: 'Noun (名词)', es: 'Sustantivo (名词)', fr: 'Nom (名词)', it: 'Sostantivo (名词)', pt: 'Substantivo (名词)', ru: 'Существительное (名词)' },
       verb: { de: 'Verb (动词)', en: 'Verb (动词)', es: 'Verbo (动词)', fr: 'Verbe (动词)', it: 'Verbo (动词)', pt: 'Verbo (动词)', ru: 'Глагол (动词)' },
@@ -344,22 +362,42 @@
       adv:  { de: 'Adverb (副词)', en: 'Adverb (副词)', es: 'Adverbio (副词)', fr: 'Adverbe (副词)', it: 'Avverbio (副词)', pt: 'Advérbio (副词)', ru: 'Наречие (副词)' },
       pron: { de: 'Pronomen (代词)', en: 'Pronoun (代词)', es: 'Pronombre (代词)', fr: 'Pronom (代词)', it: 'Pronome (代词)', pt: 'Pronome (代词)', ru: 'Местоимение (代词)' },
       num:  { de: 'Zahlwort (数词/量词)', en: 'Numeral/Measure Word', es: 'Numeral / Clasificador', fr: 'Numéral / Classificateur', it: 'Numerale / Classificatore', pt: 'Numeral / Classificador', ru: 'Числительное / Счетное сл.' },
-      prep: { de: 'Präposition (介词)', en: 'Preposition (介词)', es: 'Preposición (介词)', fr: 'Préposition (介词)', it: 'Preposizione (介词)', pt: 'Preposição (介词)', ru: 'Предлог (介词)' }
+      prep: { de: 'Präposition (介词)', en: 'Preposition (介词)', es: 'Preposición (介词)', fr: 'Préposition (介词)', it: 'Preposizione (介词)', pt: 'Preposizione (介词)', ru: 'Предлог (介词)' }
     };
 
-    // 2. 动态语法与词性规则引擎 (全量汉字语法推断)
+    // 2. 核心：基于语境的多音字精准解析算法 (Context-Aware Polyphonic Pipeline)
+    function getContextualPinyinList(phrase) {
+      // 在整词/整句语境下统一计算拼音数组，确保多音字在上下文中的读音完全准确
+      const pinyinArray = pinyin(phrase, { toneType: 'symbol', type: 'array' });
+      return pinyinArray;
+    }
+
+    // 3. Web Speech API 原生高保真语音朗读提示
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) {
+        alert('当前浏览器暂不支持语音合成朗读功能');
+        return;
+      }
+      window.speechSynthesis.cancel(); // 停止当前正在播放的声音
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'zh-CN';
+      utterance.rate = 0.85; // 稍慢语速，适合对外汉语跟读
+      utterance.pitch = 1.0;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // 4. 动态语法与词性规则引擎
     function inferGrammarAndPOS(char, targetLang) {
       const code = char.charCodeAt(0);
       let posKey = 'noun';
       let patternZh = `${char} + 名词 / 结构`;
       let hsk = 'HSK 1';
 
-      // 规则推断语法与词性
       if ('太很非常真最更挺特别极其'.includes(char)) {
         posKey = 'adv';
         patternZh = `${char} + 形容词 / 动词 + (了)`;
         hsk = 'HSK 1';
-      } else if ('看吃喝走去来想爱做买写听读说说见找问笑学住工作'.includes(char)) {
+      } else if ('看吃喝走去来想爱做买写听读说说见找问笑学住工作睡觉行'.includes(char)) {
         posKey = 'verb';
         patternZh = `${char} + 宾语 (Objekt) / 补语`;
         hsk = 'HSK 1';
@@ -389,11 +427,10 @@
       return { posKey, posName, patternZh, hsk };
     }
 
-    // 3. 通用高可用多语言翻译网关 (实时联机翻译短语、单词及语法解释)
+    // 5. 通用多语言翻译网关
     async function universalTranslate(text, targetLang) {
       if (targetLang === 'none' || !text) return '';
       
-      // 接口 1: MyMemory 翻译网关
       try {
         const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=zh-CN|${targetLang}`;
         const res = await fetch(url);
@@ -405,10 +442,9 @@
           }
         }
       } catch (e) {
-        console.warn('MyMemory 接口调度失败，准备降级尝试:', e);
+        console.warn('MyMemory 调度失败:', e);
       }
 
-      // 接口 2: 降级网关 (Lingva API)
       try {
         const lingvaUrl = `https://lingva.ml/api/v1/zh/${targetLang}/${encodeURIComponent(text)}`;
         const res2 = await fetch(lingvaUrl);
@@ -417,25 +453,23 @@
           return data2.translation.trim();
         }
       } catch (e2) {
-        console.warn('Lingva 接口调度失败:', e2);
+        console.warn('Lingva 调度失败:', e2);
       }
 
-      return '点击补充翻译';
+      return '点击补充释义';
     }
 
-    // 4. 字源网标准的汉字字形流变 (甲骨文、金文、小篆、楷书) 动态渲染器
+    // 6. 字形流变与通用插图
     function getEtymologyNodes(char) {
       return [
-        { name: '甲骨', type: 'text', content: char, fontClass: 'kaiti' },
-        { name: '金文', type: 'text', content: char, fontClass: 'kaiti' },
-        { name: '小篆', type: 'text', content: char, fontClass: 'kaiti' },
-        { name: '楷书', type: 'text', content: char, fontClass: 'kaiti' }
+        { name: '甲骨', content: char },
+        { name: '金文', content: char },
+        { name: '小篆', content: char },
+        { name: '楷书', content: char }
       ];
     }
 
-    // 5. 动态生成具象矢量图解 (通用SVG图标引擎)
     function generateDynamicIcon(char) {
-      // 颜色哈希生成愉悦的色彩体系
       const colors = ['#1890ff', '#52c41a', '#fa8c16', '#eb2f96', '#722ed1', '#13c2c2', '#faad14'];
       const color = colors[char.charCodeAt(0) % colors.length];
       return `
@@ -446,7 +480,7 @@
       `;
     }
 
-    // 6. 生成字帖核心函数
+    // 7. 生成字帖核心入口
     async function generateSheet() {
       const container = document.getElementById('sheetContainer');
       const text = document.getElementById('textInput').value.trim();
@@ -466,25 +500,29 @@
         const chars = (rawPhrase.match(/[\u4e00-\u9fa5]/g) || []).join('');
         if (!chars) continue;
 
-        const phrasePinyin = pinyin(chars, { toneType: 'symbol' });
+        // 【多音字核心】：整句语境提取拼音列表，确保每个字拿到它在当前词里的专属正确发音
+        const contextualPinyins = getContextualPinyinList(chars);
+        const phrasePinyinStr = contextualPinyins.join(' ');
         const transBoxId = `trans-box-${pIdx}`;
 
         const wordBlock = document.createElement('div');
         wordBlock.className = 'word-block';
 
-        // 词条顶部区域
+        // 词条顶部头部 + 整词语音朗读按钮
         wordBlock.innerHTML = `
           <div class="word-header">
             <span class="word-text">${chars}</span>
-            <span class="word-pinyin">[ ${phrasePinyin} ]</span>
+            <span class="word-pinyin">[ ${phrasePinyinStr} ]</span>
+            <button class="btn-audio" onclick="speakText('${chars}')">🔊 朗读词句</button>
             <div class="word-trans" id="${transBoxId}" contenteditable="true" title="点击可直接编辑修改翻译">${targetLang === 'none' ? '' : '翻译获取中...'}</div>
           </div>
         `;
 
-        // 逐字生成演变图与动态词性/语法卡片
+        // 逐字生成演变图与带有语境多音字读音的字卡
         for (let cIdx = 0; cIdx < chars.length; cIdx++) {
           const char = chars[cIdx];
-          const charPy = pinyin(char, { toneType: 'symbol' });
+          // 准确取出语境下的单字拼音（自动解决如银行 háng、行走 xíng 等多音字问题）
+          const charPy = contextualPinyins[cIdx] || pinyin(char, { toneType: 'symbol' });
           const firstGridId = `grid-demo-${globalGridIdx}`;
           const grammarMeaningId = `grammar-mean-${pIdx}-${cIdx}`;
 
@@ -492,7 +530,6 @@
           const evoNodes = getEtymologyNodes(char);
           const iconSvg = generateDynamicIcon(char);
 
-          // 构建演变流变节点
           const evoHtml = evoNodes.map((node, idx) => `
             <div class="evo-node">
               <div class="evo-glyph">
@@ -521,7 +558,7 @@
             </div>
           `;
 
-          // 笔顺演示与米字格描红
+          // 笔顺演示、单字读音与米字格描红
           const practiceRow = document.createElement('div');
           practiceRow.className = 'char-practice-row';
 
@@ -529,7 +566,10 @@
           charBadge.className = 'char-badge';
           charBadge.innerHTML = `
             <div class="char-pinyin-small">${charPy}</div>
-            <button class="btn-animate" onclick="playStroke('${firstGridId}', '${char}')">▶ 笔顺</button>
+            <div class="btn-action-group">
+              <button class="btn-small-audio" onclick="speakText('${char}')" title="朗读该字">🔊</button>
+              <button class="btn-animate" onclick="playStroke('${firstGridId}', '${char}')" title="播放笔顺">▶ 笔顺</button>
+            </div>
           `;
           practiceRow.appendChild(charBadge);
 
@@ -564,7 +604,7 @@
             });
           }
 
-          // 异步动态翻译单字的语法与核心含义
+          // 异步动态翻译单字的含义
           if (targetLang !== 'none') {
             universalTranslate(char, targetLang).then(res => {
               const el = document.getElementById(grammarMeaningId);
