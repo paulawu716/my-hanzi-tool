@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>洪恩识字风格多功能汉字演变与描红字帖</title>
+  <title>多语言汉字语法图解与笔顺描红字帖</title>
   <!-- 引入汉字笔顺库与拼音库 -->
   <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.18.3/dist/index.js"></script>
@@ -23,7 +23,7 @@
       padding: 16px 20px;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      max-width: 980px;
+      max-width: 1000px;
       margin: 0 auto 20px;
       display: flex;
       flex-wrap: wrap;
@@ -57,7 +57,7 @@
     .btn-print { background: #52c41a; }
     .btn:hover { opacity: 0.9; }
 
-    /* A4 纸张排版容器 */
+    /* A4 打印纸张容器 */
     .sheet-page {
       background: #fff;
       width: 210mm;
@@ -67,11 +67,11 @@
       box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     }
 
-    /* 词组/字卡单元 */
+    /* 词组/整句单元块 */
     .word-block {
       margin-bottom: 22px;
       padding-bottom: 14px;
-      border-bottom: 2px dashed #f0f0f0;
+      border-bottom: 2px dashed #e8e8e8;
     }
 
     /* 词条顶部：整词/句型拼音与翻译 */
@@ -79,8 +79,8 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 12px;
-      background: #fafafa;
+      margin-bottom: 10px;
+      background: #f8fafc;
       padding: 6px 12px;
       border-radius: 6px;
       border-left: 4px solid #1890ff;
@@ -88,7 +88,7 @@
     .word-text {
       font-size: 18px;
       font-weight: bold;
-      color: #262626;
+      color: #1e293b;
     }
     .word-pinyin {
       font-size: 14px;
@@ -97,63 +97,71 @@
     }
     .word-trans {
       font-size: 13px;
-      color: #595959;
+      color: #475569;
       background: #fff;
       padding: 3px 8px;
       border-radius: 4px;
-      border: 1px dashed #d9d9d9;
+      border: 1px dashed #cbd5e1;
       cursor: text;
       flex: 1;
     }
     .word-trans:focus {
       outline: 1px solid #1890ff;
-      background: #e6f7ff;
+      background: #f0fdf4;
     }
 
-    /* 洪恩识字核心卡片：单字认知与字理区 */
+    /* 单字知识卡片 */
     .char-card {
       margin-bottom: 14px;
       background: #ffffff;
-      border: 1px solid #e8e8e8;
+      border: 1px solid #e2e8f0;
       border-radius: 8px;
-      padding: 10px;
+      padding: 10px 12px;
     }
 
-    /* 识字卡上半部分：象形图、演变、字理口诀与结构属性 */
+    /* 第一行：图片 + 字体演变 + 语法句型解构 */
     .char-cognition-row {
       display: flex;
-      align-items: center;
+      align-items: stretch;
       gap: 12px;
-      margin-bottom: 8px;
-      background: #fffbe6;
-      border: 1px solid #ffe58f;
+      margin-bottom: 10px;
+      background: #f8fafc;
+      border: 1px solid #f1f5f9;
       border-radius: 6px;
-      padding: 6px 10px;
+      padding: 8px 10px;
     }
 
-    /* 象形图徽章 */
+    /* 精选具象插画 */
     .pic-badge {
-      width: 44px;
-      height: 44px;
+      width: 52px;
+      height: 52px;
       display: flex;
       align-items: center;
       justify-content: center;
       background: #fff;
       border-radius: 6px;
-      border: 1px solid #ffd591;
+      border: 1px solid #e2e8f0;
       flex-shrink: 0;
     }
     .pic-badge svg {
-      width: 34px;
-      height: 34px;
+      width: 42px;
+      height: 42px;
     }
 
-    /* 演变轨迹 */
+    /* 字体演变轨迹 */
+    .evolution-box {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0 8px;
+      border-right: 1px solid #e2e8f0;
+      flex-shrink: 0;
+    }
     .evolution-timeline {
       display: flex;
       align-items: center;
       gap: 4px;
-      flex-shrink: 0;
     }
     .evo-step {
       display: flex;
@@ -161,44 +169,64 @@
       align-items: center;
     }
     .evo-icon {
-      font-size: 15px;
+      font-size: 16px;
       font-family: "KaiTi", "STKaiti", serif;
-      color: #595959;
-      height: 20px;
+      color: #334155;
+      height: 22px;
       display: flex;
       align-items: center;
     }
     .evo-name {
       font-size: 9px;
-      color: #8c8c8c;
+      color: #94a3b8;
       transform: scale(0.85);
     }
     .evo-arrow {
-      color: #d9d9d9;
+      color: #cbd5e1;
       font-size: 10px;
     }
 
-    /* 洪恩式记忆口诀与字理故事 */
-    .mnemonic-box {
+    /* 语法与句型结构核心呈现区 */
+    .grammar-box {
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 3px;
+    }
+    .grammar-pattern-title {
       font-size: 12px;
-      color: #d46b08;
-      line-height: 1.4;
-      border-left: 2px dashed #ffd591;
-      padding-left: 10px;
-    }
-    .mnemonic-title {
       font-weight: bold;
-      color: #fa8c16;
-      margin-bottom: 2px;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .meta-tags {
+    .pattern-tag {
+      background: #e0f2fe;
+      color: #0284c7;
+      padding: 1px 6px;
+      border-radius: 3px;
       font-size: 11px;
-      color: #8c8c8c;
-      margin-top: 2px;
+      font-family: monospace;
+      font-weight: bold;
+    }
+    .grammar-desc {
+      font-size: 11px;
+      color: #475569;
+      line-height: 1.3;
+    }
+    .grammar-example {
+      font-size: 11px;
+      color: #059669;
+      background: #ecfdf5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      width: fit-content;
     }
 
-    /* 识字卡下半部分：笔顺与米字格描红 */
+    /* 第二行：笔顺 + 米字格描红 */
     .char-practice-row {
       display: flex;
       align-items: center;
@@ -208,7 +236,7 @@
       width: 50px;
       text-align: center;
       font-size: 14px;
-      color: #262626;
+      color: #1e293b;
       font-weight: bold;
       flex-shrink: 0;
     }
@@ -234,8 +262,8 @@
       flex-wrap: wrap;
     }
     .mi-grid {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border: 1px solid #ff4d4f;
       position: relative;
       background:
@@ -246,22 +274,6 @@
       background-size: 100% 100%;
     }
 
-    /* 拓展组词与造句区 */
-    .char-words-expand {
-      font-size: 11px;
-      color: #595959;
-      margin-top: 6px;
-      padding-top: 4px;
-      border-top: 1px dashed #f0f0f0;
-      display: flex;
-      gap: 16px;
-    }
-    .char-words-expand span {
-      background: #f5f5f5;
-      padding: 1px 6px;
-      border-radius: 3px;
-    }
-
     /* 打印适配 */
     @media print {
       body { background: transparent; padding: 0; }
@@ -269,8 +281,8 @@
       .sheet-page { box-shadow: none; width: 100%; margin: 0; padding: 0; }
       .btn-animate { display: none; }
       .word-trans { border: none; background: transparent; padding: 0; }
-      .char-cognition-row { background: #fff !important; border: 1px solid #ddd; }
-      .char-card { border: 1px solid #ccc; }
+      .char-cognition-row { background: #fff !important; border: 1px solid #cbd5e1; }
+      .char-card { border: 1px solid #94a3b8; }
     }
   </style>
 </head>
@@ -278,7 +290,7 @@
 
   <!-- 控制工具栏 -->
   <div class="controls">
-    <input type="text" id="textInput" value="太阳, 月亮, 森林, 高山" placeholder="输入词语/句子，用逗号或空格隔开..." />
+    <input type="text" id="textInput" value="太大了, 太阳, 高山, 森林" placeholder="输入词语、短语或句型，用逗号或空格隔开..." />
     
     <select id="langSelect">
       <option value="en">🇬🇧 英语 (English)</option>
@@ -300,95 +312,107 @@
   <script>
     const { pinyin } = pinyinPro;
 
-    // 洪恩识字风格深度字库：字理象形插画 + 演变 + 识字儿歌/口诀 + 部首结构 + 拓展组词
-    const IHUMAN_CHAR_DB = {
+    // 汉字语法结构、句型用法及精美插图数据库
+    const CHAR_GRAMMAR_DB = {
+      '太': {
+        pattern: '太 + 形容词 / 动词 + (了)',
+        patternEn: 'Too / Extremely + Adj (Excessive degree)',
+        meaning: '表示程度极高或过分（too / overly / extremely）。',
+        example: '例：太大 (too big) / 太好 (too good) / 太贵了 (too expensive)',
+        icon: `<svg viewBox="0 0 64 64"><polygon points="32,6 40,24 60,24 44,36 50,54 32,42 14,54 20,36 4,24 24,24" fill="#fa8c16"/><circle cx="32" cy="30" r="6" fill="#fff"/></svg>`,
+        steps: [{ name: '甲骨', char: '大' }, { name: '金文', char: '太' }, { name: '小篆', char: '太' }, { name: '楷书', char: '太' }]
+      },
+      '大': {
+        pattern: '大 + 名词 / 形容词作谓语',
+        patternEn: 'Big / Large / Great',
+        meaning: '表示体积、规模、数量或年龄超过一般。',
+        example: '例：大山 (big mountain) / 大人 (adult) / 房子很大 (The house is big)',
+        icon: `<svg viewBox="0 0 64 64"><rect x="10" y="10" width="44" height="44" rx="8" fill="#1890ff"/><path d="M18,32 L46,32 M32,18 L32,46" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>`,
+        steps: [{ name: '甲骨', char: '大' }, { name: '金文', char: '大' }, { name: '小篆', char: '大' }, { name: '楷书', char: '大' }]
+      },
+      '小': {
+        pattern: '小 + 名词 / 形容词作谓语',
+        patternEn: 'Small / Little / Young',
+        meaning: '表示体积、程度细小或幼年。',
+        example: '例：小鸟 (little bird) / 小心 (be careful / mindfully) / 小雨 (light rain)',
+        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="12" fill="#52c41a"/><circle cx="16" cy="40" r="6" fill="#8ce857"/><circle cx="48" cy="40" r="6" fill="#8ce857"/></svg>`,
+        steps: [{ name: '甲骨', char: '小' }, { name: '金文', char: '小' }, { name: '小篆', char: '小' }, { name: '楷书', char: '小' }]
+      },
       '日': {
-        radical: '日', strokes: 4, structure: '独体字',
-        rhyme: '圆圆太阳空中挂，照得大地暖洋洋；中间一点是黑子，古人造字叫作日。',
-        words: ['日光', '日子', '日月'],
-        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="16" fill="#f5222d"/><g stroke="#fa8c16" stroke-width="4" stroke-linecap="round"><line x1="32" y1="4" x2="32" y2="10"/><line x1="32" y1="54" x2="32" y2="60"/><line x1="4" y1="32" x2="10" y2="32"/><line x1="54" y1="32" x2="60" y2="32"/><line x1="12" y1="12" x2="16" y2="16"/><line x1="48" y1="48" x2="52" y2="52"/><line x1="12" y1="52" x2="16" y2="48"/><line x1="48" y1="16" x2="52" y2="12"/></g></svg>`,
+        pattern: '名词：太阳 / 量词：天数 / 词缀',
+        patternEn: 'Sun / Day / Date',
+        meaning: '表示太阳、白昼或按日计算的时间单位。',
+        example: '例：日光 (sunlight) / 日记 (diary) / 5月1日 (May 1st)',
+        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="15" fill="#ff4d4f"/><g stroke="#fa8c16" stroke-width="3" stroke-linecap="round"><line x1="32" y1="6" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="58"/><line x1="6" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="58" y2="32"/><line x1="14" y1="14" x2="18" y2="18"/><line x1="46" y1="46" x2="50" y2="50"/><line x1="14" y1="50" x2="18" y2="46"/><line x1="46" y1="14" x2="50" y2="18"/></g></svg>`,
         steps: [{ name: '甲骨', char: '☉' }, { name: '金文', char: '⊙' }, { name: '小篆', char: '⾐' }, { name: '楷书', char: '日' }]
       },
       '月': {
-        radical: '月', strokes: 4, structure: '独体字',
-        rhyme: '弯弯月儿像小船，两头尖尖挂天边；夜晚悄悄照人间，十五变圆亮晶晶。',
-        words: ['月光', '月亮', '岁月'],
-        icon: `<svg viewBox="0 0 64 64"><path d="M42,10 A24,24 0 1,0 42,54 A20,20 0 0,1 42,10 Z" fill="#faad14"/></svg>`,
+        pattern: '名词：月亮 / 时间：月份',
+        patternEn: 'Moon / Month',
+        meaning: '指天体月球，或用作一年的十二分之一时间单位。',
+        example: '例：月亮 (moon) / 月光 (moonlight) / 上个月 (last month)',
+        icon: `<svg viewBox="0 0 64 64"><path d="M42,10 A22,22 0 1,0 42,54 A18,18 0 0,1 42,10 Z" fill="#faad14"/></svg>`,
         steps: [{ name: '甲骨', char: '☽' }, { name: '金文', char: '⺼' }, { name: '小篆', char: '月' }, { name: '楷书', char: '月' }]
       },
       '山': {
-        radical: '山', strokes: 3, structure: '独体字',
-        rhyme: '一座大山高又高，三座山峰连成线；中间峰顶冲入云，高耸挺立就是山。',
-        words: ['高山', '山河', '山川'],
-        icon: `<svg viewBox="0 0 64 64"><polygon points="32,12 14,52 50,52" fill="#52c41a"/><polygon points="46,24 34,52 58,52" fill="#389e0d"/><polygon points="18,28 6,52 30,52" fill="#73d13d"/></svg>`,
+        pattern: '名词：山峰 / 偏旁部首',
+        patternEn: 'Mountain / Hill',
+        meaning: '指地面形成的高耸隆起部分。',
+        example: '例：高山 (high mountain) / 爬山 (climb mountains) / 山水 (scenery)',
+        icon: `<svg viewBox="0 0 64 64"><polygon points="32,14 14,50 50,50" fill="#389e0d"/><polygon points="46,24 32,50 60,50" fill="#237804"/><polygon points="18,28 6,50 30,50" fill="#52c41a"/></svg>`,
         steps: [{ name: '甲骨', char: 'ⵊ' }, { name: '金文', char: '⽭' }, { name: '小篆', char: '山' }, { name: '楷书', char: '山' }]
       },
       '水': {
-        radical: '水', strokes: 4, structure: '独体字',
-        rhyme: '溪流弯弯向前淌，两边浪花泛水光；滋润草木和大地，生命之源清又亮。',
-        words: ['流水', '泉水', '水果'],
-        icon: `<svg viewBox="0 0 64 64"><path d="M10,40 Q20,30 32,40 T54,40 M10,48 Q20,38 32,48 T54,48" fill="none" stroke="#1890ff" stroke-width="5" stroke-linecap="round"/></svg>`,
+        pattern: '名词：水流 / 偏旁(氵)构成液体',
+        patternEn: 'Water / Liquid',
+        meaning: '无色无味液体，一切生命的源泉。',
+        example: '例：喝水 (drink water) / 水果 (fruit) / 溪水 (stream)',
+        icon: `<svg viewBox="0 0 64 64"><path d="M10,38 Q20,28 32,38 T54,38 M10,48 Q20,38 32,48 T54,48" fill="none" stroke="#1890ff" stroke-width="5" stroke-linecap="round"/></svg>`,
         steps: [{ name: '甲骨', char: '川' }, { name: '金文', char: '水' }, { name: '小篆', char: '氺' }, { name: '楷书', char: '水' }]
       },
-      '木': {
-        radical: '木', strokes: 4, structure: '独体字',
-        rhyme: '一横为枝一竖干，撇捺伸出大树根；春天发芽夏日绿，一棵大树立天地。',
-        words: ['树木', '木头', '草木'],
-        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="24" r="16" fill="#52c41a"/><rect x="28" y="32" width="8" height="24" fill="#873800"/></svg>`,
-        steps: [{ name: '甲骨', char: '木' }, { name: '金文', char: '木' }, { name: '小篆', char: '木' }, { name: '楷书', char: '木' }]
-      },
       '林': {
-        radical: '木', strokes: 8, structure: '左右结构',
-        rhyme: '一木成树双木林，两棵大树手拉手；鸟儿枝头唱新曲，绿色树林美如画。',
-        words: ['树林', '竹林', '林海'],
+        pattern: '名词：树林 / 聚集处',
+        patternEn: 'Woods / Forest',
+        meaning: '成片的树木或同类人/事物的聚集。',
+        example: '例：树林 (woods) / 竹林 (bamboo forest) / 碑林 (forest of steles)',
         icon: `<svg viewBox="0 0 64 64"><circle cx="22" cy="26" r="12" fill="#52c41a"/><rect x="19" y="34" width="6" height="20" fill="#873800"/><circle cx="42" cy="22" r="14" fill="#389e0d"/><rect x="39" y="32" width="6" height="22" fill="#873800"/></svg>`,
         steps: [{ name: '甲骨', char: '木木' }, { name: '金文', char: '林' }, { name: '小篆', char: '林' }, { name: '楷书', char: '林' }]
       },
       '森': {
-        radical: '木', strokes: 12, structure: '品字形结构',
-        rhyme: '三木聚会变成森，树木茂密遮天日；小鹿小兔捉迷藏，神秘森林生机旺。',
-        words: ['森林', '阴森', '森严'],
+        pattern: '名词：森林 / 形容词：茂盛森严',
+        patternEn: 'Dense forest / Vast woods',
+        meaning: '许多树木聚集生长成片的大面积区域。',
+        example: '例：森林 (forest) / 阴森 (gloomy) / 森罗万象 (all-inclusive)',
         icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="18" r="10" fill="#237804"/><rect x="30" y="24" width="4" height="12" fill="#612500"/><circle cx="18" cy="38" r="10" fill="#52c41a"/><rect x="16" y="44" width="4" height="12" fill="#612500"/><circle cx="46" cy="38" r="10" fill="#389e0d"/><rect x="44" y="44" width="4" height="12" fill="#612500"/></svg>`,
         steps: [{ name: '金文', char: '森' }, { name: '小篆', char: '森' }, { name: '隶书', char: '森' }, { name: '楷书', char: '森' }]
       },
       '高': {
-        radical: '高', strokes: 10, structure: '上中下结构',
-        rhyme: '一层楼台一层顶，高高耸立如宝塔；站得高来望得远，红日蓝天看得清。',
-        words: ['高山', '高兴', '高大'],
+        pattern: '高 + 名词 / 程度形容词',
+        patternEn: 'High / Tall / High level',
+        meaning: '由下到上距离大；或等级、水平优越。',
+        example: '例：高山 (high mountain) / 个子很高 (very tall) / 高水平 (high level)',
         icon: `<svg viewBox="0 0 64 64"><path d="M32,8 L48,22 L16,22 Z" fill="#fa8c16"/><rect x="22" y="22" width="20" height="34" fill="#d46b08"/><rect x="27" y="36" width="10" height="20" fill="#fff"/></svg>`,
         steps: [{ name: '甲骨', char: '高' }, { name: '金文', char: '高' }, { name: '小篆', char: '高' }, { name: '楷书', char: '高' }]
-      },
-      '阳': {
-        radical: '阝', strokes: 6, structure: '左右结构',
-        rhyme: '左边山丘右边日，太阳照射暖意升；阳气升腾万物长，朝气蓬勃笑开颜。',
-        words: ['阳光', '太阳', '阳台'],
-        icon: `<svg viewBox="0 0 64 64"><circle cx="36" cy="28" r="12" fill="#fa8c16"/><path d="M12,52 L26,24 L38,52 Z" fill="#8c8c8c"/></svg>`,
-        steps: [{ name: '甲骨', char: '昜' }, { name: '金文', char: '陽' }, { name: '小篆', char: '陽' }, { name: '楷书', char: '阳' }]
-      },
-      '亮': {
-        radical: '亠', strokes: 9, structure: '上中下结构',
-        rhyme: '夜幕降临星光闪，灯火通明如白昼；双眼清澈如泉水，亮亮堂堂好心情。',
-        words: ['明亮', '亮晶晶', '光亮'],
-        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="10" fill="#ffd666"/><g stroke="#faad14" stroke-width="3"><line x1="32" y1="12" x2="32" y2="18"/><line x1="32" y1="46" x2="32" y2="52"/><line x1="12" y1="32" x2="18" y2="32"/><line x1="46" y1="32" x2="52" y2="32"/></g></svg>`,
-        steps: [{ name: '甲骨', char: '高' }, { name: '金文', char: '亮' }, { name: '小篆', char: '亮' }, { name: '楷书', char: '亮' }]
       }
     };
 
     // 常用短语精准备用库
     const PHRASE_DICT = {
-      '太阳': { en: 'sun', de: 'die Sonne', fr: 'le soleil', es: 'el sol', it: 'il sole', pt: 'o sol', ru: 'солнце' },
-      '月亮': { en: 'moon', de: 'der Mond', fr: 'la lune', es: 'la luna', it: 'la luna', pt: 'a lua', ru: 'луна' },
-      '高山': { en: 'high mountain', de: 'hoher Berg', fr: 'haute montagne', es: 'alta montaña', it: 'alta montagna', pt: 'alta montanha', ru: 'высокая гора' },
-      '森林': { en: 'forest', de: 'der Wald', fr: 'la forêt', es: 'el bosque', it: 'la foresta', pt: 'a floresta', ru: 'лес' }
+      '太大了': { en: 'Too big / Extremely large', de: 'Viel zu groß', fr: 'Trop grand', es: 'Demasiado grande', it: 'Troppo grande', pt: 'Grande demais', ru: 'Слишком большой' },
+      '太阳': { en: 'Sun', de: 'die Sonne', fr: 'le soleil', es: 'el sol', it: 'il sole', pt: 'o sol', ru: 'солнце' },
+      '月亮': { en: 'Moon', de: 'der Mond', fr: 'la lune', es: 'la luna', it: 'la luna', pt: 'a lua', ru: 'луна' },
+      '高山': { en: 'High mountain', de: 'hoher Berg', fr: 'haute montagne', es: 'alta montaña', it: 'alta montagna', pt: 'alta montanha', ru: 'высокая гора' },
+      '森林': { en: 'Forest', de: 'der Wald', fr: 'la forêt', es: 'el bosque', it: 'la foresta', pt: 'a floresta', ru: 'лес' }
     };
 
     // 通用汉字回退解析
-    function getDefaultCognition(char) {
+    function getDefaultGrammar(char) {
       return {
-        radical: '部首', strokes: '多笔', structure: '汉字结构',
-        rhyme: `仔细观察「${char}」的字形特征，一笔一画写端正。`,
-        words: [`${char}字`, `学${char}`],
-        icon: `<svg viewBox="0 0 64 64"><rect x="12" y="12" width="40" height="40" rx="8" fill="#f0f2f5"/><text x="32" y="38" font-size="20" text-anchor="middle" fill="#8c8c8c">${char}</text></svg>`,
+        pattern: `常用汉字：${char}`,
+        patternEn: 'Basic Character',
+        meaning: `请结合前后语境及词组进行理解运用。`,
+        example: `例：${char}字 / 学${char}`,
+        icon: `<svg viewBox="0 0 64 64"><rect x="12" y="12" width="40" height="40" rx="8" fill="#f1f5f9"/><text x="32" y="38" font-size="20" text-anchor="middle" fill="#64748b">${char}</text></svg>`,
         steps: [{ name: '古文', char: char }, { name: '小篆', char: char }, { name: '隶书', char: char }, { name: '楷书', char: char }]
       };
     }
@@ -446,13 +470,13 @@
           </div>
         `;
 
-        // 逐字生成洪恩识字风格识字卡
+        // 逐字生成语法解析与练习卡
         for (let cIdx = 0; cIdx < chars.length; cIdx++) {
           const char = chars[cIdx];
           const charPy = pinyin(char, { toneType: 'symbol' });
           const firstGridId = `grid-demo-${globalGridIdx}`;
 
-          const charData = IHUMAN_CHAR_DB[char] || getDefaultCognition(char);
+          const charData = CHAR_GRAMMAR_DB[char] || getDefaultGrammar(char);
           const stepsHtml = charData.steps.map((s, idx) => `
             <div class="evo-step">
               <span class="evo-icon">${s.char}</span>
@@ -464,20 +488,25 @@
           const card = document.createElement('div');
           card.className = 'char-card';
 
-          // 1. 洪恩识字四步法上部：看图 + 溯源 + 口诀儿歌 + 部首属性
+          // 1. 图解 + 溯源 + 语法句型结构
           card.innerHTML = `
             <div class="char-cognition-row">
-              <div class="pic-badge" title="${char} 的象形实物图">${charData.icon}</div>
-              <div class="evolution-timeline">${stepsHtml}</div>
-              <div class="mnemonic-box">
-                <div class="mnemonic-title">💡 洪恩识字口诀：</div>
-                <div>${charData.rhyme}</div>
-                <div class="meta-tags">【部首: ${charData.radical} | 结构: ${charData.structure} | 笔画: ${charData.strokes}画】</div>
+              <div class="pic-badge" title="${char} 的具象插图">${charData.icon}</div>
+              <div class="evolution-box">
+                <div class="evolution-timeline">${stepsHtml}</div>
+              </div>
+              <div class="grammar-box">
+                <div class="grammar-pattern-title">
+                  <span class="pattern-tag">${charData.pattern}</span>
+                  <span style="font-size:11px; color:#64748b;">${charData.patternEn}</span>
+                </div>
+                <div class="grammar-desc">${charData.meaning}</div>
+                <div class="grammar-example">${charData.example}</div>
               </div>
             </div>
           `;
 
-          // 2. 识字下部：笔顺演示 + 描红米字格
+          // 2. 笔顺与描红米字格
           const practiceRow = document.createElement('div');
           practiceRow.className = 'char-practice-row';
 
@@ -489,11 +518,11 @@
           `;
           practiceRow.appendChild(charBadge);
 
-          // 米字格（1示范 + 2描红 + 3练习）
+          // 米字格（1示范 + 2描红 + 4练习）
           const gridList = document.createElement('div');
           gridList.className = 'grid-list';
           
-          const totalGrids = 6;
+          const totalGrids = 7;
           const currentGrids = [];
           for (let g = 0; g < totalGrids; g++) {
             const grid = document.createElement('div');
@@ -505,24 +534,18 @@
           practiceRow.appendChild(gridList);
           card.appendChild(practiceRow);
 
-          // 3. 拓展常用词
-          const wordsExpand = document.createElement('div');
-          wordsExpand.className = 'char-words-expand';
-          wordsExpand.innerHTML = `<strong>常用词组：</strong> ${charData.words.map(w => `<span>${w}</span>`).join(' ')}`;
-          card.appendChild(wordsExpand);
-
           wordBlock.appendChild(card);
           container.appendChild(wordBlock);
 
-          // 渲染示范字
+          // 渲染黑字示范
           HanziWriter.create(firstGridId, char, {
-            width: 44, height: 44, padding: 3, strokeColor: '#000000', showOutline: false
+            width: 42, height: 42, padding: 3, strokeColor: '#000000', showOutline: false
           });
 
           // 渲染描红浅灰字
           for (let g = 1; g <= 2; g++) {
             HanziWriter.create(currentGrids[g], char, {
-              width: 44, height: 44, padding: 3, strokeColor: '#d4d4d4', showOutline: false
+              width: 42, height: 42, padding: 3, strokeColor: '#d4d4d4', showOutline: false
             });
           }
 
@@ -543,7 +566,7 @@
       const targetElem = document.getElementById(elementId);
       targetElem.innerHTML = '';
       const writer = HanziWriter.create(elementId, char, {
-        width: 44, height: 44, padding: 3,
+        width: 42, height: 42, padding: 3,
         strokeColor: '#1890ff',
         strokeAnimationSpeed: 1.2,
         delayBetweenStrokes: 120
