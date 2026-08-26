@@ -98,7 +98,8 @@
       max-width: 95px;
       word-break: break-word;
       line-height: 1.2;
-      border-bottom: 1px dotted #bbb;
+      border-bottom: 1px dashed #bbb;
+      padding: 1px 3px;
       cursor: text;
     }
     .char-trans:focus {
@@ -168,20 +169,53 @@
   <script>
     const { pinyin } = pinyinPro;
 
-    // 免费、免跨域限制的翻译接口
-    async function translateWord(text, targetLang) {
+    // 内置常用汉字高精度多语言词典（离线保证立即显示）
+    const DICT = {
+      '日': { de: 'Sonne / Tag', en: 'sun / day', fr: 'soleil / jour', es: 'sol / día' },
+      '月': { de: 'Mond / Monat', en: 'moon / month', fr: 'lune / mois', es: 'luna / mes' },
+      '山': { de: 'Berg', en: 'mountain', fr: 'montagne', es: 'montaña' },
+      '水': { de: 'Wasser', en: 'water', fr: 'eau', es: 'agua' },
+      '木': { de: 'Holz / Baum', en: 'wood / tree', fr: 'bois / arbre', es: 'madera / árbol' },
+      '林': { de: 'Wald', en: 'forest', fr: 'forêt', es: 'bosque' },
+      '火': { de: 'Feuer', en: 'fire', fr: 'feu', es: 'fuego' },
+      '土': { de: 'Erde / Boden', en: 'soil / earth', fr: 'terre / sol', es: 'tierra / suelo' },
+      '天': { de: 'Himmel / Tag', en: 'sky / day', fr: 'ciel / jour', es: 'cielo / día' },
+      '地': { de: 'Erde / Land', en: 'earth / ground', fr: 'terre', es: 'tierra' },
+      '人': { de: 'Mensch / Person', en: 'person', fr: 'personne', es: 'persona' },
+      '大': { de: 'groß', en: 'big', fr: 'grand', es: 'grande' },
+      '小': { de: 'klein', en: 'small', fr: 'petit', es: 'pequeño' },
+      '上': { de: 'oben / auf', en: 'up / above', fr: 'sur / haut', es: 'arriba' },
+      '下': { de: 'unten / unter', en: 'down / below', fr: 'sous / bas', es: 'abajo' },
+      '中': { de: 'Mitte', en: 'middle', fr: 'milieu', es: 'medio' },
+      '生': { de: 'gebären / leben', en: 'birth / live', fr: 'naître / vie', es: 'nacer / vida' },
+      '字': { de: 'Schriftzeichen', en: 'character', fr: 'caractère', es: 'carácter' }
+    };
+
+    // 智能获取翻译：优先词典，次选网络接口
+    async function getTranslation(char, targetLang) {
       if (targetLang === 'none') return '';
-      try {
-        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=zh-CN|${targetLang}`;
-        const response = await fetch(url);
-        const data = await response.json();
-        if (data && data.responseData && data.responseData.translatedText) {
-          return data.responseData.translatedText.replace(/^[#\s]+/, '').toLowerCase();
-        }
-      } catch (err) {
-        console.error('翻译获取失败:', err);
+      
+      // 1. 命中内置词典
+      if (DICT[char] && DICT[char][targetLang]) {
+        return DICT[char][targetLang];
       }
-      return '';
+
+      // 2. 词典未包含时，走开放网络翻译服务
+      try {
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(char)}&langpair=zh-CN|${targetLang}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data && data.responseData && data.responseData.translatedText) {
+          const trans = data.responseData.translatedText.trim();
+          if (!trans.startsWith('MYMEMORY WARNING')) {
+            return trans.toLowerCase();
+          }
+        }
+      } catch (e) {
+        console.warn('在线翻译失败:', e);
+      }
+
+      return '点击输入释义';
     }
 
     // 生成字帖核心函数
@@ -205,11 +239,12 @@
         const py = pinyin(char, { toneType: 'symbol' });
         const transBoxId = `trans-${charIdx}`;
 
+        // 创建左侧拼音与翻译标注区（支持直接点击修改）
         const metaBox = document.createElement('div');
         metaBox.className = 'char-meta';
         metaBox.innerHTML = `
           <div class="char-pinyin">${py}</div>
-          <div class="char-trans" id="${transBoxId}" contenteditable="true" title="点击可直接编辑修改释义">${targetLang === 'none' ? '' : '...'}</div>
+          <div class="char-trans" id="${transBoxId}" contenteditable="true" title="点击可直接编辑修改释义">${targetLang === 'none' ? '' : '加载中...'}</div>
           <button class="btn-animate" onclick="playStroke('${charIdx}', '${char}')">▶ 演示</button>
         `;
         row.appendChild(metaBox);
@@ -226,7 +261,7 @@
         row.appendChild(gridList);
         container.appendChild(row);
 
-        // 渲染示范字与描红字
+        // 渲染范字与描红字
         HanziWriter.create(`char-${charIdx}-grid-0`, char, {
           width: 58, height: 58, padding: 5, strokeColor: '#000000', showOutline: false
         });
@@ -236,17 +271,17 @@
           });
         }
 
-        // 异步填充多语言翻译
+        // 加载翻译内容
         if (targetLang !== 'none') {
-          translateWord(char, targetLang).then(res => {
+          getTranslation(char, targetLang).then(res => {
             const el = document.getElementById(transBoxId);
-            if (el) el.innerText = res || '';
+            if (el) el.innerText = res;
           });
         }
       }
     }
 
-    // 播放笔顺动画
+    // 播放笔顺演示动画
     function playStroke(charIdx, char) {
       const targetElem = document.getElementById(`char-${charIdx}-grid-0`);
       targetElem.innerHTML = '';
@@ -259,6 +294,7 @@
       writer.animateCharacter();
     }
 
+    // 页面加载默认运行
     window.onload = generateSheet;
   </script>
 </body>
