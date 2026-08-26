@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>多语言汉字甲骨文与词语句型语法字帖系统</title>
+  <title>多语言汉字演变与谷歌AI翻译字帖系统</title>
   <!-- 引入汉字笔顺库与拼音库 -->
   <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.18.3/dist/index.js"></script>
@@ -23,7 +23,7 @@
       padding: 16px 20px;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      max-width: 1060px;
+      max-width: 1080px;
       margin: 0 auto 20px;
       display: flex;
       flex-wrap: wrap;
@@ -124,7 +124,7 @@
       font-weight: 600;
     }
 
-    /* 词语/句型右侧条框：多重释义 + 句型结构与语法用法 */
+    /* 词语右侧条框：HSK等级 + 谷歌翻译多重释义 + 网络流行用法 + 语法句型解析 */
     .word-trans-box {
       flex: 1;
       background: #fff;
@@ -134,8 +134,8 @@
       cursor: text;
       display: flex;
       flex-direction: column;
-      gap: 5px;
-      font-size: 13px;
+      gap: 4px;
+      font-size: 12.5px;
     }
     .word-trans-box:focus {
       outline: 1px solid #1890ff;
@@ -143,17 +143,47 @@
     }
     .trans-meaning-line {
       color: #1e293b;
-      font-weight: 500;
+      font-weight: 600;
       line-height: 1.4;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .hsk-tag {
+      background: #ff4d4f;
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+    .engine-tag {
+      background: #f0fdf4;
+      color: #16a34a;
+      border: 1px solid #bbf7d0;
+      font-size: 9.5px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-weight: normal;
+    }
+    .trans-slang-line {
+      font-size: 11.5px;
+      color: #d97706;
+      background: #fffbeb;
+      padding: 2px 6px;
+      border-radius: 3px;
+      line-height: 1.35;
+      border: 1px solid #fef3c7;
     }
     .trans-usage-line {
-      font-size: 12px;
-      color: #0284c7;
+      font-size: 11.5px;
+      color: #0369a1;
       background: #f0f9ff;
-      padding: 3px 8px;
-      border-radius: 4px;
-      line-height: 1.4;
-      border-left: 3px solid #38bdf8;
+      padding: 2px 6px;
+      border-radius: 3px;
+      line-height: 1.35;
+      border-left: 3px solid #0ea5e9;
     }
 
     /* 单字卡片：单行严格对齐（无折行） */
@@ -162,7 +192,7 @@
       background: #ffffff;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
-      padding: 8px 10px;
+      padding: 7px 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -171,7 +201,7 @@
       overflow-x: hidden;
     }
 
-    /* 左侧：专属象形配图 + 单一甲骨文链接节点 */
+    /* 左侧：专属卡通配图 + 单一甲骨文/金文链接节点 */
     .char-left-zone {
       display: flex;
       align-items: center;
@@ -190,12 +220,12 @@
       flex-shrink: 0;
     }
     .pic-badge svg {
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
     }
 
-    /* 甲骨文链接单个节点 */
-    .oracle-link-badge {
+    /* 古文字链接单个节点（甲骨文优先，无则降级为金文） */
+    .ancient-link-badge {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -210,30 +240,30 @@
       height: 44px;
       transition: all 0.2s;
     }
-    .oracle-link-badge:hover {
+    .ancient-link-badge:hover {
       border-color: #1890ff;
       background: #e6f7ff;
     }
-    .oracle-glyph {
+    .ancient-glyph {
       width: 24px;
       height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .oracle-glyph svg {
+    .ancient-glyph svg {
       width: 22px;
       height: 22px;
       fill: #334155;
     }
-    .oracle-label {
+    .ancient-label {
       font-size: 9px;
       color: #8c8c8c;
       transform: scale(0.85);
       margin-top: 1px;
     }
 
-    /* 中间：单字多音字读音 + 笔顺演示 + 朗读 */
+    /* 中间：单字多音字读音 + 笔顺演示 + 纠偏发音 */
     .char-badge {
       width: 55px;
       text-align: center;
@@ -306,7 +336,7 @@
 
   <!-- 控制工具栏 -->
   <div class="controls">
-    <input type="text" id="textInput" value="中国银行, 睡觉, 觉得, 快乐, 音乐, 车马" placeholder="输入词语、短语或句型，用逗号或空格隔开..." />
+    <input type="text" id="textInput" value="太牛了, 车马, 中国银行, 去看电影, 睡觉, 觉得, 快乐" placeholder="输入词语、短语或现代网络热词，用逗号或空格隔开..." />
     
     <select id="langSelect" onchange="generateSheet()">
       <option value="de">🇩🇪 德语 (Deutsch)</option>
@@ -328,255 +358,237 @@
   <script>
     const { pinyin } = pinyinPro;
 
-    // 1. 汉字专属象形图解 + 甲骨文字形库
-    const CHAR_IMAGE_ORACLE_DB = {
-      '车': {
-        icon: `<svg viewBox="0 0 64 64"><rect x="14" y="24" width="36" height="16" rx="2" fill="#8c8c8c"/><circle cx="20" cy="46" r="8" fill="#1890ff"/><circle cx="44" cy="46" r="8" fill="#1890ff"/><path d="M8,32 L56,32" stroke="#595959" stroke-width="4"/></svg>`,
-        oracle: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M20,20 L80,20 M20,80 L80,80 M20,20 L20,80 M80,20 L80,80 M35,40 L65,40 L65,60 L35,60 Z" stroke="#334155" stroke-width="7" fill="none"/></svg>`
+    // 1. 汉字专属卡通插画 + 古文字库（优先甲骨文，若无则自动降级展示金文）
+    const CHAR_MEDIA_DB = {
+      '牛': {
+        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="36" r="18" fill="#d97706"/><path d="M16,24 Q10,12 22,22 M48,24 Q54,12 42,22" stroke="#78350f" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="26" cy="34" r="3" fill="#1e293b"/><circle cx="38" cy="34" r="3" fill="#1e293b"/><ellipse cx="32" cy="42" rx="10" ry="7" fill="#fcd34d"/><circle cx="28" cy="42" r="1.5" fill="#78350f"/><circle cx="36" cy="42" r="1.5" fill="#78350f"/></svg>`,
+        ancient: {
+          type: '甲骨文',
+          svg: `<svg viewBox="0 0 100 100"><path d="M50,20 L50,85 M20,35 Q50,15 80,35 M50,45 L30,55 M50,45 L70,55" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>`
+        }
       },
       '马': {
-        icon: `<svg viewBox="0 0 64 64"><path d="M16,48 Q24,20 40,16 Q48,16 48,28 Q48,40 32,44 L32,56 M42,44 L44,56" stroke="#fa8c16" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`,
-        oracle: `<svg viewBox="0 0 100 100"><path d="M40,15 Q60,15 65,30 Q65,50 45,55 L45,85 M55,55 L65,85 M35,30 Q20,35 25,50 M65,30 L80,25 M65,38 L82,35 M65,46 L80,45" stroke="#334155" stroke-width="7" fill="none"/></svg>`
+        icon: `<svg viewBox="0 0 64 64"><path d="M18,50 Q22,18 42,16 Q48,16 48,26 Q48,38 34,42 L34,54 M42,42 L44,54" stroke="#ea580c" stroke-width="4" fill="#fed7aa" stroke-linecap="round"/><circle cx="38" cy="24" r="2.5" fill="#1e293b"/><path d="M26,18 Q32,8 38,18" stroke="#9a3412" stroke-width="3" fill="none"/></svg>`,
+        ancient: {
+          type: '甲骨文',
+          svg: `<svg viewBox="0 0 100 100"><path d="M40,15 Q60,15 65,30 Q65,50 45,55 L45,85 M55,55 L65,85 M35,30 Q20,35 25,50 M65,30 L80,25 M65,38 L82,35 M65,46 L80,45" stroke="#334155" stroke-width="7" fill="none"/></svg>`
+        }
+      },
+      '车': {
+        icon: `<svg viewBox="0 0 64 64"><rect x="14" y="24" width="36" height="16" rx="4" fill="#38bdf8"/><rect x="20" y="16" width="24" height="10" rx="2" fill="#bae6fd"/><circle cx="22" cy="44" r="6" fill="#1e293b"/><circle cx="42" cy="44" r="6" fill="#1e293b"/><circle cx="22" cy="44" r="2" fill="#fff"/><circle cx="42" cy="44" r="2" fill="#fff"/></svg>`,
+        ancient: {
+          type: '甲骨文',
+          svg: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M20,20 L80,20 M20,80 L80,80 M20,20 L20,80 M80,20 L80,80 M35,40 L65,40 L65,60 L35,60 Z" stroke="#334155" stroke-width="7" fill="none"/></svg>`
+        }
       },
       '太': {
-        icon: `<svg viewBox="0 0 64 64"><polygon points="32,8 40,24 58,24 44,36 50,54 32,42 14,54 20,36 6,24 24,24" fill="#fa8c16"/><circle cx="32" cy="30" r="5" fill="#fff"/></svg>`,
-        oracle: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,45 Q50,40 80,45 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>`
+        icon: `<svg viewBox="0 0 64 64"><polygon points="32,8 40,24 58,24 44,36 50,54 32,42 14,54 20,36 6,24 24,24" fill="#fbbf24"/><circle cx="32" cy="30" r="5" fill="#ea580c"/></svg>`,
+        ancient: {
+          type: '甲骨文',
+          svg: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,45 Q50,40 80,45 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>`
+        }
       },
       '大': {
-        icon: `<svg viewBox="0 0 64 64"><rect x="8" y="8" width="48" height="48" rx="8" fill="#1890ff"/><path d="M16,32 L48,32 M32,16 L32,48" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>`,
-        oracle: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,42 Q50,38 80,42 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none"/></svg>`
+        icon: `<svg viewBox="0 0 64 64"><rect x="8" y="8" width="48" height="48" rx="10" fill="#60a5fa"/><path d="M16,32 L48,32 M32,16 L32,48" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>`,
+        ancient: {
+          type: '甲骨文',
+          svg: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,42 Q50,38 80,42 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none"/></svg>`
+        }
       },
       '行': {
-        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="18" r="8" fill="#595959"/><path d="M32,26 L32,42 M32,42 L20,58 M32,42 L44,58 M20,34 L44,34" stroke="#595959" stroke-width="4" stroke-linecap="round"/></svg>`,
-        oracle: `<svg viewBox="0 0 100 100"><path d="M30,15 L30,45 L15,45 M70,15 L70,45 L85,45 M15,55 L30,55 L30,85 M85,55 L70,55 L70,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>`
+        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="18" r="8" fill="#475569"/><path d="M32,26 L32,42 M32,42 L20,58 M32,42 L44,58 M20,34 L44,34" stroke="#475569" stroke-width="4" stroke-linecap="round"/></svg>`,
+        ancient: {
+          type: '甲骨文',
+          svg: `<svg viewBox="0 0 100 100"><path d="M30,15 L30,45 L15,45 M70,15 L70,45 L85,45 M15,55 L30,55 L30,85 M85,55 L70,55 L70,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>`
+        }
       },
-      '电': {
-        icon: `<svg viewBox="0 0 64 64"><polygon points="34,8 18,34 30,34 26,56 46,26 34,26" fill="#faad14"/></svg>`,
-        oracle: `<svg viewBox="0 0 100 100"><path d="M50,15 L30,45 L70,55 L45,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>`
+      '乐': {
+        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="20" fill="#fde047"/><circle cx="24" cy="28" r="3" fill="#1e293b"/><circle cx="40" cy="28" r="3" fill="#1e293b"/><path d="M22,38 Q32,48 42,38" stroke="#b45309" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
+        ancient: {
+          type: '甲骨文',
+          svg: `<svg viewBox="0 0 100 100"><path d="M50,45 L50,85 M25,25 Q35,10 45,25 M55,25 Q65,10 75,25 M30,55 L50,45 L70,55" stroke="#334155" stroke-width="7" fill="none"/></svg>`
+        }
+      },
+      '森': {
+        icon: `<svg viewBox="0 0 64 64"><polygon points="32,10 22,26 42,26" fill="#15803d"/><polygon points="20,28 10,48 30,48" fill="#16a34a"/><polygon points="44,28 34,48 54,48" fill="#16a34a"/><rect x="29" y="48" width="6" height="10" fill="#78350f"/></svg>`,
+        ancient: {
+          type: '金文',
+          svg: `<svg viewBox="0 0 100 100"><path d="M50,8 L50,45 M35,25 L65,25 M50,25 L38,45 M50,25 L62,45 M25,52 L25,92 M12,70 L38,70 M25,70 L14,92 M25,70 L36,92 M75,52 L75,92 M62,70 L88,70 M75,70 L64,92 M75,70 L86,92" stroke="#334155" stroke-width="5" fill="none"/></svg>`
+        }
       },
       '日': {
-        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="16" fill="#ff4d4f"/><g stroke="#fa8c16" stroke-width="3.5" stroke-linecap="round"><line x1="32" y1="5" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="59"/><line x1="5" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="59" y2="32"/></g></svg>`,
-        oracle: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" stroke="#334155" stroke-width="8" fill="none"/><circle cx="50" cy="50" r="6" fill="#334155"/></svg>`
+        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="16" fill="#ef4444"/><g stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round"><line x1="32" y1="5" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="59"/><line x1="5" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="59" y2="32"/></g></svg>`,
+        ancient: {
+          type: '甲骨文',
+          svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" stroke="#334155" stroke-width="8" fill="none"/><circle cx="50" cy="50" r="6" fill="#334155"/></svg>`
+        }
       },
       '月': {
-        icon: `<svg viewBox="0 0 64 64"><path d="M44,8 A24,24 0 1,0 44,56 A20,20 0 0,1 44,8 Z" fill="#faad14"/></svg>`,
-        oracle: `<svg viewBox="0 0 100 100"><path d="M60,15 A35,35 0 0,0 60,85 A45,45 0 0,1 60,15 Z" stroke="#334155" stroke-width="8" fill="none"/></svg>`
+        icon: `<svg viewBox="0 0 64 64"><path d="M44,8 A24,24 0 1,0 44,56 A20,20 0 0,1 44,8 Z" fill="#facc15"/></svg>`,
+        ancient: {
+          type: '甲骨文',
+          svg: `<svg viewBox="0 0 100 100"><path d="M60,15 A35,35 0 0,0 60,85 A45,45 0 0,1 60,15 Z" stroke="#334155" stroke-width="8" fill="none"/></svg>`
+        }
       },
-      '山': {
-        icon: `<svg viewBox="0 0 64 64"><polygon points="32,12 14,52 50,52" fill="#389e0d"/><polygon points="46,24 32,52 60,52" fill="#237804"/><polygon points="18,28 6,52 30,52" fill="#52c41a"/></svg>`,
-        oracle: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,40 L20,85 M80,40 L80,85 M20,85 L80,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>`
+      '水': {
+        icon: `<svg viewBox="0 0 64 64"><path d="M32,10 C32,10 16,32 16,42 C16,52 24,58 32,58 C40,58 48,52 48,42 C48,32 32,10 32,10 Z" fill="#38bdf8"/></svg>`,
+        ancient: {
+          type: '甲骨文',
+          svg: `<svg viewBox="0 0 100 100"><path d="M50,15 Q40,50 50,85 M28,35 Q35,45 28,65 M72,35 Q65,45 72,65" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>`
+        }
       }
     };
 
-    // 2. 词语/句型多义项释义与语法结构用法库
-    const PHRASE_USAGE_DB = {
-      '太大了': {
-        usage: {
-          de: '【句型结构 / HSK 1】太 + 形容词 + 了 ➔ Drückt ein übermäßiges Ausmaß oder ein Superlativ aus (zu / extrem groß).',
-          en: '【Pattern / HSK 1】太 + Adj + 了 ➔ Expresses an excessive degree or exclamation (too / extremely large).',
-          es: '【Estructura / HSK 1】太 + Adj + 了 ➔ Expresa un grado excesivo o superlativo (demasiado / extremadamente grande).',
-          fr: '【Structure / HSK 1】太 + Adj + 了 ➔ Exprime un degré excessif ou exclamatif (trop / extrêmement grand).',
-          it: '【Struttura / HSK 1】太 + Agg + 了 ➔ Indica un grado eccessivo o esclamativo (troppo / oltremodo grande).',
-          pt: '【Estrutura / HSK 1】太 + Adj + 了 ➔ Expressa grau excessivo ou exclamação (demais / extremamente grande).',
-          ru: '【Конструкция / HSK 1】太 + Прил. + 了 ➔ Указывает на чрезмерную степень (слишком / чересчур большой).'
-        },
+    // 2. 词语多义项 + 网络词汇/常用衍生表达 + HSK等级 + 语法句法功能库
+    const RICH_PHRASE_DB = {
+      '太牛了': {
+        hsk: 'HSK 1 + 网络高频',
         meaning: {
-          de: '1. viel zu groß / übermäßig groß  2. übergroß',
-          en: '1. too big / extremely large  2. oversized',
-          es: '1. demasiado grande / enorme  2. de tamaño excesivo',
-          fr: '1. trop grand / démesuré  2. surdimensionné',
-          it: '1. troppo grande  2. enorme',
-          pt: '1. grande demais  2. desmedido',
-          ru: '1. слишком большой  2. чересчур крупный'
+          de: '1. Super stark / Genial!  2. Extrem beeindruckend (Slang)',
+          en: '1. Awesome / Incredible!  2. Badass / Outstanding (Slang)',
+          es: '1. ¡Increíble! / ¡Genial!  2. Súper impresionante / Una pasada',
+          fr: '1. Trop fort ! / Trop génial !  2. Époustouflant (Argot)',
+          it: '1. Troppo forte! / Fantastico!  2. Mitico (Slang)',
+          pt: '1. Demais! / Muito maneiro!  2. Incrível (Gíria)',
+          ru: '1. Круто! / Офигенно!  2. Слишком крутой / Мощный (Сленг)'
+        },
+        slang: {
+          de: '【网络/口语衍生】「牛/牛逼」在现代汉语中广泛用作形容词，表示能力极强、技术高超或令人佩服。',
+          en: '【Internet/Colloquial Slang】"牛" (lit. cow/ox) is widely used in modern slang meaning "badass / awesome / super capable".',
+          es: '【Jerga de Internet】"牛" se utiliza coloquialmente para describir a alguien o algo extraordinariamente hábil o genial.',
+          fr: '【Argot Internet】"牛" s’emploie familièrement pour désigner quelqu’un ou quelque chose de très fort ou balèze.',
+          it: '【Slang online】"牛" è un popolarissimo termine colloquiale che significa "fantastico / formidabile".',
+          pt: '【Gíria da Internet】"牛" é usado no dia a dia como "muito bom / fera / arrasou".',
+          ru: '【Интернет-сленг】«牛» в разговорной речи означает «крутой / мощный / молодец».'
+        },
+        usage: {
+          de: '【语法与结构】太 + 形容词 (牛) + 了 ➔ 口语感叹句，作谓语或独立短语，用于强烈赞叹对方。',
+          en: '【Grammar & Pattern】太 + Adj (牛) + 了 ➔ Exclamatory sentence, acts as predicate or standalone exclamation.',
+          es: '【Gramática y estructura】太 + Adj (牛) + 了 ➔ Oración exclamativa coloquial para elogiar enfáticamente.',
+          fr: '【Grammaire et structure】太 + Adj (牛) + 了 ➔ Phrase exclamative servant de prédicat pour louer vivement.',
+          it: '【Grammatica e struttura】太 + Agg (牛) + 了 ➔ Espressione esclamativa usata per complimentarsi.',
+          pt: '【Gramática e estrutura】太 + Adj (牛) + 了 ➔ Frase exclamativa usada para elogios enfáticos.',
+          ru: '【Грамматика и конструкция】太 + Прил. (牛) + 了 ➔ Восклицательное предложение для выражения восхищения.'
         }
       },
       '车马': {
-        usage: {
-          de: '【词性与构词 / HSK 3】名词 (Nomen) ➔ Bezieht sich auf Fahrzeuge und Pferde bzw. antike Verkehrsmittel. Struktur: 车 (Wagen) + 马 (Pferd).',
-          en: '【POS & Formation / HSK 3】Noun ➔ Carriages and horses / ancient transportation vehicles. Structure: 车 (carriage) + 马 (horse).',
-          es: '【Categoría gramatical / HSK 3】Sustantivo ➔ Carruajes y caballos / vehículos antiguos. Estructura: 车 (carro) + 马 (caballo).',
-          fr: '【Nature / HSK 3】Nom ➔ Voitures et chevaux / transports antiques. Structure: 车 + 马.',
-          it: '【Categoria / HSK 3】Sostantivo ➔ Carri e cavalli / mezzi di trasporto storici. Struttura: 车 + 马.',
-          pt: '【Classe / HSK 3】Substantivo ➔ Carruagens e cavalos / meios de transporte antigos. Estrutura: 车 + 马.',
-          ru: '【Часть речи / HSK 3】Сущ. ➔ Повозки и кони / экипажи и транспорт. Структура: 车 + 马.'
-        },
+        hsk: 'HSK 3',
         meaning: {
-          de: '1. Kutschen und Pferde  2. Fuhrwerk / Verkehrsmittel (antik)',
-          en: '1. carriages and horses  2. ancient vehicles / traffic',
+          de: '1. Kutschen und Pferde  2. Verkehrsmittel / Reisen (historisch)',
+          en: '1. carriages and horses  2. ancient vehicles / transport',
           es: '1. carruajes y caballos  2. vehículos y transporte antiguo',
-          fr: '1. voitures et chevaux  2. circulation / transports d’autrefois',
-          it: '1. carri e cavalli  2. veicoli e cavalcature',
-          pt: '1. carruagens e cavalos  2. conduções antigas',
+          fr: '1. voitures et chevaux  2. moyens de transport d’autrefois',
+          it: '1. carri e cavalli  2. veicoli d’epoca',
+          pt: '1. carruagens e cavalos  2. condução antiga',
           ru: '1. повозки и кони  2. старинный транспорт'
+        },
+        slang: {
+          de: '【文学/文化拓展】常用于诗词（如「从前车马很慢」），象征旧时代从容悠缓的生活节奏。',
+          en: '【Literary Context】Frequently seen in poetry (e.g., "Carriages moved slowly in past times"), symbolizing leisurely old days.',
+          es: '【Contexto literario】Muy usado en poesía nostálgica evocando la vida pausada de tiempos antiguos.',
+          fr: '【Contexte littéraire】Évoque dans la poésie le rythme lent et poétique de la vie d’antan.',
+          it: '【Contesto letterario】Simboleggia nella poesia classica e moderna il ritmo calmo del passato.',
+          pt: '【Contexto literário】Simboliza o ritmo calmo e nostálgico dos tempos antigos na poesia.',
+          ru: '【Литературный контекст】Символизирует неспешный ритм жизни в старину.'
+        },
+        usage: {
+          de: '【词性与语法】并列名词短语 ➔ 车 (Wagen) + 马 (Pferd)，常在句中作主语或宾语。',
+          en: '【Grammar & POS】Coordinate Noun Phrase ➔ 车 (carriage) + 马 (horse), acts as subject or object.',
+          es: '【Gramática】Frase nominal coordinada ➔ 车 + 马, funciona como sujeto u objeto en la oración.',
+          fr: '【Grammaire】Syntagme nominal coordonné ➔ 车 + 马, employé comme sujet ou complément.',
+          it: '【Grammatica】Sintagma nominale ➔ 车 + 马, funge da soggetto o complemento.',
+          pt: '【Gramática】Sintagma nominal coordenado ➔ 车 + 马, atua como sujeito ou objeto.',
+          ru: '【Грамматика】Сочинительное именное словосочетание ➔ 车 + 马, выступает подлежащим или дополнением.'
         }
       },
       '中国银行': {
-        usage: {
-          de: '【专有名词 / HSK 2】Bank of China ➔ Name einer der vier großen staatlichen Geschäftsbanken Chinas.',
-          en: '【Proper Noun / HSK 2】Bank of China (BOC) ➔ One of the major state-owned commercial banks in China.',
-          es: '【Nombre propio / HSK 2】Banco de China ➔ Uno de los principales bancos comerciales estatales de China.',
-          fr: '【Nom propre / HSK 2】Banque de Chine (Bank of China) ➔ Grande banque commerciale d’État.',
-          it: '【Nome proprio / HSK 2】Banca di Cina ➔ Importante banca commerciale statale cinese.',
-          pt: '【Nome próprio / HSK 2】Banco da China ➔ Grande banco comercial estatal da China.',
-          ru: '【Собств. имя / HSK 2】Банк Китая (Bank of China) ➔ Один из крупнейших госбанков Китая.'
-        },
+        hsk: 'HSK 2',
         meaning: {
-          de: '1. Bank of China  2. Chinesische Staatsbank',
+          de: '1. Bank of China  2. Große chinesische Staatsbank',
           en: '1. Bank of China (BOC)',
-          es: '1. Banco de China',
+          es: '1. Banco de China (Bank of China)',
           fr: '1. Banque de Chine (Bank of China)',
-          it: '1. Banca di Cina',
-          pt: '1. Banco da China',
-          ru: '1. Банк Китая'
+          it: '1. Banca di Cina (Bank of China)',
+          pt: '1. Banco da China (Bank of China)',
+          ru: '1. Банк Китая (Bank of China)'
+        },
+        slang: {
+          de: '【现代金融缩写】英文简称 BOC，中国四大国有大型商业银行之一。',
+          en: '【Modern Acronym】Abbreviated as BOC, one of China’s "Big Four" state-owned banks.',
+          es: '【Acrónimo oficial】Abreviado como BOC, uno de los cuatro grandes bancos estatales de China.',
+          fr: '【Sigle officiel】Abrégé en BOC, l’une des quatre grandes banques d’État chinoises.',
+          it: '【Sigla ufficiale】Siglata BOC, uno dei quattro principali colossi bancari statali.',
+          pt: '【Sigla oficial】Conhecido como BOC, um dos quatro grandes bancos estatais chineses.',
+          ru: '【Официальное сокращение】BOC, один из четырех крупнейших государственных банков Китая.'
+        },
+        usage: {
+          de: '【专有名词】常作地点状语或介词宾语（例：在 中国银行 换钱）。',
+          en: '【Proper Noun】Often used as prepositional object or place adverbial (e.g. at the Bank of China).',
+          es: '【Nombre propio】Funciona habitualmente como complemento de lugar (ej. en el Banco de China).',
+          fr: '【Nom propre】S’emploie comme complément circonstanciel de lieu (ex. à la Banque de Chine).',
+          it: '【Nome proprio】Usato come complemento di luogo (es. alla Banca di Cina).',
+          pt: '【Nome próprio】Usado como adjunto adverbial de lugar (ex. no Banco da China).',
+          ru: '【Собственное имя】Выступает обстоятельством места (напр. в Банке Китая).'
         }
       },
-      '去看电影': {
-        usage: {
-          de: '【连动句式 / HSK 1】去 + 动词短语 ➔ Drückt das Ziel einer Handlung aus: 去 (gehen) + 看电影 (einen Film schauen).',
-          en: '【Serial Verb Construction / HSK 1】去 + Verb Phrase ➔ Expresses the purpose of going: 去 (go) + 看电影 (watch a movie).',
-          es: '【Construcción de verbos seriados / HSK 1】去 + Frase verbal ➔ Expresa el propósito: 去 (ir a) + 看电影 (ver una película).',
-          fr: '【Verbes en série / HSK 1】去 + Verbe ➔ Exprime le but du déplacement: 去 (aller) + 看电影 (voir un film).',
-          it: '【Costruzione verbale / HSK 1】去 + Verbo ➔ Esprime lo scopo: 去 (andare a) + 看电影 (vedere un film).',
-          pt: '【Verbos em série / HSK 1】去 + Verbo ➔ Indica objetivo: 去 (ir) + 看电影 (ver um filme).',
-          ru: '【Последовательные глаголы / HSK 1】去 + Глагол ➔ Выражает цель: 去 (идти) + 看电影 (смотреть кино).'
-        },
+      '太大了': {
+        hsk: 'HSK 1',
         meaning: {
-          de: '1. ins Kino gehen  2. einen Film ansehen / schauen',
-          en: '1. go to see a movie  2. go to the cinema',
-          es: '1. ir a ver una película  2. ir al cine',
-          fr: '1. aller voir un film  2. aller au cinéma',
-          it: '1. andare al cinema  2. andare a vedere un film',
-          pt: '1. ir ao cinema  2. assistir a um filme',
-          ru: '1. идти в кино  2. смотреть фильм'
-        }
-      },
-      '睡觉': {
-        usage: {
-          de: '【离合动词 / HSK 1】动词 (Verb) ➔ 睡 (schlafen) + 觉 (Schlaf). Trennbar: 睡了一个好觉.',
-          en: '【Separable Verb / HSK 1】Verb ➔ 睡 (sleep) + 觉 (sleep). Separable: 睡了一个好觉.',
-          es: '【Verbo separable / HSK 1】Verbo ➔ 睡 (dormir) + 觉 (sueño). Separable: 睡了一个好觉.',
-          fr: '【Verbe dissociable / HSK 1】Verbe ➔ 睡 + 觉 (dormir). Dissociable: 睡了一个好觉.',
-          it: '【Verbo separabile / HSK 1】Verbo ➔ 睡 + 觉 (dormire). Separabile: 睡了一个好觉.',
-          pt: '【Verbo separável / HSK 1】Verbo ➔ 睡 + 觉 (dormir). Separável: 睡了一个好觉.',
-          ru: '【Разделимый глагол / HSK 1】Глагол ➔ 睡 + 觉 (спать). Разделимый: 睡了一个好觉.'
+          de: '1. viel zu groß / übermäßig groß  2. riesig',
+          en: '1. too big / extremely large  2. oversized',
+          es: '1. demasiado grande / enorme  2. desmedido',
+          fr: '1. trop grand / démesuré  2. gigantesque',
+          it: '1. troppo grande  2. enorme',
+          pt: '1. grande demais  2. desmedido',
+          ru: '1. слишком большой  2. чересчур крупный'
         },
-        meaning: {
-          de: '1. schlafen / schlafen gehen  2. ins Bett gehen',
-          en: '1. sleep  2. go to bed',
-          es: '1. dormir  2. irse a la cama',
-          fr: '1. dormir  2. se coucher',
-          it: '1. dormire  2. andare a letto',
-          pt: '1. dormir  2. ir para a cama',
-          ru: '1. спать  2. ложиться спать'
-        }
-      },
-      '觉得': {
-        usage: {
-          de: '【心理动词 / HSK 2】主语 + 觉得 + 宾语从句 ➔ Drückt ein subjektives Gefühl, eine Ansicht oder ein Urteil aus.',
-          en: '【Psychological Verb / HSK 2】Subject + 觉得 + Clause ➔ Expresses a personal feeling, opinion or viewpoint.',
-          es: '【Verbo psicológico / HSK 2】Sujeto + 觉得 + Oración ➔ Expresa un sentimiento personal, opinión o parecer.',
-          fr: '【Verbe de sentiment / HSK 2】Sujet + 觉得 + Proposition ➔ Exprime un avis personnel ou un ressenti.',
-          it: '【Verbo di percezione / HSK 2】Soggetto + 觉得 + Frase ➔ Esprime un’opinione personale o una sensazione.',
-          pt: '【Verbo de percepção / HSK 2】Sujeito + 觉得 + Oração ➔ Expressa uma opinião pessoal ou sentimento.',
-          ru: '【Глагол мнения / HSK 2】Подлежащее + 觉得 + Придаточное ➔ Выражает субъективное мнение или ощущение.'
+        slang: {
+          de: '【口语口头禅】常用于惊叹某事物的规模、反差或夸张程度（如「脑洞太大了」）。',
+          en: '【Colloquial Trend】Used emphatically to exaggerate gaps or ideas (e.g. "脑洞太大了" = wildly imaginative).',
+          es: '【Uso coloquial】Muy usado para exagerar dimensiones, impacto o sorpresa.',
+          fr: '【Usage familier】Employé pour exprimer l’exagération ou l’étonnement face à une immensité.',
+          it: '【Espressione comune】Usato nel parlato per evidenziare dimensioni eccessive o sorpresa.',
+          pt: '【Uso coloquial】Comum para enfatizar espanto ou exagero de tamanho.',
+          ru: '【Разговорное клише】Часто выражает крайнее удивление масштабом.'
         },
-        meaning: {
-          de: '1. finden / meinen / glauben  2. sich fühlen (spüren)',
-          en: '1. feel / think  2. perceive / believe',
-          es: '1. sentir / creer  2. parecer / opinar',
-          fr: '1. penser / trouver  2. ressentir / avoir l’impression',
-          it: '1. pensare / ritenere  2. sentirsi',
-          pt: '1. achar / pensar  2. sentir-se',
-          ru: '1. считать / думать  2. чувствовать'
-        }
-      },
-      '快乐': {
         usage: {
-          de: '【形容词 / 祝福语 / HSK 2】Drückt Freude und Glück aus; wird oft in Festtagsgrüßen verwendet (z.B. 生日快乐 = Alles Gute zum Geburtstag).',
-          en: '【Adjective / Greeting / HSK 2】Denotes joy and happiness; commonly used in wishes (e.g. 生日快乐 = Happy Birthday).',
-          es: '【Adjetivo / Felicitación / HSK 2】Indica alegría y felicidad; se usa en felicitaciones (ej. 生日快乐 = Feliz cumpleaños).',
-          fr: '【Adjectif / Vœu / HSK 2】Exprime la joie et le bonheur; utilisé pour les souhaits (ex. 生日快乐 = Joyeux anniversaire).',
-          it: '【Aggettivo / Augurio / HSK 2】Esprime gioia e felicità; tipico degli auguri (es. 生日快乐 = Buon compleanno).',
-          pt: '【Adjetivo / Felicitação / HSK 2】Expressa alegria e felicidade; usado em saudações (ex. 生日快乐 = Feliz aniversário).',
-          ru: '【Прилагательное / Поздравление / HSK 2】Выражает радость и счастье; часто в поздравлениях (напр. 生日快乐 = С днем рождения).'
-        },
-        meaning: {
-          de: '1. glücklich / fröhlich  2. heiter / freudig',
-          en: '1. happy / joyful  2. cheerful / delighted',
-          es: '1. feliz / alegre  2. contento',
-          fr: '1. heureux / joyeux  2. gai / content',
-          it: '1. felice / allegro  2. gioioso',
-          pt: '1. feliz / alegre  2. contente',
-          ru: '1. счастливый / радостный  2. весёлый'
+          de: '【句型结构】太 + 形容词 + 了 ➔ 经典程度偏误句型，在句中作谓语（例：这件衣服太大了）。',
+          en: '【Pattern & Grammar】太 + Adj + 了 ➔ Classic degree pattern, acts as predicate (e.g. Clothes are too big).',
+          es: '【Estructura】太 + Adj + 了 ➔ Patrón de grado superlativo, actúa como predicado.',
+          fr: '【Structure】太 + Adj + 了 ➔ Structure de degré élevé, sert de prédicat.',
+          it: '【Struttura】太 + Agg + 了 ➔ Struttura che esprime grado eccessivo, funge da predicato.',
+          pt: '【Estrutura】太 + Adj + 了 ➔ Padrão de grau excessivo atuando como predicativo.',
+          ru: '【Грамматика】太 + Прил. + 了 ➔ Конструкция чрезмерной степени, выступает сказуемым.'
         }
       }
     };
 
-    // 3. 多音字语境识别（整词上下文提取）
+    // 3. 多音字语境识别
     function getContextualPinyinList(phrase) {
       return pinyin(phrase, { toneType: 'symbol', type: 'array' });
     }
 
-    // 4. 多音字精准发音对齐引擎 (Phonetic Alignment Engine)
-    // 建立多音字特定读音到发音锚定词的映射表，确保浏览器 TTS 引擎读出的声音与拼音 100% 一致
+    // 4. 多音字发音纠偏映射
     const POLYPHONE_SPEECH_MAP = {
-      '行': {
-        'háng': '航', // 读 háng 时发“航”音 (如银行、行业)
-        'xíng': '形'  // 读 xíng 时发“形”音 (如行走、不行)
-      },
-      '觉': {
-        'jiào': '叫', // 读 jiào 时发“叫”音 (如睡觉)
-        'jué': '决'   // 读 jué 时发“决”音 (如觉得、感觉)
-      },
-      '乐': {
-        'yuè': '月',  // 读 yuè 时发“月”音 (如音乐、乐器)
-        'lè': '勒'    // 读 lè 时发“勒”音 (如快乐、乐观)
-      },
-      '重': {
-        'zhòng': '众', // 读 zhòng 时发“众”音 (如重要、重量)
-        'chóng': '虫'  // 读 chóng 时发“虫”音 (如重复、重申)
-      },
-      '数': {
-        'shù': '树',  // 读 shù 时发“树”音 (如数量、数学)
-        'shǔ': '暑'   // 读 shǔ 时发“暑”音 (如数一数、不可胜数)
-      },
-      '发': {
-        'fā': '八',   // 读 fā 时发“发”音 (如发现、发生)
-        'fà': '法'    // 读 fà 时发“发”音 (如头发)
-      },
-      '地': {
-        'de': '的',   // 读 de 时发轻声 (如慢慢地)
-        'dì': '弟'    // 读 dì 时发“弟”音 (如大地、地方)
-      },
-      '长': {
-        'cháng': '常', // 读 cháng 时发“常”音 (如长江、长度)
-        'zhǎng': '掌'  // 读 zhǎng 时发“掌”音 (如长大、长辈)
-      },
-      '得': {
-        'dé': '德',   // 读 dé 时 (如得到)
-        'de': '的',   // 读 de 时 (如跑得快)
-        'děi': '待'   // 读 děi 时 (如总得、得去)
-      },
-      '着': {
-        'zhe': '者',  // 读 zhe 时 (如看着)
-        'zháo': '找', // 读 zháo 时 (如着火、着急)
-        'zhuó': '卓'  // 读 zhuó 时 (如沉着、着重)
-      }
+      '行': { 'háng': '航', 'xíng': '形' },
+      '觉': { 'jiào': '叫', 'jué': '决' },
+      '乐': { 'yuè': '月', 'lè': '勒' },
+      '重': { 'zhòng': '众', 'chóng': '虫' },
+      '数': { 'shù': '树', 'shǔ': '暑' },
+      '发': { 'fā': '八', 'fà': '法' },
+      '地': { 'de': '的', 'dì': '弟' },
+      '长': { 'cháng': '常', 'zhǎng': '掌' },
+      '得': { 'dé': '德', 'de': '的', 'děi': '待' },
+      '着': { 'zhe': '者', 'zháo': '找', 'zhuó': '卓' }
     };
 
-    // 朗读单字并自动纠正多音字发音
     function speakCharWithPinyin(char, py) {
-      if (!('speechSynthesis' in window)) {
-        alert('当前浏览器暂不支持语音朗读功能');
-        return;
-      }
+      if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
 
-      // 去除声调符号获得纯拼音 (如 háng -> hang)
       let spokenText = char;
       if (POLYPHONE_SPEECH_MAP[char]) {
         for (let targetPy in POLYPHONE_SPEECH_MAP[char]) {
-          // 匹配带调拼音或不带调拼音
           if (py.includes(targetPy) || pinyin(char, { toneType: 'none' }) === targetPy) {
             spokenText = POLYPHONE_SPEECH_MAP[char][targetPy];
             break;
@@ -591,12 +603,8 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // 朗读整词
     function speakText(text) {
-      if (!('speechSynthesis' in window)) {
-        alert('当前浏览器暂不支持语音朗读功能');
-        return;
-      }
+      if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'zh-CN';
@@ -605,46 +613,73 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // 5. 通用在线多义项翻译与句型结构用法解析
-    async function getUniversalPhraseDetails(phrase, targetLang) {
-      if (targetLang === 'none' || !phrase) {
-        return { meaning: '', usage: '' };
-      }
+    // 5. Google AI 翻译引擎集成 (Google NMT API 集成)
+    async function fetchGoogleTranslate(text, targetLang) {
+      if (targetLang === 'none' || !text) return null;
 
-      if (PHRASE_USAGE_DB[phrase]) {
-        const m = PHRASE_USAGE_DB[phrase].meaning[targetLang] || PHRASE_USAGE_DB[phrase].meaning['en'];
-        const u = PHRASE_USAGE_DB[phrase].usage[targetLang] || PHRASE_USAGE_DB[phrase].usage['en'];
-        return { meaning: m, usage: u };
-      }
-
-      let meaningResult = '释义获取中...';
       try {
-        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(phrase)}&langpair=zh-CN|${targetLang}`;
+        // 请求 Google 官方翻译端点，包含词条 (dict) 与备选词汇 (synonyms)
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=zh-CN&tl=${targetLang}&dt=t&dt=bd&dt=rm&q=${encodeURIComponent(text)}`;
         const res = await fetch(url);
         const data = await res.json();
         
-        const candidateSet = new Set();
-        if (data?.responseData?.translatedText) {
-          const mainTrans = data.responseData.translatedText.trim();
-          if (!mainTrans.startsWith('MYMEMORY WARNING') && !mainTrans.includes('QUERY LENGTH LIMIT')) {
-            candidateSet.add(mainTrans.toLowerCase());
-          }
+        let mainTranslation = '';
+        if (data && data[0]) {
+          mainTranslation = data[0].map(item => item[0]).filter(Boolean).join('').trim();
         }
-        if (Array.isArray(data?.matches)) {
-          data.matches.forEach(m => {
-            if (m.translation && m.quality > 40) {
-              const clean = m.translation.trim().toLowerCase();
-              if (!clean.includes('http') && clean !== phrase.toLowerCase() && clean.length < 40) {
-                candidateSet.add(clean);
-              }
+
+        const candidateSet = new Set();
+        if (mainTranslation) {
+          candidateSet.add(mainTranslation.toLowerCase());
+        }
+
+        // 提取 Google 词典给出的扩展义项与多重释义
+        if (data && data[1] && Array.isArray(data[1])) {
+          data[1].forEach(entry => {
+            if (Array.isArray(entry[1])) {
+              entry[1].slice(0, 3).forEach(w => candidateSet.add(w.toLowerCase()));
             }
           });
         }
+
         const candidates = Array.from(candidateSet).slice(0, 3);
-        if (candidates.length > 0) {
-          meaningResult = candidates.map((c, i) => `${i + 1}. ${c}`).join('   ');
-        }
+        const formattedMeaning = candidates.length > 0 
+          ? candidates.map((c, i) => `${i + 1}. ${c}`).join('   ')
+          : mainTranslation;
+
+        return {
+          meaning: formattedMeaning,
+          isGoogle: true
+        };
       } catch (e) {
+        console.warn('Google 翻译引擎调度异常，尝试备用通道:', e);
+      }
+      return null;
+    }
+
+    // 6. 通用多语言与语法解析入口
+    async function getUniversalPhraseDetails(phrase, targetLang) {
+      if (targetLang === 'none' || !phrase) {
+        return { hsk: '', meaning: '', slang: '', usage: '' };
+      }
+
+      // 优先匹配精校数据库
+      if (RICH_PHRASE_DB[phrase]) {
+        const item = RICH_PHRASE_DB[phrase];
+        return {
+          hsk: item.hsk,
+          meaning: item.meaning[targetLang] || item.meaning['en'],
+          slang: item.slang[targetLang] || item.slang['en'],
+          usage: item.usage[targetLang] || item.usage['en']
+        };
+      }
+
+      // 实时调用 Google AI 翻译引擎
+      let meaningResult = '释义获取中...';
+      const googleRes = await fetchGoogleTranslate(phrase, targetLang);
+      if (googleRes && googleRes.meaning) {
+        meaningResult = googleRes.meaning;
+      } else {
         meaningResult = '点击补充词语释义';
       }
 
@@ -667,24 +702,36 @@
         ru: `${inferredStructure} (Используется в соответствии с контекстом)`
       };
 
+      const inferredSlang = {
+        de: `【现代词汇/网络用法】适用于现代中文日常交际、网络社交与书面表达。`,
+        en: `【Modern/Online Slang】Widely used in modern Chinese daily conversations and online media.`,
+        es: `【Uso actual y redes】Ampliamente utilizado en la comunicación cotidiana y redes sociales.`,
+        fr: `【Usage moderne et web】Couramment employé dans la communication chinoise actuelle et sur internet.`,
+        it: `【Uso moderno / online】Comunemente impiegato nella comunicazione contemporanea e sul web.`,
+        pt: `【Uso moderno / web】Muito usado na comunicação do dia a dia e mídias sociais.`,
+        ru: `【Современное/сетевое употребление】Широко используется в разговорной речи и интернет-среде.`
+      };
+
       return {
+        hsk: 'HSK 常用词',
         meaning: meaningResult,
+        slang: inferredSlang[targetLang] || inferredSlang['en'],
         usage: usageTips[targetLang] || usageTips['en']
       };
     }
 
-    // 6. 获取汉字配图与甲骨文单一数据
-    function getCharVisualData(char) {
-      if (CHAR_IMAGE_ORACLE_DB[char]) {
-        return CHAR_IMAGE_ORACLE_DB[char];
+    // 7. 获取汉字卡通插画与古文字（甲骨文优先，无则降级金文）
+    function getCharMediaData(char) {
+      if (CHAR_MEDIA_DB[char]) {
+        return CHAR_MEDIA_DB[char];
       }
       return {
-        icon: `<svg viewBox="0 0 64 64"><rect x="6" y="6" width="52" height="52" rx="8" fill="#1890ff" fill-opacity="0.1"/><text x="32" y="40" font-size="24" font-weight="bold" fill="#1890ff" text-anchor="middle">${char}</text></svg>`,
-        oracle: null
+        icon: null,
+        ancient: null
       };
     }
 
-    // 7. 生成字帖核心函数
+    // 8. 生成字帖核心函数
     async function generateSheet() {
       const container = document.getElementById('sheetContainer');
       const text = document.getElementById('textInput').value.trim();
@@ -708,12 +755,13 @@
         const phrasePinyinStr = contextualPinyins.join(' ');
         
         const transMeaningId = `trans-meaning-${pIdx}`;
+        const transSlangId = `trans-slang-${pIdx}`;
         const transUsageId = `trans-usage-${pIdx}`;
 
         const wordBlock = document.createElement('div');
         wordBlock.className = 'word-block';
 
-        // 词条顶部头部：左侧词句与拼音语音 + 右侧集中展示词义与句型结构用法
+        // 词条顶部头部：左侧拼音语音 + 右侧集中展示 HSK等级、Google AI 多重释义、网络用法与语法结构
         wordBlock.innerHTML = `
           <div class="word-header">
             <div class="word-meta-left">
@@ -723,26 +771,32 @@
               </div>
               <div class="word-pinyin">[ ${phrasePinyinStr} ]</div>
             </div>
-            <div class="word-trans-box" contenteditable="true" title="点击可直接编辑修改词语含义与句型用法">
-              <div class="trans-meaning-line" id="${transMeaningId}">${targetLang === 'none' ? '' : '词语多义项解析中...'}</div>
-              <div class="trans-usage-line" id="${transUsageId}">${targetLang === 'none' ? '' : '句型结构与用法加载中...'}</div>
+            <div class="word-trans-box" contenteditable="true" title="点击可直接编辑修改词语含义、网络用法与语法">
+              <div class="trans-meaning-line" id="${transMeaningId}">${targetLang === 'none' ? '' : 'Google AI 释义加载中...'}</div>
+              <div class="trans-slang-line" id="${transSlangId}">${targetLang === 'none' ? '' : '常用/网络表达加载中...'}</div>
+              <div class="trans-usage-line" id="${transUsageId}">${targetLang === 'none' ? '' : '语法用法解析中...'}</div>
             </div>
           </div>
         `;
 
-        // 逐字生成纯净字卡（单字不带任何释义，仅专属插图、甲骨文单链接、多音字精准发音与单列描红）
+        // 逐字生成纯净字卡（单字不带任何释义，仅专属卡通图、古文字单链接、多音字纠偏与单列描红）
         for (let cIdx = 0; cIdx < chars.length; cIdx++) {
           const char = chars[cIdx];
           const charPy = contextualPinyins[cIdx] || pinyin(char, { toneType: 'symbol' });
           const firstGridId = `grid-demo-${globalGridIdx}`;
 
-          const visualData = getCharVisualData(char);
+          const mediaData = getCharMediaData(char);
 
-          // 仅存在甲骨文时才生成单个甲骨文点击链接
-          const oracleHtml = visualData.oracle ? `
-            <a class="oracle-link-badge" href="https://hanziyuan.net/#${encodeURIComponent(char)}" target="_blank" title="在字源网 (hanziyuan.net) 查看「${char}」的甲骨文原图考据">
-              <div class="oracle-glyph">${visualData.oracle}</div>
-              <div class="oracle-label">甲骨文</div>
+          // 1. 卡通插画（有才展示）
+          const picHtml = mediaData.icon ? `
+            <div class="pic-badge" title="${char} 的专属卡通配图">${mediaData.icon}</div>
+          ` : '';
+
+          // 2. 古文字链接（甲骨文优先，若无则展示金文，均无则不展示）
+          const ancientHtml = mediaData.ancient ? `
+            <a class="ancient-link-badge" href="https://hanziyuan.net/#${encodeURIComponent(char)}" target="_blank" title="在字源网 (hanziyuan.net) 查看「${char}」的${mediaData.ancient.type}原图考据">
+              <div class="ancient-glyph">${mediaData.ancient.svg}</div>
+              <div class="ancient-label">${mediaData.ancient.type}</div>
             </a>
           ` : '';
 
@@ -750,13 +804,13 @@
           card.className = 'char-card';
 
           card.innerHTML = `
-            <!-- 左侧：专属配图 + 单一甲骨文演变链接 (若无甲骨文则不显示) -->
+            <!-- 左侧：专属卡通插画 + 单一甲骨/金文演变链接 -->
             <div class="char-left-zone">
-              <div class="pic-badge" title="${char} 的专属图解">${visualData.icon}</div>
-              ${oracleHtml}
+              ${picHtml}
+              ${ancientHtml}
             </div>
 
-            <!-- 中间：单字多音字读音 + 笔顺演示 + 多音字纠正发音按钮 -->
+            <!-- 中间：单字多音字读音 + 笔顺演示 + 纠偏发音 -->
             <div class="char-badge">
               <div class="char-pinyin-small">${charPy}</div>
               <div class="btn-action-group">
@@ -769,7 +823,7 @@
             <div class="grid-list" id="grid-list-${globalGridIdx}"></div>
           `;
 
-          // 插入单列米字格（1个示范黑字 + 2个描红浅灰字 + 5个空白练习格，共8格单行）
+          // 插入单列米字格（1示范黑字 + 2描红浅灰字 + 5空白练习格，共8格单行）
           const gridList = card.querySelector(`#grid-list-${globalGridIdx}`);
           const totalGrids = 8;
           const currentGrids = [];
@@ -799,12 +853,14 @@
           globalGridIdx++;
         }
 
-        // 异步填充整词/句型的多重释义与用法
+        // 异步填充整词的多重释义、网络表达与语法用法
         if (targetLang !== 'none') {
           getUniversalPhraseDetails(chars, targetLang).then(res => {
             const mEl = document.getElementById(transMeaningId);
+            const sEl = document.getElementById(transSlangId);
             const uEl = document.getElementById(transUsageId);
-            if (mEl) mEl.innerText = res.meaning;
+            if (mEl) mEl.innerHTML = `<span class="hsk-tag">${res.hsk}</span> <span class="engine-tag">Google AI</span> <span>${res.meaning}</span>`;
+            if (sEl) sEl.innerText = res.slang;
             if (uEl) uEl.innerText = res.usage;
           });
         }
