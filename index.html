@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>多语言汉字笔顺描红字帖</title>
-  <!-- 引入汉字笔顺库与拼音库 -->
+  <title>多语言中文词句笔顺描红字帖</title>
   <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.18.3/dist/index.js"></script>
   
@@ -23,7 +22,7 @@
       padding: 16px 20px;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      max-width: 900px;
+      max-width: 960px;
       margin: 0 auto 20px;
       display: flex;
       flex-wrap: wrap;
@@ -31,8 +30,8 @@
       align-items: center;
     }
     .controls input {
-      flex: 2;
-      min-width: 200px;
+      flex: 3;
+      min-width: 280px;
       padding: 8px 12px;
       font-size: 15px;
       border: 1px solid #d9d9d9;
@@ -63,48 +62,60 @@
       width: 210mm;
       min-height: 297mm;
       margin: 0 auto;
-      padding: 15mm;
+      padding: 12mm 15mm;
       box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-      box-sizing: border-box;
     }
 
-    /* 单行生字 */
-    .char-row {
-      display: flex;
-      align-items: center;
-      margin-bottom: 12px;
-      border-bottom: 1px dashed #e8e8e8;
-      padding-bottom: 8px;
+    /* 词条单元卡片 */
+    .word-block {
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed #dcdcdc;
     }
 
-    /* 左侧汉字拼音与释义区 */
-    .char-meta {
-      width: 105px;
-      text-align: center;
-      margin-right: 12px;
+    /* 词条顶部：整词拼音与完整语义 */
+    .word-header {
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 8px;
     }
-    .char-pinyin {
-      font-size: 15px;
-      color: #1890ff;
+    .word-text {
+      font-size: 18px;
       font-weight: bold;
+      color: #262626;
     }
-    .char-trans {
-      font-size: 12px;
-      color: #4a5568;
-      margin: 2px 0 4px;
-      max-width: 100px;
-      word-break: break-word;
-      line-height: 1.2;
-      border-bottom: 1px dashed #bbb;
-      padding: 1px 3px;
+    .word-pinyin {
+      font-size: 14px;
+      color: #1890ff;
+      font-weight: 500;
+    }
+    .word-trans {
+      font-size: 13px;
+      color: #595959;
+      background: #fafafa;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px dashed #d9d9d9;
       cursor: text;
+      flex: 1;
     }
-    .char-trans:focus {
+    .word-trans:focus {
       outline: 1px solid #1890ff;
       background: #e6f7ff;
+    }
+
+    /* 单字描红行 */
+    .char-line {
+      display: flex;
+      align-items: center;
+      margin-top: 6px;
+    }
+    .char-badge {
+      width: 45px;
+      text-align: center;
+      font-size: 14px;
+      color: #8c8c8c;
     }
     .btn-animate {
       padding: 2px 6px;
@@ -114,17 +125,18 @@
       border: none;
       border-radius: 3px;
       cursor: pointer;
+      margin-top: 2px;
     }
 
     /* 米字格布局 */
     .grid-list {
       display: flex;
-      flex-wrap: wrap;
       gap: 6px;
+      flex-wrap: wrap;
     }
     .mi-grid {
-      width: 58px;
-      height: 58px;
+      width: 48px;
+      height: 48px;
       border: 1px solid #ff4d4f;
       position: relative;
       background:
@@ -141,7 +153,7 @@
       .controls { display: none !important; }
       .sheet-page { box-shadow: none; width: 100%; margin: 0; padding: 0; }
       .btn-animate { display: none; }
-      .char-trans { border-bottom: none; }
+      .word-trans { border: none; background: transparent; padding: 0; }
     }
   </style>
 </head>
@@ -149,19 +161,16 @@
 
   <!-- 控制工具栏 -->
   <div class="controls">
-    <input type="text" id="textInput" value="日月山水木林" placeholder="输入生字..." />
+    <input type="text" id="textInput" value="太阳, 月亮, 森林, 很高兴认识你" placeholder="输入词语/短句，用逗号或空格隔开..." />
     
-    <!-- 欧洲常见语言选择列表 -->
     <select id="langSelect">
-      <option value="de">🇩🇪 德语 (Deutsch)</option>
       <option value="en">🇬🇧 英语 (English)</option>
+      <option value="de">🇩🇪 德语 (Deutsch)</option>
       <option value="fr">🇫🇷 法语 (Français)</option>
       <option value="es">🇪🇸 西班牙语 (Español)</option>
       <option value="it">🇮🇹 意大利语 (Italiano)</option>
       <option value="pt">🇵🇹 葡萄牙语 (Português)</option>
       <option value="ru">🇷🇺 俄语 (Русский)</option>
-      <option value="nl">🇳🇱 荷兰语 (Nederlands)</option>
-      <option value="pl">🇵🇱 波兰语 (Polski)</option>
       <option value="none">🚫 无翻译</option>
     </select>
 
@@ -174,127 +183,150 @@
   <script>
     const { pinyin } = pinyinPro;
 
-    // 内置多语言常用生字离线词典（秒级呈现）
-    const DICT = {
-      '日': { de: 'Sonne / Tag', en: 'sun / day', fr: 'soleil / jour', es: 'sol / día', it: 'sole / giorno', pt: 'sol / dia', ru: 'солнце / день', nl: 'zon / dag', pl: 'słońce / dzień' },
-      '月': { de: 'Mond / Monat', en: 'moon / month', fr: 'lune / mois', es: 'luna / mes', it: 'luna / mese', pt: 'lua / mês', ru: 'луна / месяц', nl: 'maan / maand', pl: 'księżyc / miesiąc' },
-      '山': { de: 'Berg', en: 'mountain', fr: 'montagne', es: 'montaña', it: 'montagna', pt: 'montanha', ru: 'гора', nl: 'berg', pl: 'góra' },
-      '水': { de: 'Wasser', en: 'water', fr: 'eau', es: 'agua', it: 'acqua', pt: 'água', ru: 'вода', nl: 'water', pl: 'woda' },
-      '木': { de: 'Holz / Baum', en: 'wood / tree', fr: 'bois / arbre', es: 'madera / árbol', it: 'legno / albero', pt: 'madeira / árvore', ru: 'дерево', nl: 'hout / boom', pl: 'drzewo' },
-      '林': { de: 'Wald', en: 'forest', fr: 'forêt', es: 'bosque', it: 'foresta', pt: 'bosque / floresta', ru: 'лес', nl: 'bos', pl: 'las' },
-      '火': { de: 'Feuer', en: 'fire', fr: 'feu', es: 'fuego', it: 'fuoco', pt: 'fogo', ru: 'огонь', nl: 'vuur', pl: 'ogień' },
-      '土': { de: 'Erde / Boden', en: 'soil / earth', fr: 'terre / sol', es: 'tierra / suelo', it: 'terra / suolo', pt: 'terra / solo', ru: 'земля', nl: 'aarde / grond', pl: 'ziemia' },
-      '天': { de: 'Himmel / Tag', en: 'sky / day', fr: 'ciel / jour', es: 'cielo / día', it: 'cielo / giorno', pt: 'céu / dia', ru: 'небо / день', nl: 'hemel / dag', pl: 'niebo / dzień' },
-      '地': { de: 'Erde / Land', en: 'earth / ground', fr: 'terre', es: 'tierra', it: 'terra', pt: 'terra', ru: 'земля', nl: 'aarde', pl: 'ziemia' },
-      '人': { de: 'Mensch', en: 'person', fr: 'personne', es: 'persona', it: 'persona', pt: 'pessoa', ru: 'человек', nl: 'mens / persoon', pl: 'człowiek' },
-      '大': { de: 'groß', en: 'big', fr: 'grand', es: 'grande', it: 'grande', pt: 'grande', ru: 'большой', nl: 'groot', pl: 'duży' },
-      '小': { de: 'klein', en: 'small', fr: 'petit', es: 'pequeño', it: 'piccolo', pt: 'pequeno', ru: 'маленький', nl: 'klein', pl: 'mały' },
-      '上': { de: 'oben / auf', en: 'up / on', fr: 'sur / haut', es: 'arriba / sobre', it: 'sopra / su', pt: 'cima / sobre', ru: 'вверх / на', nl: 'boven / op', pl: 'góra / na' },
-      '下': { de: 'unten / unter', en: 'down / under', fr: 'sous / bas', es: 'abajo / bajo', it: 'sotto / giù', pt: 'baixo / sob', ru: 'вниз / под', nl: 'beneden / onder', pl: 'dół / pod' },
-      '中': { de: 'Mitte', en: 'middle', fr: 'milieu / centre', es: 'medio / centro', it: 'centro / mezzo', pt: 'meio / centro', ru: 'центр / середина', nl: 'midden', pl: 'środek' },
-      '生': { de: 'gebären / leben', en: 'birth / live', fr: 'naître / vie', es: 'nacer / vida', it: 'nascere / vita', pt: 'nascer / vida', ru: 'рождаться / жизнь', nl: 'geboren / leven', pl: 'rodzić się / życie' },
-      '字': { de: 'Schriftzeichen', en: 'character', fr: 'caractère', es: 'carácter', it: 'carattere', pt: 'caractere', ru: 'иероглиф / буква', nl: 'karakter', pl: 'znak' }
+    // 常用词汇/短语词典（精准短语匹配）
+    const PHRASE_DICT = {
+      '太阳': { en: 'sun', de: 'die Sonne', fr: 'le soleil', es: 'el sol', it: 'il sole', pt: 'o sol', ru: 'солнце' },
+      '月亮': { en: 'moon', de: 'der Mond', fr: 'la lune', es: 'la luna', it: 'la luna', pt: 'a lua', ru: 'луна' },
+      '森林': { en: 'forest', de: 'der Wald', fr: 'la forêt', es: 'el bosque', it: 'la foresta', pt: 'a floresta', ru: 'лес' },
+      '很高兴认识你': { en: 'Nice to meet you', de: 'Freut mich, Sie kennenzulernen', fr: 'Ravi de vous rencontrer', es: 'Mucho gusto en conocerte', it: 'Piacere di conoscerti', pt: 'Prazer em conhecê-lo', ru: 'Приятно познакомиться' }
     };
 
-    // 智能获取多语言翻译
-    async function getTranslation(char, targetLang) {
+    // 获取词语或句子的完整翻译
+    async function getPhraseTranslation(phrase, targetLang) {
       if (targetLang === 'none') return '';
-      
-      // 1. 优先匹配内置词典
-      if (DICT[char] && DICT[char][targetLang]) {
-        return DICT[char][targetLang];
+
+      // 1. 命中词组缓存
+      if (PHRASE_DICT[phrase] && PHRASE_DICT[phrase][targetLang]) {
+        return PHRASE_DICT[phrase][targetLang];
       }
 
-      // 2. 备选：在线翻译接口
+      // 2. 在线整句/整词翻译
       try {
-        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(char)}&langpair=zh-CN|${targetLang}`;
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(phrase)}&langpair=zh-CN|${targetLang}`;
         const res = await fetch(url);
         const data = await res.json();
-        if (data && data.responseData && data.responseData.translatedText) {
+        if (data?.responseData?.translatedText) {
           const trans = data.responseData.translatedText.trim();
           if (!trans.startsWith('MYMEMORY WARNING')) {
-            return trans.toLowerCase();
+            return trans;
           }
         }
       } catch (e) {
-        console.warn('在线翻译获取异常:', e);
+        console.warn('在线词句翻译获取失败:', e);
       }
 
-      return '点击输入释义';
+      return '点击补充释义';
     }
 
-    // 生成字帖核心函数
     async function generateSheet() {
       const container = document.getElementById('sheetContainer');
       const text = document.getElementById('textInput').value.trim();
       const targetLang = document.getElementById('langSelect').value;
       container.innerHTML = '';
 
-      const chars = text.match(/[\u4e00-\u9fa5]/g) || [];
-      if (chars.length === 0) {
-        alert('请输入有效的中文汉字！');
+      // 按逗号、分号、空格或换行拆分词组/短语
+      const phrases = text.split(/[,，;；\n\s]+/).filter(item => item.trim().length > 0);
+
+      if (phrases.length === 0) {
+        alert('请输入有效的中文词语或句子！');
         return;
       }
 
-      for (let charIdx = 0; charIdx < chars.length; charIdx++) {
-        const char = chars[charIdx];
-        const row = document.createElement('div');
-        row.className = 'char-row';
+      let globalGridIdx = 0;
 
-        const py = pinyin(char, { toneType: 'symbol' });
-        const transBoxId = `trans-${charIdx}`;
+      for (let pIdx = 0; pIdx < phrases.length; pIdx++) {
+        const rawPhrase = phrases[pIdx];
+        // 过滤出当前词组中的汉字
+        const chars = (rawPhrase.match(/[\u4e00-\u9fa5]/g) || []).join('');
+        if (!chars) continue;
 
-        // 拼音与释义区（支持双击/点击直接改字）
-        const metaBox = document.createElement('div');
-        metaBox.className = 'char-meta';
-        metaBox.innerHTML = `
-          <div class="char-pinyin">${py}</div>
-          <div class="char-trans" id="${transBoxId}" contenteditable="true" title="点击可直接编辑修改释义">${targetLang === 'none' ? '' : '...'}</div>
-          <button class="btn-animate" onclick="playStroke('${charIdx}', '${char}')">▶ 演示</button>
+        const phrasePinyin = pinyin(chars, { toneType: 'symbol' });
+        const transBoxId = `trans-box-${pIdx}`;
+
+        // 创建词条卡片
+        const wordBlock = document.createElement('div');
+        wordBlock.className = 'word-block';
+
+        // 词条顶部：原词 + 整词拼音 + 完整释义
+        wordBlock.innerHTML = `
+          <div class="word-header">
+            <span class="word-text">${chars}</span>
+            <span class="word-pinyin">[ ${phrasePinyin} ]</span>
+            <div class="word-trans" id="${transBoxId}" contenteditable="true" title="点击可编辑释义">${targetLang === 'none' ? '' : '翻译获取中...'}</div>
+          </div>
         `;
-        row.appendChild(metaBox);
 
-        // 生成米字格
-        const gridList = document.createElement('div');
-        gridList.className = 'grid-list';
-        for (let i = 0; i < 7; i++) {
-          const grid = document.createElement('div');
-          grid.className = 'mi-grid';
-          grid.id = `char-${charIdx}-grid-${i}`;
-          gridList.appendChild(grid);
-        }
-        row.appendChild(gridList);
-        container.appendChild(row);
+        // 词内逐字生成描红网格
+        for (let cIdx = 0; cIdx < chars.length; cIdx++) {
+          const char = chars[cIdx];
+          const charRow = document.createElement('div');
+          charRow.className = 'char-line';
 
-        // 渲染示范字与描红字
-        HanziWriter.create(`char-${charIdx}-grid-0`, char, {
-          width: 58, height: 58, padding: 5, strokeColor: '#000000', showOutline: false
-        });
-        for (let i = 1; i <= 2; i++) {
-          HanziWriter.create(`char-${charIdx}-grid-${i}`, char, {
-            width: 58, height: 58, padding: 5, strokeColor: '#d9d9d9', showOutline: false
+          const charPy = pinyin(char, { toneType: 'symbol' });
+          const firstGridId = `grid-demo-${globalGridIdx}`;
+
+          // 左侧单字拼音与动画按钮
+          const charBadge = document.createElement('div');
+          charBadge.className = 'char-badge';
+          charBadge.innerHTML = `
+            <div>${charPy}</div>
+            <button class="btn-animate" onclick="playStroke('${firstGridId}', '${char}')">▶ 笔顺</button>
+          `;
+          charRow.appendChild(charBadge);
+
+          // 右侧米字格（1个示范黑字 + 2个浅灰描红字 + 5个空白练习格）
+          const gridList = document.createElement('div');
+          gridList.className = 'grid-list';
+          
+          const totalGrids = 8;
+          const currentGrids = [];
+
+          for (let g = 0; g < totalGrids; g++) {
+            const grid = document.createElement('div');
+            grid.className = 'mi-grid';
+            grid.id = (g === 0) ? firstGridId : `grid-${globalGridIdx}-${g}`;
+            gridList.appendChild(grid);
+            currentGrids.push(grid.id);
+          }
+          charRow.appendChild(gridList);
+          wordBlock.appendChild(charRow);
+
+          container.appendChild(wordBlock);
+
+          // 渲染第一格标准黑字
+          HanziWriter.create(firstGridId, char, {
+            width: 48, height: 48, padding: 4, strokeColor: '#000000', showOutline: false
           });
+
+          // 渲染第2~3格描红浅灰字
+          for (let g = 1; g <= 2; g++) {
+            HanziWriter.create(currentGrids[g], char, {
+              width: 48, height: 48, padding: 4, strokeColor: '#d0d0d0', showOutline: false
+            });
+          }
+
+          globalGridIdx++;
         }
 
-        // 异步填充多语言翻译
+        // 异步请求整词/短语翻译
         if (targetLang !== 'none') {
-          getTranslation(char, targetLang).then(res => {
-            const el = document.getElementById(transBoxId);
-            if (el) el.innerText = res;
+          getPhraseTranslation(chars, targetLang).then(res => {
+            const transEl = document.getElementById(transBoxId);
+            if (transEl) transEl.innerText = res;
           });
         }
       }
     }
 
-    // 播放笔顺演示动画
-    function playStroke(charIdx, char) {
-      const targetElem = document.getElementById(`char-${charIdx}-grid-0`);
+    // 播放单字笔画动画
+    function playStroke(elementId, char) {
+      const targetElem = document.getElementById(elementId);
       targetElem.innerHTML = '';
-      const writer = HanziWriter.create(targetElem.id, char, {
-        width: 58, height: 58, padding: 5,
+      const writer = HanziWriter.create(elementId, char, {
+        width: 48, height: 48, padding: 4,
         strokeColor: '#1890ff',
         strokeAnimationSpeed: 1.2,
-        delayBetweenStrokes: 150
+        delayBetweenStrokes: 120
       });
       writer.animateCharacter();
     }
