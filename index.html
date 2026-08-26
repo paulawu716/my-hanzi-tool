@@ -367,7 +367,7 @@
 
   <!-- 控制工具栏 -->
   <div class="controls">
-    <input type="text" id="textInput" value="苹果, 太阳, 高山, 汽车, 喝水, 很好" placeholder="输入任意词语或句子，德语名词将全量自动识别并首字母大写..." />
+    <input type="text" id="textInput" value="行, 快乐, 觉得, 方便, 意思, 苹果, 睡觉" placeholder="输入任意词语或句子，将自动提取常用的2~3种多重释义..." />
     
     <select id="langSelect" onchange="generateSheet()">
       <option value="de">🇩🇪 德语 (Deutsch)</option>
@@ -389,7 +389,6 @@
   <script>
     const { pinyin } = pinyinPro;
 
-    // 1. 各语言对应 TTS 语音合成代码映射
     const LANG_TTS_MAP = {
       de: 'de-DE',
       en: 'en-US',
@@ -411,11 +410,10 @@
       window.speechSynthesis.onvoiceschanged = loadVoices;
     }
 
-    // 2. 全量通用德语正字法大写引擎（针对任意输入的德语翻译进行名词首字母大写处理）
-    function universalGermanCapitalize(rawText, originalChinese = '') {
+    // 1. 德语名词全量正字法大写处理
+    function universalGermanCapitalize(rawText) {
       if (!rawText) return '';
 
-      // 德语小写虚词库（冠词、介词、连词、常见小写副词）
       const germanArticles = new Set([
         'der', 'die', 'das', 'den', 'dem', 'des', 'ein', 'eine', 'einen', 'einem', 'einer', 'eines'
       ]);
@@ -425,13 +423,10 @@
       const germanConjunctions = new Set([
         'und', 'oder', 'aber', 'denn', 'doch', 'als', 'wie'
       ]);
-
-      // 德语常见名词性后缀（出现则必然为名词，必须首字母大写）
       const nounSuffixes = [
         'ung', 'heit', 'keit', 'schaft', 'tion', 'sion', 'tät', 'tum', 'ment', 'chen', 'lein', 'ling', 'nis', 'ant', 'ent', 'ist', 'or', 'eur', 'enz', 'anz'
       ];
 
-      // 对斜杠或分号分隔的每个释义分支独立处理
       const entries = rawText.split(/([\/;])/);
 
       return entries.map(part => {
@@ -440,23 +435,19 @@
         let str = part.trim();
         if (!str) return '';
 
-        // 分割词汇与标点
         const tokens = str.split(/\s+/);
         const len = tokens.length;
 
         const capitalizedTokens = tokens.map((tok, idx) => {
-          // 清理可能附带的标点
           const clean = tok.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '');
           const lower = clean.toLowerCase();
 
           if (!clean) return tok;
 
-          // 规则 1：如果是冠词、介词、连词，保持小写（除非是整句首词）
           if (germanArticles.has(lower) || germanPrepositions.has(lower) || germanConjunctions.has(lower)) {
             return tok.toLowerCase();
           }
 
-          // 规则 2：前一个词是冠词/介词/所有格（如 der ..., ein ..., ins ...），后面的实词为名词，必须大写
           if (idx > 0) {
             const prev = tokens[idx - 1].toLowerCase().replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '');
             if (germanArticles.has(prev) || germanPrepositions.has(prev)) {
@@ -464,18 +455,15 @@
             }
           }
 
-          // 规则 3：命中名词典型后缀（如 -ung, -heit 等），强制首字母大写
           const hasNounSuffix = nounSuffixes.some(suf => lower.length > suf.length + 2 && lower.endsWith(suf));
           if (hasNounSuffix) {
             return tok.charAt(0).toUpperCase() + tok.slice(1);
           }
 
-          // 规则 4：短语末尾词且非动词不定式（以 en/eln 结尾的常见动词除外），通常为德语核心名词
           if (idx === len - 1 && len <= 3 && !lower.endsWith('en') && !lower.endsWith('ern') && !lower.endsWith('eln')) {
             return tok.charAt(0).toUpperCase() + tok.slice(1);
           }
 
-          // 规则 5：单字名词翻译（如“苹果”-> Apfel，“山”-> Berg）
           if (len === 1 && !lower.endsWith('en') && !lower.endsWith('lich') && !lower.endsWith('ig') && !lower.endsWith('isch')) {
             return tok.charAt(0).toUpperCase() + tok.slice(1);
           }
@@ -483,7 +471,6 @@
           return tok;
         });
 
-        // 首字母如果是非冠词/介词，保证开头大写
         if (capitalizedTokens.length > 0) {
           const firstLower = capitalizedTokens[0].toLowerCase();
           if (!germanArticles.has(firstLower) && !germanPrepositions.has(firstLower)) {
@@ -495,7 +482,7 @@
       }).join('');
     }
 
-    // 3. 词语专属实物照片与标志图库
+    // 2. 词语专属实物照片与标志图库
     const PHRASE_REAL_PHOTO_DB = {
       '中国银行': 'https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?w=150&auto=format&fit=crop&q=80',
       '去看电影': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=150&auto=format&fit=crop&q=80',
@@ -510,7 +497,7 @@
       '喝水': 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=150&auto=format&fit=crop&q=80'
     };
 
-    // 4. 单字专属实物照片与演变过程库
+    // 3. 单字专属实物照片与演变过程库
     const CHAR_REAL_PHOTO_DB = {
       '牛': {
         photo: 'https://images.unsplash.com/photo-1527153857715-3908f2bae5e8?w=120&auto=format&fit=crop&q=80',
@@ -577,142 +564,12 @@
       }
     };
 
-    // 5. 核心词汇数据库
-    const RICH_PHRASE_DB = {
-      '太牛了': {
-        hsk: 'HSK 1',
-        meaning: {
-          de: '1. Super stark / Genial!  2. Extrem beeindruckend',
-          en: '1. Awesome / Incredible!  2. Badass / Outstanding',
-          es: '1. ¡Increíble! / ¡Genial!  2. Súper impresionante',
-          fr: '1. Trop fort ! / Trop génial !  2. Époustouflant',
-          it: '1. Troppo forte! / Fantastico!  2. Mitico',
-          pt: '1. Demais! / Muito maneiro!  2. Incrível',
-          ru: '1. Круто! / Офигенно!  2. Слишком крутой'
-        },
-        usage: {
-          de: '太 + Adj (牛) + 了 ➔ Drückt im gesprochenen Chinesisch eine starke Bewunderung oder Begeisterung aus.',
-          en: '太 + Adj (牛) + 了 ➔ Exclamatory structure used to express great admiration or excitement.',
-          es: '太 + Adj (牛) + 了 ➔ Estructura exclamativa para expresar gran admiración o entusiasmo.',
-          fr: '太 + Adj (牛) + 了 ➔ Structure exclamative pour exprimer une vive admiration.',
-          it: '太 + Agg (牛) + 了 ➔ Costrutto esclamativo per esprimere grande ammirazione.',
-          pt: '太 + Adj (牛) + 了 ➔ Estrutura exclamativa para expressar forte admiração.',
-          ru: '太 + Прил. (牛) + 了 ➔ Восклицательная конструкция для выражения восторга.'
-        }
-      },
-      '车马': {
-        hsk: 'HSK 3',
-        meaning: {
-          de: '1. Kutschen und Pferde  2. Verkehrsmittel (historisch)',
-          en: '1. carriages and horses  2. ancient transport',
-          es: '1. carruajes y caballos  2. transporte antiguo',
-          fr: '1. voitures et chevaux  2. transports d’autrefois',
-          it: '1. carri e cavalli  2. veicoli storici',
-          pt: '1. carruagens e cavalos  2. transporte antigo',
-          ru: '1. повозки и кони  2. старинный транспорт'
-        },
-        usage: {
-          de: 'Nomen (车 + 马) ➔ Symbolisiert in der Poesie oft das entschleunigte Leben vergangener Zeiten.',
-          en: 'Noun phrase (车 + 马) ➔ Often symbolizes the leisurely pace of old times in poetry.',
-          es: 'Frase nominal (车 + 马) ➔ Simboliza poéticamente el ritmo pausado de tiempos remotos.',
-          fr: 'Syntagme nominal (车 + 马) ➔ Évoque dans la poésie le rythme paisible du passé.',
-          it: 'Sintagma nominale (车 + 马) ➔ Simboleggia nella poesia il ritmo lento del passato.',
-          pt: 'Frase nominal (车 + 马) ➔ Simboliza na poesia o ritmo calmo dos tempos antigos.',
-          ru: 'Именная группа (车 + 马) ➔ В поэзии символизирует неспешный ритм старины.'
-        }
-      },
-      '中国银行': {
-        hsk: 'HSK 2',
-        meaning: {
-          de: '1. Bank of China (BOC)',
-          en: '1. Bank of China (BOC)',
-          es: '1. Banco de China (BOC)',
-          fr: '1. Banque de Chine (BOC)',
-          it: '1. Banca di Cina (BOC)',
-          pt: '1. Banco da China (BOC)',
-          ru: '1. Банк Китая (BOC)'
-        },
-        usage: {
-          de: 'Eigenname ➔ Eine der vier großen staatlichen Geschäftsbanken Chinas.',
-          en: 'Proper noun ➔ One of the major state-owned commercial banks in China.',
-          es: 'Nombre propio ➔ Uno de los cuatro grandes bancos estatales comerciales de China.',
-          fr: 'Nom propre ➔ L’une des quatre grandes banques commerciales d’État.',
-          it: 'Nome proprio ➔ Una delle principali banche commerciali statali cinesi.',
-          pt: 'Nome próprio ➔ Um dos quatro maiores bancos comerciais estatais da China.',
-          ru: 'Собственное имя ➔ Один из крупнейших государственных банков Китая.'
-        }
-      },
-      '太大了': {
-        hsk: 'HSK 1',
-        meaning: {
-          de: '1. viel zu groß / übermäßig groß  2. riesig',
-          en: '1. too big / extremely large  2. oversized',
-          es: '1. demasiado grande / enorme',
-          fr: '1. trop grand / démesuré',
-          it: '1. troppo grande / enorme',
-          pt: '1. grande demais / desmedido',
-          ru: '1. слишком большой / чересчур крупный'
-        },
-        usage: {
-          de: '太 + Adj (大) + 了 ➔ Zeigt ein übersteigertes Ausmaß an; fungiert im Satz als Prädikat.',
-          en: '太 + Adj (大) + 了 ➔ Indicates an excessive degree; serves as predicate in sentences.',
-          es: '太 + Adj (大) + 了 ➔ Indica un grado excesivo; funciona como predicado.',
-          fr: '太 + Adj (大) + 了 ➔ Exprime un degré excessif; employé comme prédicat.',
-          it: '太 + Agg (大) + 了 ➔ Indica grado eccessivo; funge da predicato nella frase.',
-          pt: '太 + Adj (大) + 了 ➔ Indica grau excessivo; atua como predicado na oração.',
-          ru: '太 + Прил. (大) + 了 ➔ Указывает на чрезмерную степень признака; сказуемое.'
-        }
-      },
-      '去看电影': {
-        hsk: 'HSK 1',
-        meaning: {
-          de: '1. ins Kino gehen / einen Film ansehen',
-          en: '1. go to see a movie / go to the cinema',
-          es: '1. ir al cine / ver una película',
-          fr: '1. aller au cinéma / voir un film',
-          it: '1. andare al cinema / vedere un film',
-          pt: '1. ir ao cinema / assistir a um filme',
-          ru: '1. идти в кино / смотреть фильм'
-        },
-        usage: {
-          de: '去 + Verb (看电影) ➔ Drückt das Ziel oder die Absicht einer Ortsbewegung aus.',
-          en: '去 + Verb (看电影) ➔ Expresses the purpose of going somewhere.',
-          es: '去 + Verbo (看电影) ➔ Expresa el propósito del desplazamiento.',
-          fr: '去 + Verbe (看电影) ➔ Exprime le but d’un déplacement.',
-          it: '去 + Verbo (看电影) ➔ Esprime lo scopo di un movimento.',
-          pt: '去 + Verbo (看电影) ➔ Indica o objetivo do deslocamento.',
-          ru: '去 + Глагол (看电影) ➔ Выражает цель движения.'
-        }
-      },
-      '睡觉': {
-        hsk: 'HSK 1',
-        meaning: {
-          de: '1. schlafen / zu Bett gehen',
-          en: '1. sleep / go to bed',
-          es: '1. dormir / ir a dormir',
-          fr: '1. dormir / se coucher',
-          it: '1. dormire / coricarsi',
-          pt: '1. dormir / deitar-se',
-          ru: '1. спать / ложиться спать'
-        },
-        usage: {
-          de: 'Trennbares Verb (睡 + 觉) ➔ z.B. 睡了一个好觉 (gut geschlafen).',
-          en: 'Separable verb (睡 + 觉) ➔ e.g. 睡了一个好觉 (had a good sleep).',
-          es: 'Verbo separable (睡 + 觉) ➔ ej. 睡了一个好觉 (dormí muy bien).',
-          fr: 'Verbe dissociable (睡 + 觉) ➔ ex. 睡了一个好觉 (bien dormi).',
-          it: 'Verbo separabile (睡 + 觉) ➔ es. 睡了一个好觉 (fatto una bella dormita).',
-          pt: 'Verbo separável (睡 + 觉) ➔ ex. 睡了一个好觉 (dormi muito bem).',
-          ru: 'Разделимый глагол (睡 + 觉) ➔ напр. 睡了一个好觉 (хорошо выспался).'
-        }
-      }
-    };
-
-    // 6. 多音字语境识别
+    // 4. 多音字语境识别
     function getContextualPinyinList(phrase) {
       return pinyin(phrase, { toneType: 'symbol', type: 'array' });
     }
 
-    // 7. 多音字发音纠偏映射
+    // 5. 多音字发音纠偏映射
     const POLYPHONE_SPEECH_MAP = {
       '行': { 'háng': '航', 'xíng': '形' },
       '觉': { 'jiào': '叫', 'jué': '决' },
@@ -757,7 +614,7 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // 8. 外语发音朗读器
+    // 6. 外语发音朗读器
     let activeAudioPlayer = null;
     function speakForeignTextSafe(encodedText, targetLang) {
       if (!encodedText || targetLang === 'none') return;
@@ -822,76 +679,106 @@
       }
     }
 
-    // 9. Google AI 翻译引擎集成（集成全量德语名词大写算法）
-    async function fetchGoogleTranslate(text, targetLang) {
+    // 7. Google AI 多义项深度解析引擎（全语种自动提取 2~3 种常用核心释义）
+    async function fetchGoogleMultiMeanings(text, targetLang) {
       if (targetLang === 'none' || !text) return null;
 
       try {
-        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=zh-CN&tl=${targetLang}&dt=t&dt=bd&dt=rm&q=${encodeURIComponent(text)}`;
+        // 请求包含字典释义(dict: bd)与同义词(synonyms: ss)的 Google NMT API
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=zh-CN&tl=${targetLang}&dt=t&dt=bd&dt=ss&dt=md&q=${encodeURIComponent(text)}`;
         const res = await fetch(url);
         const data = await res.json();
         
-        let mainTranslation = '';
+        let primaryTranslation = '';
         if (data && data[0]) {
-          mainTranslation = data[0].map(item => item[0]).filter(Boolean).join('').trim();
+          primaryTranslation = data[0].map(item => item[0]).filter(Boolean).join('').trim();
         }
 
-        const candidateSet = new Set();
-        if (mainTranslation) {
-          candidateSet.add(mainTranslation);
+        const distinctMeanings = [];
+        const seenSet = new Set();
+
+        function addCandidate(cand) {
+          if (!cand) return;
+          let str = cand.trim();
+          let key = str.toLowerCase();
+          if (!seenSet.has(key) && key.length > 0 && !key.includes('http')) {
+            seenSet.add(key);
+            distinctMeanings.push(str);
+          }
         }
 
-        if (data && data[1] && Array.isArray(data[1])) {
-          data[1].forEach(entry => {
-            if (Array.isArray(entry[1])) {
-              entry[1].slice(0, 3).forEach(w => candidateSet.add(w));
+        // 1. 首要直译
+        if (primaryTranslation) {
+          addCandidate(primaryTranslation);
+        }
+
+        // 2. 深入解析 Google 词典给出的词性与多义项候选项 (data[1])
+        if (data && Array.isArray(data[1])) {
+          data[1].forEach(posBlock => {
+            // posBlock[1] 包含该词性下的多个常用翻译列表
+            if (Array.isArray(posBlock[1])) {
+              posBlock[1].forEach(item => {
+                if (typeof item === 'string') {
+                  addCandidate(item);
+                }
+              });
             }
           });
         }
 
-        let candidates = Array.from(candidateSet).slice(0, 3);
-        
-        // 全量德语正字法大写规范化
-        if (targetLang === 'de') {
-          candidates = candidates.map(w => universalGermanCapitalize(w, text));
-          mainTranslation = universalGermanCapitalize(mainTranslation, text);
+        // 3. 深入解析同义词模块 (data[11])
+        if (data && Array.isArray(data[11])) {
+          data[11].forEach(synBlock => {
+            if (Array.isArray(synBlock[1])) {
+              synBlock[1].forEach(synList => {
+                if (Array.isArray(synList[0])) {
+                  synList[0].forEach(word => addCandidate(word));
+                }
+              });
+            }
+          });
         }
 
-        const formattedMeaning = candidates.length > 0 
-          ? candidates.map((c, i) => `${i + 1}. ${c}`).join('   ')
-          : mainTranslation;
+        // 提取前 2 ~ 3 种高频常用释义
+        let topMeanings = distinctMeanings.slice(0, 3);
+        if (topMeanings.length === 0 && primaryTranslation) {
+          topMeanings = [primaryTranslation];
+        }
+
+        // 德语全量多义项正字法大写处理
+        if (targetLang === 'de') {
+          topMeanings = topMeanings.map(m => universalGermanCapitalize(m));
+          primaryTranslation = universalGermanCapitalize(primaryTranslation);
+        }
+
+        // 构造编号形式的多重释义展示 (如: 1. ...  2. ...  3. ...)
+        let formattedString = '';
+        if (topMeanings.length > 1) {
+          formattedString = topMeanings.map((m, i) => `${i + 1}. ${m}`).join('   ');
+        } else if (topMeanings.length === 1) {
+          formattedString = topMeanings[0];
+        }
 
         return {
-          meaning: formattedMeaning,
-          primary: mainTranslation || candidates[0] || ''
+          meaning: formattedString,
+          primary: topMeanings[0] || primaryTranslation || ''
         };
       } catch (e) {
-        console.warn('Google 翻译调度异常:', e);
+        console.warn('Google 多义项引擎调度异常:', e);
       }
       return null;
     }
 
-    // 10. 通用多语言与语法解析入口
+    // 8. 通用多语言与语法解析入口
     async function getUniversalPhraseDetails(phrase, targetLang) {
       if (targetLang === 'none' || !phrase) {
         return { hsk: '', meaning: '', usage: '', primary: '' };
       }
 
-      if (RICH_PHRASE_DB[phrase]) {
-        const item = RICH_PHRASE_DB[phrase];
-        let m = item.meaning[targetLang] || item.meaning['en'];
-        if (targetLang === 'de') m = universalGermanCapitalize(m, phrase);
-        return {
-          hsk: item.hsk,
-          meaning: m,
-          usage: item.usage ? (item.usage[targetLang] || item.usage['en']) : '',
-          primary: m.replace(/\d+\.\s*/g, '').split(/[\/;]/)[0].trim()
-        };
-      }
-
       let meaningResult = '释义获取中...';
       let primaryWord = '';
-      const googleRes = await fetchGoogleTranslate(phrase, targetLang);
+
+      const googleRes = await fetchGoogleMultiMeanings(phrase, targetLang);
       if (googleRes && googleRes.meaning) {
         meaningResult = googleRes.meaning;
         primaryWord = googleRes.primary;
@@ -914,7 +801,7 @@
       };
     }
 
-    // 11. 获取单字实物照片与古文字演变
+    // 9. 获取单字实物照片与古文字演变
     function getCharMediaData(char) {
       if (CHAR_REAL_PHOTO_DB[char]) {
         return CHAR_REAL_PHOTO_DB[char];
@@ -925,7 +812,7 @@
       };
     }
 
-    // 12. 生成字帖核心函数
+    // 10. 生成字帖核心函数
     async function generateSheet() {
       const container = document.getElementById('sheetContainer');
       const text = document.getElementById('textInput').value.trim();
@@ -969,9 +856,9 @@
               <button class="btn-audio" onclick="speakText('${chars}')">🔊 朗读中文</button>
             </div>
             ${phrasePicHtml}
-            <div class="word-trans-box" contenteditable="true" title="点击可直接编辑修改词语含义与语法">
+            <div class="word-trans-box" contenteditable="true" title="点击可直接编辑修改词语多重释义与语法">
               <div class="trans-meaning-line" id="${transMeaningId}">
-                <span>${targetLang === 'none' ? '' : 'Google AI 释义加载中...'}</span>
+                <span>${targetLang === 'none' ? '' : 'Google AI 多义项解析中...'}</span>
               </div>
               <div class="trans-usage-line" id="${transUsageId}" style="display:none;"></div>
             </div>
