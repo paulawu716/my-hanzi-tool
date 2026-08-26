@@ -23,7 +23,7 @@
       padding: 16px 20px;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      max-width: 860px;
+      max-width: 900px;
       margin: 0 auto 20px;
       display: flex;
       flex-wrap: wrap;
@@ -79,7 +79,7 @@
 
     /* 左侧汉字拼音与释义区 */
     .char-meta {
-      width: 100px;
+      width: 105px;
       text-align: center;
       margin-right: 12px;
       display: flex;
@@ -95,7 +95,7 @@
       font-size: 12px;
       color: #4a5568;
       margin: 2px 0 4px;
-      max-width: 95px;
+      max-width: 100px;
       word-break: break-word;
       line-height: 1.2;
       border-bottom: 1px dashed #bbb;
@@ -151,12 +151,17 @@
   <div class="controls">
     <input type="text" id="textInput" value="日月山水木林" placeholder="输入生字..." />
     
-    <!-- 语言选择 -->
+    <!-- 欧洲常见语言选择列表 -->
     <select id="langSelect">
       <option value="de">🇩🇪 德语 (Deutsch)</option>
       <option value="en">🇬🇧 英语 (English)</option>
       <option value="fr">🇫🇷 法语 (Français)</option>
       <option value="es">🇪🇸 西班牙语 (Español)</option>
+      <option value="it">🇮🇹 意大利语 (Italiano)</option>
+      <option value="pt">🇵🇹 葡萄牙语 (Português)</option>
+      <option value="ru">🇷🇺 俄语 (Русский)</option>
+      <option value="nl">🇳🇱 荷兰语 (Nederlands)</option>
+      <option value="pl">🇵🇱 波兰语 (Polski)</option>
       <option value="none">🚫 无翻译</option>
     </select>
 
@@ -169,38 +174,38 @@
   <script>
     const { pinyin } = pinyinPro;
 
-    // 内置常用汉字高精度多语言词典（离线保证立即显示）
+    // 内置多语言常用生字离线词典（秒级呈现）
     const DICT = {
-      '日': { de: 'Sonne / Tag', en: 'sun / day', fr: 'soleil / jour', es: 'sol / día' },
-      '月': { de: 'Mond / Monat', en: 'moon / month', fr: 'lune / mois', es: 'luna / mes' },
-      '山': { de: 'Berg', en: 'mountain', fr: 'montagne', es: 'montaña' },
-      '水': { de: 'Wasser', en: 'water', fr: 'eau', es: 'agua' },
-      '木': { de: 'Holz / Baum', en: 'wood / tree', fr: 'bois / arbre', es: 'madera / árbol' },
-      '林': { de: 'Wald', en: 'forest', fr: 'forêt', es: 'bosque' },
-      '火': { de: 'Feuer', en: 'fire', fr: 'feu', es: 'fuego' },
-      '土': { de: 'Erde / Boden', en: 'soil / earth', fr: 'terre / sol', es: 'tierra / suelo' },
-      '天': { de: 'Himmel / Tag', en: 'sky / day', fr: 'ciel / jour', es: 'cielo / día' },
-      '地': { de: 'Erde / Land', en: 'earth / ground', fr: 'terre', es: 'tierra' },
-      '人': { de: 'Mensch / Person', en: 'person', fr: 'personne', es: 'persona' },
-      '大': { de: 'groß', en: 'big', fr: 'grand', es: 'grande' },
-      '小': { de: 'klein', en: 'small', fr: 'petit', es: 'pequeño' },
-      '上': { de: 'oben / auf', en: 'up / above', fr: 'sur / haut', es: 'arriba' },
-      '下': { de: 'unten / unter', en: 'down / below', fr: 'sous / bas', es: 'abajo' },
-      '中': { de: 'Mitte', en: 'middle', fr: 'milieu', es: 'medio' },
-      '生': { de: 'gebären / leben', en: 'birth / live', fr: 'naître / vie', es: 'nacer / vida' },
-      '字': { de: 'Schriftzeichen', en: 'character', fr: 'caractère', es: 'carácter' }
+      '日': { de: 'Sonne / Tag', en: 'sun / day', fr: 'soleil / jour', es: 'sol / día', it: 'sole / giorno', pt: 'sol / dia', ru: 'солнце / день', nl: 'zon / dag', pl: 'słońce / dzień' },
+      '月': { de: 'Mond / Monat', en: 'moon / month', fr: 'lune / mois', es: 'luna / mes', it: 'luna / mese', pt: 'lua / mês', ru: 'луна / месяц', nl: 'maan / maand', pl: 'księżyc / miesiąc' },
+      '山': { de: 'Berg', en: 'mountain', fr: 'montagne', es: 'montaña', it: 'montagna', pt: 'montanha', ru: 'гора', nl: 'berg', pl: 'góra' },
+      '水': { de: 'Wasser', en: 'water', fr: 'eau', es: 'agua', it: 'acqua', pt: 'água', ru: 'вода', nl: 'water', pl: 'woda' },
+      '木': { de: 'Holz / Baum', en: 'wood / tree', fr: 'bois / arbre', es: 'madera / árbol', it: 'legno / albero', pt: 'madeira / árvore', ru: 'дерево', nl: 'hout / boom', pl: 'drzewo' },
+      '林': { de: 'Wald', en: 'forest', fr: 'forêt', es: 'bosque', it: 'foresta', pt: 'bosque / floresta', ru: 'лес', nl: 'bos', pl: 'las' },
+      '火': { de: 'Feuer', en: 'fire', fr: 'feu', es: 'fuego', it: 'fuoco', pt: 'fogo', ru: 'огонь', nl: 'vuur', pl: 'ogień' },
+      '土': { de: 'Erde / Boden', en: 'soil / earth', fr: 'terre / sol', es: 'tierra / suelo', it: 'terra / suolo', pt: 'terra / solo', ru: 'земля', nl: 'aarde / grond', pl: 'ziemia' },
+      '天': { de: 'Himmel / Tag', en: 'sky / day', fr: 'ciel / jour', es: 'cielo / día', it: 'cielo / giorno', pt: 'céu / dia', ru: 'небо / день', nl: 'hemel / dag', pl: 'niebo / dzień' },
+      '地': { de: 'Erde / Land', en: 'earth / ground', fr: 'terre', es: 'tierra', it: 'terra', pt: 'terra', ru: 'земля', nl: 'aarde', pl: 'ziemia' },
+      '人': { de: 'Mensch', en: 'person', fr: 'personne', es: 'persona', it: 'persona', pt: 'pessoa', ru: 'человек', nl: 'mens / persoon', pl: 'człowiek' },
+      '大': { de: 'groß', en: 'big', fr: 'grand', es: 'grande', it: 'grande', pt: 'grande', ru: 'большой', nl: 'groot', pl: 'duży' },
+      '小': { de: 'klein', en: 'small', fr: 'petit', es: 'pequeño', it: 'piccolo', pt: 'pequeno', ru: 'маленький', nl: 'klein', pl: 'mały' },
+      '上': { de: 'oben / auf', en: 'up / on', fr: 'sur / haut', es: 'arriba / sobre', it: 'sopra / su', pt: 'cima / sobre', ru: 'вверх / на', nl: 'boven / op', pl: 'góra / na' },
+      '下': { de: 'unten / unter', en: 'down / under', fr: 'sous / bas', es: 'abajo / bajo', it: 'sotto / giù', pt: 'baixo / sob', ru: 'вниз / под', nl: 'beneden / onder', pl: 'dół / pod' },
+      '中': { de: 'Mitte', en: 'middle', fr: 'milieu / centre', es: 'medio / centro', it: 'centro / mezzo', pt: 'meio / centro', ru: 'центр / середина', nl: 'midden', pl: 'środek' },
+      '生': { de: 'gebären / leben', en: 'birth / live', fr: 'naître / vie', es: 'nacer / vida', it: 'nascere / vita', pt: 'nascer / vida', ru: 'рождаться / жизнь', nl: 'geboren / leven', pl: 'rodzić się / życie' },
+      '字': { de: 'Schriftzeichen', en: 'character', fr: 'caractère', es: 'carácter', it: 'carattere', pt: 'caractere', ru: 'иероглиф / буква', nl: 'karakter', pl: 'znak' }
     };
 
-    // 智能获取翻译：优先词典，次选网络接口
+    // 智能获取多语言翻译
     async function getTranslation(char, targetLang) {
       if (targetLang === 'none') return '';
       
-      // 1. 命中内置词典
+      // 1. 优先匹配内置词典
       if (DICT[char] && DICT[char][targetLang]) {
         return DICT[char][targetLang];
       }
 
-      // 2. 词典未包含时，走开放网络翻译服务
+      // 2. 备选：在线翻译接口
       try {
         const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(char)}&langpair=zh-CN|${targetLang}`;
         const res = await fetch(url);
@@ -212,7 +217,7 @@
           }
         }
       } catch (e) {
-        console.warn('在线翻译失败:', e);
+        console.warn('在线翻译获取异常:', e);
       }
 
       return '点击输入释义';
@@ -239,12 +244,12 @@
         const py = pinyin(char, { toneType: 'symbol' });
         const transBoxId = `trans-${charIdx}`;
 
-        // 创建左侧拼音与翻译标注区（支持直接点击修改）
+        // 拼音与释义区（支持双击/点击直接改字）
         const metaBox = document.createElement('div');
         metaBox.className = 'char-meta';
         metaBox.innerHTML = `
           <div class="char-pinyin">${py}</div>
-          <div class="char-trans" id="${transBoxId}" contenteditable="true" title="点击可直接编辑修改释义">${targetLang === 'none' ? '' : '加载中...'}</div>
+          <div class="char-trans" id="${transBoxId}" contenteditable="true" title="点击可直接编辑修改释义">${targetLang === 'none' ? '' : '...'}</div>
           <button class="btn-animate" onclick="playStroke('${charIdx}', '${char}')">▶ 演示</button>
         `;
         row.appendChild(metaBox);
@@ -261,7 +266,7 @@
         row.appendChild(gridList);
         container.appendChild(row);
 
-        // 渲染范字与描红字
+        // 渲染示范字与描红字
         HanziWriter.create(`char-${charIdx}-grid-0`, char, {
           width: 58, height: 58, padding: 5, strokeColor: '#000000', showOutline: false
         });
@@ -271,7 +276,7 @@
           });
         }
 
-        // 加载翻译内容
+        // 异步填充多语言翻译
         if (targetLang !== 'none') {
           getTranslation(char, targetLang).then(res => {
             const el = document.getElementById(transBoxId);
@@ -294,7 +299,6 @@
       writer.animateCharacter();
     }
 
-    // 页面加载默认运行
     window.onload = generateSheet;
   </script>
 </body>
