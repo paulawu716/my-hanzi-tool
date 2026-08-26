@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>通用多语言汉字演变与词语语法字帖系统</title>
+  <title>多语言汉字演变与词语句型语法字帖系统</title>
   <!-- 引入汉字笔顺库与拼音库 -->
   <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.18.3/dist/index.js"></script>
@@ -68,18 +68,18 @@
       box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     }
 
-    /* 词语单元块 */
+    /* 词语/句型单元块 */
     .word-block {
       margin-bottom: 24px;
       padding-bottom: 16px;
       border-bottom: 2px dashed #eaeaea;
     }
 
-    /* 词条顶部：左侧拼音语音，右侧整词释义与用法条框 */
+    /* 词条顶部：左侧词句与拼音语音，右侧整词/句型结构与用法解析 */
     .word-header {
       display: flex;
       align-items: stretch;
-      gap: 12px;
+      gap: 14px;
       margin-bottom: 12px;
       background: #f8fafc;
       padding: 10px 14px;
@@ -91,7 +91,7 @@
       flex-direction: column;
       justify-content: center;
       gap: 4px;
-      min-width: 140px;
+      min-width: 150px;
     }
     .word-text-line {
       display: flex;
@@ -115,23 +115,26 @@
       align-items: center;
       gap: 3px;
     }
+    .btn-audio:hover {
+      background: #bae7ff;
+    }
     .word-pinyin {
       font-size: 14px;
       color: #1890ff;
       font-weight: 600;
     }
 
-    /* 词语右侧条框：多重释义 + 语法句型用法 */
+    /* 词语/句型右侧解析框：多重含义 + 句型结构与语法用法 */
     .word-trans-box {
       flex: 1;
       background: #fff;
-      padding: 6px 12px;
+      padding: 8px 12px;
       border-radius: 4px;
       border: 1px dashed #cbd5e1;
       cursor: text;
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 5px;
       font-size: 13px;
     }
     .word-trans-box:focus {
@@ -147,13 +150,13 @@
       font-size: 12px;
       color: #0284c7;
       background: #f0f9ff;
-      padding: 2px 6px;
-      border-radius: 3px;
-      width: fit-content;
-      line-height: 1.35;
+      padding: 3px 8px;
+      border-radius: 4px;
+      line-height: 1.4;
+      border-left: 3px solid #38bdf8;
     }
 
-    /* 单字卡片：无单字释义，仅字源、插图、拼音与描红 */
+    /* 单字行：去除任何单字释义，仅字源、插图、拼音与描红 */
     .char-card {
       margin-bottom: 10px;
       background: #ffffff;
@@ -163,10 +166,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 12px;
     }
 
-    /* 左侧：配图 + 字源网演变 (hanziyuan) */
+    /* 左侧：专属配图 + 字源网演变 (甲骨/金文/小篆/楷书) */
     .char-left-zone {
       display: flex;
       align-items: center;
@@ -188,7 +191,7 @@
       height: 38px;
     }
 
-    /* 汉字字源演变区 (甲骨文 -> 金文 -> 小篆 -> 楷书) */
+    /* 汉字演变轨迹 */
     .etymology-box {
       display: flex;
       align-items: center;
@@ -233,7 +236,7 @@
       font-size: 11px;
     }
 
-    /* 中间：单字多音字发音 + 控制 */
+    /* 中间：单字多音字读音 + 笔顺演示 + 朗读 */
     .char-badge {
       width: 60px;
       text-align: center;
@@ -305,7 +308,7 @@
 
   <!-- 控制工具栏 -->
   <div class="controls">
-    <input type="text" id="textInput" value="车马, 太大了, 中国银行, 去看电影, 觉得" placeholder="输入任意词语或短句（字源演变依 hanziyuan 标准呈现）..." />
+    <input type="text" id="textInput" value="太大了, 车马, 中国银行, 去看电影, 觉得" placeholder="输入词语、短语或句型，用逗号或空格隔开..." />
     
     <select id="langSelect" onchange="generateSheet()">
       <option value="de">🇩🇪 德语 (Deutsch)</option>
@@ -327,7 +330,7 @@
   <script>
     const { pinyin } = pinyinPro;
 
-    // 1. 基于字源网 (hanziyuan.net) 标准的真实字源拓片字形与象形矢量库
+    // 1. 字源网 (hanziyuan.net) 标准拓片字形与象形矢量库
     const ETYMOLOGY_HANZIYUAN_DB = {
       '车': {
         icon: `<svg viewBox="0 0 64 64"><rect x="14" y="24" width="36" height="16" rx="2" fill="#8c8c8c"/><circle cx="20" cy="46" r="8" fill="#1890ff"/><circle cx="44" cy="46" r="8" fill="#1890ff"/><path d="M8,32 L56,32" stroke="#595959" stroke-width="4"/></svg>`,
@@ -367,37 +370,17 @@
       }
     };
 
-    // 2. 词汇多义项释义 + 语法句型用法库 (含各语种地道表达)
+    // 2. 词语与句型多义项释义 + 句型结构用法数据库 (支持各语种对应表达)
     const PHRASE_USAGE_DB = {
-      '车马': {
-        usage: {
-          de: '【Nomen / HSK 3】Bezieht sich auf Fahrzeuge und Pferde / Verkehrsmittel im alten China. Struktur: 车 (Wagen) + 马 (Pferd).',
-          en: '【Noun / HSK 3】Refers to carriages and horses / ancient transportation vehicles. Structure: 车 (carriage) + 马 (horse).',
-          es: '【Sustantivo / HSK 3】Carruajes y caballos / vehículos de transporte antiguos. Estructura: 车 (carro) + 马 (caballo).',
-          fr: '【Nom / HSK 3】Voitures et chevaux / véhicules de transport antiques. Structure: 车 + 马.',
-          it: '【Sostantivo / HSK 3】Carri e cavalli / mezzi di trasporto antichi. Struttura: 车 + 马.',
-          pt: '【Substantivo / HSK 3】Carruagens e cavalos / veículos antigos. Estrutura: 车 + 马.',
-          ru: '【Сущ. / HSK 3】Повозки и кони / старинные экипажи. Структура: 车 + 马.'
-        },
-        meaning: {
-          de: '1. Kutschen und Pferde  2. Fuhrwerk / Verkehrsmittel (antik)',
-          en: '1. carriages and horses  2. ancient vehicles / traffic',
-          es: '1. carruajes y caballos  2. vehículos y transporte antiguo',
-          fr: '1. voitures et chevaux  2. circulation / transports d’autrefois',
-          it: '1. carri e cavalli  2. veicoli antichi',
-          pt: '1. carruagens e cavalos  2. transporte antigo',
-          ru: '1. повозки и кони  2. старинный транспорт'
-        }
-      },
       '太大了': {
         usage: {
-          de: '【Grammatik: 太 + Adj + 了 / HSK 1】Drückt ein übermäßiges Ausmaß aus (zu / extrem + Adjektiv).',
-          en: '【Pattern: 太 + Adj + 了 / HSK 1】Expresses an excessive or exclamatory degree (too / extremely + Adj).',
-          es: '【Estructura: 太 + Adj + 了 / HSK 1】Indica un grado excesivo o superlativo (demasiado + Adj).',
-          fr: '【Structure: 太 + Adj + 了 / HSK 1】Exprime un degré excessif ou exclamatif (trop + Adj).',
-          it: '【Struttura: 太 + Adj + 了 / HSK 1】Indica un grado eccessivo (troppo + Agg).',
-          pt: '【Estrutura: 太 + Adj + 了 / HSK 1】Indica excesso ou intensidade (demais / muito + Adj).',
-          ru: '【Конструкция: 太 + Прил. + 了 / HSK 1】Указывает на чрезмерную степень (слишком + Прил.).'
+          de: '【句型结构 / HSK 1】太 + 形容词 + 了 ➔ Drückt ein übermäßiges Ausmaß oder ein Superlativ aus (zu / extrem groß).',
+          en: '【Pattern / HSK 1】太 + Adj + 了 ➔ Expresses an excessive degree or exclamation (too / extremely large).',
+          es: '【Estructura / HSK 1】太 + Adj + 了 ➔ Expresa un grado excesivo o superlativo (demasiado / extremadamente grande).',
+          fr: '【Structure / HSK 1】太 + Adj + 了 ➔ Exprime un degré excessif ou exclamatif (trop / extrêmement grand).',
+          it: '【Struttura / HSK 1】太 + Agg + 了 ➔ Indica un grado eccessivo o esclamativo (troppo / oltremodo grande).',
+          pt: '【Estrutura / HSK 1】太 + Adj + 了 ➔ Expressa grau excessivo ou exclamação (demais / extremamente grande).',
+          ru: '【Конструкция / HSK 1】太 + Прил. + 了 ➔ Указывает на чрезмерную степень (слишком / чересчур большой).'
         },
         meaning: {
           de: '1. viel zu groß / übermäßig groß  2. übergroß',
@@ -409,15 +392,35 @@
           ru: '1. слишком большой  2. чересчур крупный'
         }
       },
+      '车马': {
+        usage: {
+          de: '【词性与构词 / HSK 3】名词 (Nomen) ➔ Bezieht sich auf Fahrzeuge und Pferde bzw. antike Verkehrsmittel. Struktur: 车 (Wagen) + 马 (Pferd).',
+          en: '【POS & Formation / HSK 3】Noun ➔ Carriages and horses / ancient transportation vehicles. Structure: 车 (carriage) + 马 (horse).',
+          es: '【Categoría gramatical / HSK 3】Sustantivo ➔ Carruajes y caballos / vehículos antiguos. Estructura: 车 (carro) + 马 (caballo).',
+          fr: '【Nature / HSK 3】Nom ➔ Voitures et chevaux / transports antiques. Structure: 车 + 马.',
+          it: '【Categoria / HSK 3】Sostantivo ➔ Carri e cavalli / mezzi di trasporto storici. Struttura: 车 + 马.',
+          pt: '【Classe / HSK 3】Substantivo ➔ Carruagens e cavalos / meios de transporte antigos. Estrutura: 车 + 马.',
+          ru: '【Часть речи / HSK 3】Сущ. ➔ Повозки и кони / экипажи и транспорт. Структура: 车 + 马.'
+        },
+        meaning: {
+          de: '1. Kutschen und Pferde  2. Fuhrwerk / Verkehrsmittel (antik)',
+          en: '1. carriages and horses  2. ancient vehicles / traffic',
+          es: '1. carruajes y caballos  2. vehículos y transporte antiguo',
+          fr: '1. voitures et chevaux  2. circulation / transports d’autrefois',
+          it: '1. carri e cavalli  2. veicoli e cavalcature',
+          pt: '1. carruagens e cavalos  2. conduções antigas',
+          ru: '1. повозки и кони  2. старинный транспорт'
+        }
+      },
       '中国银行': {
         usage: {
-          de: '【Eigenname / HSK 2】Name einer der vier großen staatlichen Geschäftsbanken Chinas (Bank of China).',
-          en: '【Proper Noun / HSK 2】Bank of China (BOC), one of the major state-owned commercial banks.',
-          es: '【Nombre propio / HSK 2】Banco de China, uno de los cuatro mayores bancos comerciales de China.',
-          fr: '【Nom propre / HSK 2】Banque de Chine (l’une des plus grandes banques d’État).',
-          it: '【Nome proprio / HSK 2】Banca di Cina (uno dei principali istituti bancari).',
-          pt: '【Nome próprio / HSK 2】Banco da China (uma das maiores instituições financeiras).',
-          ru: '【Собств. / HSK 2】Банк Китая (один из крупнейших госбанков КНР).'
+          de: '【专有名词 / HSK 2】Bank of China ➔ Name einer der vier großen staatlichen Geschäftsbanken Chinas.',
+          en: '【Proper Noun / HSK 2】Bank of China (BOC) ➔ One of the major state-owned commercial banks in China.',
+          es: '【Nombre propio / HSK 2】Banco de China ➔ Uno de los principales bancos comerciales estatales de China.',
+          fr: '【Nom propre / HSK 2】Banque de Chine (Bank of China) ➔ Grande banque commerciale d’État.',
+          it: '【Nome proprio / HSK 2】Banca di Cina ➔ Importante banca commerciale statale cinese.',
+          pt: '【Nome próprio / HSK 2】Banco da China ➔ Grande banco comercial estatal da China.',
+          ru: '【Собств. имя / HSK 2】Банк Китая (Bank of China) ➔ Один из крупнейших госбанков Китая.'
         },
         meaning: {
           de: '1. Bank of China  2. Chinesische Staatsbank',
@@ -450,7 +453,7 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // 5. 通用在线多义项翻译与语法用法联机网关
+    // 5. 通用在线多义项翻译与句型结构用法联机网关
     async function getUniversalPhraseDetails(phrase, targetLang) {
       if (targetLang === 'none' || !phrase) {
         return { meaning: '', usage: '' };
@@ -463,7 +466,7 @@
         return { meaning: m, usage: u };
       }
 
-      // 2. 在线联机聚合翻译与用法推断
+      // 2. 在线联机聚合翻译与多重义项
       let meaningResult = '释义获取中...';
       try {
         const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(phrase)}&langpair=zh-CN|${targetLang}`;
@@ -495,15 +498,24 @@
         meaningResult = '点击补充词语释义';
       }
 
-      // 动态生成对应语言的句法用法提示
+      // 句型结构与语法用法动态推断
+      let inferredStructure = `【句型与用法】`;
+      if (phrase.startsWith('太') && phrase.endsWith('了')) {
+        inferredStructure = `【句型结构】太 + 形容词/动词 + 了 ➔ 表示程度极高或过分 (Too / Zu + Adj)`;
+      } else if (phrase.includes('不') || phrase.includes('没')) {
+        inferredStructure = `【否定句式】不 / 没 + 动词/形容词 ➔ 表示否定否定结构 (Negation)`;
+      } else {
+        inferredStructure = `【词语用法】常用中文词组/表达，可直接在句中作主语、谓语或宾语。`;
+      }
+
       const usageTips = {
-        de: `【Wortverwendung】Häufiger chinesischer Begriff/Ausdruck. Bitte im Satzkontext anwenden.`,
-        en: `【Usage & Pattern】Common Chinese phrase/expression. Apply according to context.`,
-        es: `【Uso gramatical】Frase o expresión común en chino. Usar según el contexto.`,
-        fr: `【Usage grammatical】Terme ou expression courante en chinois. À employer selon le contexte.`,
-        it: `【Uso grammaticale】Espressione comune cinese. Da usare secondo il contesto.`,
-        pt: `【Uso gramatical】Expressão comum em chinês. Usar conforme o contexto.`,
-        ru: `【Грамматика и употребление】Употребительное словосочетание/фраза.`
+        de: `${inferredStructure} (Im deutschen Satzkontext anwenden)`,
+        en: `${inferredStructure} (Apply according to context)`,
+        es: `${inferredStructure} (Usar según la función sintáctica)`,
+        fr: `${inferredStructure} (À employer selon la syntaxe)`,
+        it: `${inferredStructure} (Da applicare secondo il contesto)`,
+        pt: `${inferredStructure} (Usar conforme o contexto sintático)`,
+        ru: `${inferredStructure} (Используется в соответствии с контекстом)`
       };
 
       return {
@@ -512,12 +524,11 @@
       };
     }
 
-    // 6. 字源网 (hanziyuan.net) 标准节点渲染
+    // 6. 字源网 (hanziyuan.net) 标准演变节点渲染
     function getHanziYuanData(char) {
       if (ETYMOLOGY_HANZIYUAN_DB[char]) {
         return ETYMOLOGY_HANZIYUAN_DB[char];
       }
-      // 通用回退：字源网字体流变标准四阶段
       return {
         icon: `<svg viewBox="0 0 64 64"><rect x="6" y="6" width="52" height="52" rx="8" fill="#1890ff" fill-opacity="0.1"/><text x="32" y="40" font-size="24" font-weight="bold" fill="#1890ff" text-anchor="middle">${char}</text></svg>`,
         nodes: [
@@ -549,7 +560,7 @@
         const chars = (rawPhrase.match(/[\u4e00-\u9fa5]/g) || []).join('');
         if (!chars) continue;
 
-        // 多音字整词语境注音
+        // 多音字语境精准注音
         const contextualPinyins = getContextualPinyinList(chars);
         const phrasePinyinStr = contextualPinyins.join(' ');
         
@@ -559,7 +570,7 @@
         const wordBlock = document.createElement('div');
         wordBlock.className = 'word-block';
 
-        // 词条顶部头部：左侧拼音与语音 + 右侧条框集中呈现释义与语法用法
+        // 词条顶部头部：左侧词句与拼音语音 + 右侧集中展示词义与句型结构用法
         wordBlock.innerHTML = `
           <div class="word-header">
             <div class="word-meta-left">
@@ -569,14 +580,14 @@
               </div>
               <div class="word-pinyin">[ ${phrasePinyinStr} ]</div>
             </div>
-            <div class="word-trans-box" contenteditable="true" title="点击可直接编辑修改词语释义与用法">
-              <div class="trans-meaning-line" id="${transMeaningId}">${targetLang === 'none' ? '' : '词语多义项加载中...'}</div>
-              <div class="trans-usage-line" id="${transUsageId}">${targetLang === 'none' ? '' : '用法结构分析中...'}</div>
+            <div class="word-trans-box" contenteditable="true" title="点击可直接编辑修改词语含义与句型用法">
+              <div class="trans-meaning-line" id="${transMeaningId}">${targetLang === 'none' ? '' : '词语多义项解析中...'}</div>
+              <div class="trans-usage-line" id="${transUsageId}">${targetLang === 'none' ? '' : '句型结构与用法加载中...'}</div>
             </div>
           </div>
         `;
 
-        // 逐字生成纯净字卡（去掉了单字释义与单字用法，保留字源网演变与描红）
+        // 逐字生成纯净字卡（单字不带任何释义，仅字源、拼音与描红）
         for (let cIdx = 0; cIdx < chars.length; cIdx++) {
           const char = chars[cIdx];
           // 确保单字拿到在当前词组上下文中的精准读音（多音字正确）
@@ -585,7 +596,7 @@
 
           const hyData = getHanziYuanData(char);
 
-          // 演变节点：带字源网（hanziyuan.net）链接
+          // 演变节点：链接直达字源网（hanziyuan.net）
           const evoHtml = hyData.nodes.map((node, idx) => `
             <a class="evo-node" href="https://hanziyuan.net/#${encodeURIComponent(char)}" target="_blank" title="在字源网 (hanziyuan.net) 查看「${char}」的${node.name}原图考据">
               <div class="evo-glyph">
@@ -603,7 +614,7 @@
             <!-- 左侧：图解 + 字源网演变轨迹 -->
             <div class="char-left-zone">
               <div class="pic-badge" title="${char} 的专属图解">${hyData.icon}</div>
-              <div class="etymology-box" title="点击任一阶段可在字源网查看原图考据">${evoHtml}</div>
+              <div class="etymology-box" title="点击可在字源网 (hanziyuan.net) 查看原图考据">${evoHtml}</div>
             </div>
 
             <!-- 中间：单字多音字读音 + 笔顺演示 + 朗读 -->
@@ -649,7 +660,7 @@
           globalGridIdx++;
         }
 
-        // 异步填充整词的多重释义与用法
+        // 异步填充整词/句型的多重释义与用法
         if (targetLang !== 'none') {
           getUniversalPhraseDetails(chars, targetLang).then(res => {
             const mEl = document.getElementById(transMeaningId);
