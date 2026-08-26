@@ -261,7 +261,7 @@
       flex-shrink: 0;
     }
 
-    /* 田字格正上方的笔画名称序列 */
+    /* 田字格正上方的笔画名称序列（含 StrokeOrder.com 联动入口） */
     .stroke-names-row {
       display: flex;
       align-items: center;
@@ -273,9 +273,22 @@
       border-radius: 4px;
       line-height: 1.2;
       width: fit-content;
-      max-width: 340px;
+      max-width: 350px;
       overflow-x: auto;
       white-space: nowrap;
+    }
+    .stroke-source-badge {
+      color: #0284c7;
+      text-decoration: none;
+      font-weight: bold;
+      margin-right: 3px;
+      padding-right: 4px;
+      border-right: 1px solid #bae6fd;
+      transition: color 0.2s;
+    }
+    .stroke-source-badge:hover {
+      color: #0369a1;
+      text-decoration: underline;
     }
     .stroke-tag {
       font-weight: 500;
@@ -376,7 +389,7 @@
 
   <!-- 控制工具栏 -->
   <div class="controls">
-    <input type="text" id="textInput" value="上下, 牛马, 行, 快乐, 睡觉, 中国银行" placeholder="输入任意词语或句子，田字格上方将自动排列笔顺笔画名称..." />
+    <input type="text" id="textInput" value="十, 上下, 牛马, 行, 快乐, 睡觉, 中国银行" placeholder="输入任意词语或句子，田字格上方将自动排列笔顺笔画名称..." />
     
     <select id="langSelect" onchange="generateSheet()">
       <option value="de">🇩🇪 德语 (Deutsch)</option>
@@ -419,8 +432,12 @@
       window.speechSynthesis.onvoiceschanged = loadVoices;
     }
 
-    // 1. 标准笔画名称数据库
+    // 1. 标准汉字官方笔画名称精确词典（依据 StrokeOrder.com 标准与国家语委规范）
     const CHAR_STROKES_DB = {
+      '十': ['横', '竖'],
+      '一': ['横'],
+      '二': ['横', '横'],
+      '三': ['横', '横', '横'],
       '上': ['竖', '横', '横'],
       '下': ['横', '竖', '点'],
       '牛': ['撇', '横', '横', '竖'],
@@ -557,6 +574,11 @@
 
     // 3. 权威汉字源流演变古文字库 (中华语文知识库 / 象形字典 / 说文解字 考据标准)
     const CHAR_EVOLUTION_DB = {
+      '十': [
+        { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85" stroke="#334155" stroke-width="8" fill="none"/></svg>` },
+        { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M50,50 C40,50 40,60 50,60 C60,60 60,50 50,50 Z" stroke="#334155" stroke-width="7" fill="#334155"/></svg>` },
+        { name: '小篆', type: 'text', content: '十' }
+      ],
       '上': [
         { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M20,75 L80,75 M50,75 L50,25 M35,45 L65,45" stroke="#334155" stroke-width="8" fill="none"/></svg>` },
         { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M20,75 L80,75 M50,75 L50,25" stroke="#334155" stroke-width="8" fill="none"/></svg>` },
@@ -579,12 +601,11 @@
       ],
       '车': [
         { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M20,20 L80,20 M20,80 L80,80 M20,20 L20,80 M80,20 L80,80 M35,40 L65,40 L65,60 L35,60 Z" stroke="#334155" stroke-width="7" fill="none"/></svg>` },
-        { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M25,25 L75,25 M25,75 L75,75 M35,38 L65,38 L65,62 L35,62 Z" stroke="#334155" stroke-width="6" fill="none"/></svg>` },
+        { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M25,25 L75,25 M25,75 L75,75 M35,38 L65,38 L65,62 L35,62 Z M25,25 L25,75 M75,25 L75,75" stroke="#334155" stroke-width="6" fill="none"/></svg>` },
         { name: '小篆', type: 'text', content: '車' }
       ],
       '日': [
         { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" stroke="#334155" stroke-width="8" fill="none"/><circle cx="50" cy="50" r="6" fill="#334155"/></svg>` },
-        { name: '金文', type: 'text', content: '日' },
         { name: '小篆', type: 'text', content: '日' }
       ],
       '月': [
@@ -705,7 +726,7 @@
           window.speechSynthesis.speak(utterance);
           return;
         } catch (err) {
-          console.warn('本地语音合成异常:', err);
+          console.warn('本地语音合成异常，转入在线音频保底:', err);
         }
       }
 
@@ -722,7 +743,7 @@
       }
     }
 
-    // 5. Google AI 多义项深度解析引擎（提取 2~3 种常用释义）
+    // 5. Google AI 多义项深度解析引擎
     async function fetchGoogleMultiMeanings(text, targetLang) {
       if (targetLang === 'none' || !text) return null;
 
@@ -872,7 +893,7 @@
         const wordBlock = document.createElement('div');
         wordBlock.className = 'word-block';
 
-        // 词条顶部：纯净学术排版（去除图片，专注拼音与多义项语法）
+        // 词条顶部：纯净学术排版（专注拼音与多义项语法）
         wordBlock.innerHTML = `
           <div class="word-header">
             <div class="word-meta-left">
@@ -924,9 +945,9 @@
               </div>
             </div>
 
-            <!-- 2. 中间：上方笔顺笔画名称序列 + 下方田字格练习区 -->
+            <!-- 2. 中间：上方笔画名称序列 (含 StrokeOrder.com 联动) + 下方田字格练习区 -->
             <div class="middle-practice-zone">
-              <div class="stroke-names-row" id="${strokeRowId}" title="${char} 的正确书写笔顺笔画名称顺序">
+              <div class="stroke-names-row" id="${strokeRowId}" title="${char} 的正确书写笔画名称顺序">
                 <span>笔画分析中...</span>
               </div>
               <div class="grid-list-middle" id="grid-list-${globalGridIdx}"></div>
@@ -952,12 +973,12 @@
           wordBlock.appendChild(card);
           container.appendChild(wordBlock);
 
-          // 异步加载并在田字格上方渲染官方笔画名称顺序
+          // 异步加载并在田字格上方渲染官方笔画名称顺序（含 StrokeOrder 专属链接）
           getStrokeNamesList(char).then(strokesList => {
             const strokeBox = document.getElementById(strokeRowId);
             if (strokeBox) {
               strokeBox.innerHTML = `
-                <span style="color:#64748b; font-weight:bold; margin-right:2px;">笔顺:</span>
+                <a class="stroke-source-badge" href="https://www.strokeorder.com/chinese/${encodeURIComponent(char)}" target="_blank" title="在 StrokeOrder.com 查看「${char}」的笔顺动画与分解图">笔顺 ↗</a>
                 ${strokesList.map((s, idx) => `
                   <span class="stroke-tag">${s}</span>
                   ${idx < strokesList.length - 1 ? '<span class="stroke-arrow">➔</span>' : ''}
