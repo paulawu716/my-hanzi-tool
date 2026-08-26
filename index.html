@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>多语言汉字演变与词语句型语法字帖系统</title>
+  <title>多语言汉字甲骨文与词语句型语法字帖系统</title>
   <!-- 引入汉字笔顺库与拼音库 -->
   <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.18.3/dist/index.js"></script>
@@ -167,11 +167,11 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      flex-wrap: nowrap; /* 保证单行不折行 */
+      flex-wrap: nowrap;
       overflow-x: hidden;
     }
 
-    /* 左侧：专属象形配图 + 字源网演变 (甲骨/金文/小篆/楷书) */
+    /* 左侧：专属象形配图 + 单一甲骨文链接节点 */
     .char-left-zone {
       display: flex;
       align-items: center;
@@ -194,54 +194,43 @@
       height: 36px;
     }
 
-    /* 汉字演变轨迹 */
-    .etymology-box {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      background: #f8fafc;
-      border: 1px solid #edf2f7;
-      padding: 3px 6px;
-      border-radius: 6px;
-    }
-    .evo-node {
+    /* 甲骨文链接单个节点 */
+    .oracle-link-badge {
       display: flex;
       flex-direction: column;
       align-items: center;
-      width: 30px;
+      justify-content: center;
+      background: #f8fafc;
+      border: 1px solid #edf2f7;
+      padding: 2px 6px;
+      border-radius: 6px;
       text-decoration: none;
-      color: inherit;
+      color: #334155;
+      width: 42px;
+      height: 44px;
+      transition: all 0.2s;
     }
-    .evo-node:hover .evo-label {
-      color: #1890ff;
+    .oracle-link-badge:hover {
+      border-color: #1890ff;
+      background: #e6f7ff;
     }
-    .evo-glyph {
-      width: 26px;
-      height: 26px;
+    .oracle-glyph {
+      width: 24px;
+      height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .evo-glyph svg {
+    .oracle-glyph svg {
       width: 22px;
       height: 22px;
       fill: #334155;
     }
-    .evo-glyph-text {
-      font-size: 16px;
-      font-family: "KaiTi", "STKaiti", "FangSong", serif;
-      color: #334155;
-    }
-    .evo-label {
+    .oracle-label {
       font-size: 9px;
-      color: #64748b;
-      margin-top: 1px;
+      color: #8c8c8c;
       transform: scale(0.85);
-      transition: color 0.2s;
-    }
-    .evo-arrow {
-      color: #cbd5e1;
-      font-size: 10px;
+      margin-top: 1px;
     }
 
     /* 中间：单字多音字读音 + 笔顺演示 + 朗读 */
@@ -282,11 +271,11 @@
       cursor: pointer;
     }
 
-    /* 右侧：单列田字格/米字格（1行排列，绝不换行成2列） */
+    /* 右侧：单列米字格/田字格（绝不换行） */
     .grid-list {
       display: flex;
       gap: 5px;
-      flex-wrap: nowrap; /* 强制单列单行 */
+      flex-wrap: nowrap;
       flex-shrink: 0;
     }
     .mi-grid {
@@ -317,7 +306,7 @@
 
   <!-- 控制工具栏 -->
   <div class="controls">
-    <input type="text" id="textInput" value="太大了, 车马, 中国银行, 去看电影, 觉得, 快乐" placeholder="输入词语、短语或句型，用逗号或空格隔开..." />
+    <input type="text" id="textInput" value="中国银行, 睡觉, 觉得, 快乐, 音乐, 车马" placeholder="输入词语、短语或句型，用逗号或空格隔开..." />
     
     <select id="langSelect" onchange="generateSheet()">
       <option value="de">🇩🇪 德语 (Deutsch)</option>
@@ -339,65 +328,47 @@
   <script>
     const { pinyin } = pinyinPro;
 
-    // 1. 基于字源网 (hanziyuan.net) 考据的字形演变库与专属象形图解
-    const ETYMOLOGY_HANZIYUAN_DB = {
+    // 1. 汉字专属象形图解 + 甲骨文字形库
+    const CHAR_IMAGE_ORACLE_DB = {
       '车': {
         icon: `<svg viewBox="0 0 64 64"><rect x="14" y="24" width="36" height="16" rx="2" fill="#8c8c8c"/><circle cx="20" cy="46" r="8" fill="#1890ff"/><circle cx="44" cy="46" r="8" fill="#1890ff"/><path d="M8,32 L56,32" stroke="#595959" stroke-width="4"/></svg>`,
-        nodes: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M20,20 L80,20 M20,80 L80,80 M20,20 L20,80 M80,20 L80,80 M35,40 L65,40 L65,60 L35,60 Z" stroke="#334155" stroke-width="6" fill="none"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M25,25 L75,25 M25,75 L75,75 M35,38 L65,38 L65,62 L35,62 Z M25,25 L25,75 M75,25 L75,75" stroke="#334155" stroke-width="6" fill="none"/></svg>` },
-          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M20,30 Q50,22 80,30 M30,42 L70,42 L70,58 L30,58 Z M20,70 Q50,78 80,70" stroke="#334155" stroke-width="6" fill="none"/></svg>` },
-          { name: '楷书', type: 'text', content: '车' }
-        ]
+        oracle: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M20,20 L80,20 M20,80 L80,80 M20,20 L20,80 M80,20 L80,80 M35,40 L65,40 L65,60 L35,60 Z" stroke="#334155" stroke-width="7" fill="none"/></svg>`
       },
       '马': {
         icon: `<svg viewBox="0 0 64 64"><path d="M16,48 Q24,20 40,16 Q48,16 48,28 Q48,40 32,44 L32,56 M42,44 L44,56" stroke="#fa8c16" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`,
-        nodes: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M40,15 Q60,15 65,30 Q65,50 45,55 L45,85 M55,55 L65,85 M35,30 Q20,35 25,50 M65,30 L80,25 M65,38 L82,35 M65,46 L80,45" stroke="#334155" stroke-width="6" fill="none"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M40,15 Q65,15 65,35 Q65,55 45,60 L45,85 M55,60 L65,85 M30,35 Q20,40 25,55 M65,30 L80,25 M65,40 L82,38" stroke="#334155" stroke-width="6" fill="none"/></svg>` },
-          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M35,15 L35,85 M35,25 Q65,20 65,45 Q65,65 35,65 M65,45 L80,42 M48,65 L48,85 M60,65 L60,85" stroke="#334155" stroke-width="6" fill="none"/></svg>` },
-          { name: '楷书', type: 'text', content: '马' }
-        ]
+        oracle: `<svg viewBox="0 0 100 100"><path d="M40,15 Q60,15 65,30 Q65,50 45,55 L45,85 M55,55 L65,85 M35,30 Q20,35 25,50 M65,30 L80,25 M65,38 L82,35 M65,46 L80,45" stroke="#334155" stroke-width="7" fill="none"/></svg>`
       },
       '太': {
         icon: `<svg viewBox="0 0 64 64"><polygon points="32,8 40,24 58,24 44,36 50,54 32,42 14,54 20,36 6,24 24,24" fill="#fa8c16"/><circle cx="32" cy="30" r="5" fill="#fff"/></svg>`,
-        nodes: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,45 Q50,40 80,45 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,40 Q50,45 80,40 M50,55 L25,85 M50,55 L75,85 M50,68 C45,68 45,78 50,78 C55,78 55,68 50,68 Z" stroke="#334155" stroke-width="7" fill="#334155"/></svg>` },
-          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,12 L50,60 M18,42 Q50,30 82,42 M50,60 Q30,75 22,88 M50,60 Q70,75 78,88 M42,75 Q50,82 58,75" stroke="#334155" stroke-width="7" fill="none"/></svg>` },
-          { name: '楷书', type: 'text', content: '太' }
-        ]
+        oracle: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,45 Q50,40 80,45 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>`
       },
       '大': {
         icon: `<svg viewBox="0 0 64 64"><rect x="8" y="8" width="48" height="48" rx="8" fill="#1890ff"/><path d="M16,32 L48,32 M32,16 L32,48" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>`,
-        nodes: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,42 Q50,38 80,42 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M18,40 Q50,45 82,40 M50,55 L22,85 M50,55 L78,85" stroke="#334155" stroke-width="8" fill="none"/></svg>` },
-          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,55 M15,40 Q50,28 85,40 M50,55 Q28,72 20,88 M50,55 Q72,72 80,88" stroke="#334155" stroke-width="7" fill="none"/></svg>` },
-          { name: '楷书', type: 'text', content: '大' }
-        ]
+        oracle: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,42 Q50,38 80,42 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none"/></svg>`
       },
       '行': {
         icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="18" r="8" fill="#595959"/><path d="M32,26 L32,42 M32,42 L20,58 M32,42 L44,58 M20,34 L44,34" stroke="#595959" stroke-width="4" stroke-linecap="round"/></svg>`,
-        nodes: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M30,15 L30,45 L15,45 M70,15 L70,45 L85,45 M15,55 L30,55 L30,85 M85,55 L70,55 L70,85" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M35,15 L35,45 L15,45 M65,15 L65,45 L85,45 M15,55 L35,55 L35,85 M85,55 L65,55 L65,85" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M32,15 Q32,50 15,50 M32,50 L32,85 M68,15 L68,50 Q68,50 85,50 M68,50 L68,85" stroke="#334155" stroke-width="6" fill="none"/></svg>` },
-          { name: '楷书', type: 'text', content: '行' }
-        ]
+        oracle: `<svg viewBox="0 0 100 100"><path d="M30,15 L30,45 L15,45 M70,15 L70,45 L85,45 M15,55 L30,55 L30,85 M85,55 L70,55 L70,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>`
       },
       '电': {
         icon: `<svg viewBox="0 0 64 64"><polygon points="34,8 18,34 30,34 26,56 46,26 34,26" fill="#faad14"/></svg>`,
-        nodes: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L30,45 L70,55 L45,85" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,12 L32,42 L68,52 L42,88" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><rect x="25" y="25" width="50" height="40" rx="6" stroke="#334155" stroke-width="6" fill="none"/><path d="M50,15 L50,85 Q65,85 75,70" stroke="#334155" stroke-width="6" fill="none"/></svg>` },
-          { name: '楷书', type: 'text', content: '电' }
-        ]
+        oracle: `<svg viewBox="0 0 100 100"><path d="M50,15 L30,45 L70,55 L45,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>`
+      },
+      '日': {
+        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="16" fill="#ff4d4f"/><g stroke="#fa8c16" stroke-width="3.5" stroke-linecap="round"><line x1="32" y1="5" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="59"/><line x1="5" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="59" y2="32"/></g></svg>`,
+        oracle: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" stroke="#334155" stroke-width="8" fill="none"/><circle cx="50" cy="50" r="6" fill="#334155"/></svg>`
+      },
+      '月': {
+        icon: `<svg viewBox="0 0 64 64"><path d="M44,8 A24,24 0 1,0 44,56 A20,20 0 0,1 44,8 Z" fill="#faad14"/></svg>`,
+        oracle: `<svg viewBox="0 0 100 100"><path d="M60,15 A35,35 0 0,0 60,85 A45,45 0 0,1 60,15 Z" stroke="#334155" stroke-width="8" fill="none"/></svg>`
+      },
+      '山': {
+        icon: `<svg viewBox="0 0 64 64"><polygon points="32,12 14,52 50,52" fill="#389e0d"/><polygon points="46,24 32,52 60,52" fill="#237804"/><polygon points="18,28 6,52 30,52" fill="#52c41a"/></svg>`,
+        oracle: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,40 L20,85 M80,40 L80,85 M20,85 L80,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>`
       }
     };
 
-    // 2. 词语/句型多义项释义与语法结构用法库 (各语种对应)
+    // 2. 词语/句型多义项释义与语法结构用法库
     const PHRASE_USAGE_DB = {
       '太大了': {
         usage: {
@@ -479,6 +450,26 @@
           ru: '1. идти в кино  2. смотреть фильм'
         }
       },
+      '睡觉': {
+        usage: {
+          de: '【离合动词 / HSK 1】动词 (Verb) ➔ 睡 (schlafen) + 觉 (Schlaf). Trennbar: 睡了一个好觉.',
+          en: '【Separable Verb / HSK 1】Verb ➔ 睡 (sleep) + 觉 (sleep). Separable: 睡了一个好觉.',
+          es: '【Verbo separable / HSK 1】Verbo ➔ 睡 (dormir) + 觉 (sueño). Separable: 睡了一个好觉.',
+          fr: '【Verbe dissociable / HSK 1】Verbe ➔ 睡 + 觉 (dormir). Dissociable: 睡了一个好觉.',
+          it: '【Verbo separabile / HSK 1】Verbo ➔ 睡 + 觉 (dormire). Separabile: 睡了一个好觉.',
+          pt: '【Verbo separável / HSK 1】Verbo ➔ 睡 + 觉 (dormir). Separável: 睡了一个好觉.',
+          ru: '【Разделимый глагол / HSK 1】Глагол ➔ 睡 + 觉 (спать). Разделимый: 睡了一个好觉.'
+        },
+        meaning: {
+          de: '1. schlafen / schlafen gehen  2. ins Bett gehen',
+          en: '1. sleep  2. go to bed',
+          es: '1. dormir  2. irse a la cama',
+          fr: '1. dormir  2. se coucher',
+          it: '1. dormire  2. andare a letto',
+          pt: '1. dormir  2. ir para a cama',
+          ru: '1. спать  2. ложиться спать'
+        }
+      },
       '觉得': {
         usage: {
           de: '【心理动词 / HSK 2】主语 + 觉得 + 宾语从句 ➔ Drückt ein subjektives Gefühl, eine Ansicht oder ein Urteil aus.',
@@ -526,7 +517,81 @@
       return pinyin(phrase, { toneType: 'symbol', type: 'array' });
     }
 
-    // 4. Web Speech API 原生语音合成
+    // 4. 多音字精准发音对齐引擎 (Phonetic Alignment Engine)
+    // 建立多音字特定读音到发音锚定词的映射表，确保浏览器 TTS 引擎读出的声音与拼音 100% 一致
+    const POLYPHONE_SPEECH_MAP = {
+      '行': {
+        'háng': '航', // 读 háng 时发“航”音 (如银行、行业)
+        'xíng': '形'  // 读 xíng 时发“形”音 (如行走、不行)
+      },
+      '觉': {
+        'jiào': '叫', // 读 jiào 时发“叫”音 (如睡觉)
+        'jué': '决'   // 读 jué 时发“决”音 (如觉得、感觉)
+      },
+      '乐': {
+        'yuè': '月',  // 读 yuè 时发“月”音 (如音乐、乐器)
+        'lè': '勒'    // 读 lè 时发“勒”音 (如快乐、乐观)
+      },
+      '重': {
+        'zhòng': '众', // 读 zhòng 时发“众”音 (如重要、重量)
+        'chóng': '虫'  // 读 chóng 时发“虫”音 (如重复、重申)
+      },
+      '数': {
+        'shù': '树',  // 读 shù 时发“树”音 (如数量、数学)
+        'shǔ': '暑'   // 读 shǔ 时发“暑”音 (如数一数、不可胜数)
+      },
+      '发': {
+        'fā': '八',   // 读 fā 时发“发”音 (如发现、发生)
+        'fà': '法'    // 读 fà 时发“发”音 (如头发)
+      },
+      '地': {
+        'de': '的',   // 读 de 时发轻声 (如慢慢地)
+        'dì': '弟'    // 读 dì 时发“弟”音 (如大地、地方)
+      },
+      '长': {
+        'cháng': '常', // 读 cháng 时发“常”音 (如长江、长度)
+        'zhǎng': '掌'  // 读 zhǎng 时发“掌”音 (如长大、长辈)
+      },
+      '得': {
+        'dé': '德',   // 读 dé 时 (如得到)
+        'de': '的',   // 读 de 时 (如跑得快)
+        'děi': '待'   // 读 děi 时 (如总得、得去)
+      },
+      '着': {
+        'zhe': '者',  // 读 zhe 时 (如看着)
+        'zháo': '找', // 读 zháo 时 (如着火、着急)
+        'zhuó': '卓'  // 读 zhuó 时 (如沉着、着重)
+      }
+    };
+
+    // 朗读单字并自动纠正多音字发音
+    function speakCharWithPinyin(char, py) {
+      if (!('speechSynthesis' in window)) {
+        alert('当前浏览器暂不支持语音朗读功能');
+        return;
+      }
+      window.speechSynthesis.cancel();
+
+      // 去除声调符号获得纯拼音 (如 háng -> hang)
+      let spokenText = char;
+      if (POLYPHONE_SPEECH_MAP[char]) {
+        for (let targetPy in POLYPHONE_SPEECH_MAP[char]) {
+          // 匹配带调拼音或不带调拼音
+          if (py.includes(targetPy) || pinyin(char, { toneType: 'none' }) === targetPy) {
+            spokenText = POLYPHONE_SPEECH_MAP[char][targetPy];
+            break;
+          }
+        }
+      }
+
+      const utterance = new SpeechSynthesisUtterance(spokenText);
+      utterance.lang = 'zh-CN';
+      utterance.rate = 0.85;
+      utterance.pitch = 1.0;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // 朗读整词
     function speakText(text) {
       if (!('speechSynthesis' in window)) {
         alert('当前浏览器暂不支持语音朗读功能');
@@ -540,20 +605,18 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // 5. 通用在线多义项翻译与句型结构用法联机网关
+    // 5. 通用在线多义项翻译与句型结构用法解析
     async function getUniversalPhraseDetails(phrase, targetLang) {
       if (targetLang === 'none' || !phrase) {
         return { meaning: '', usage: '' };
       }
 
-      // 本地精准匹配
       if (PHRASE_USAGE_DB[phrase]) {
         const m = PHRASE_USAGE_DB[phrase].meaning[targetLang] || PHRASE_USAGE_DB[phrase].meaning['en'];
         const u = PHRASE_USAGE_DB[phrase].usage[targetLang] || PHRASE_USAGE_DB[phrase].usage['en'];
         return { meaning: m, usage: u };
       }
 
-      // 在线联机聚合翻译与多重义项
       let meaningResult = '释义获取中...';
       try {
         const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(phrase)}&langpair=zh-CN|${targetLang}`;
@@ -610,19 +673,14 @@
       };
     }
 
-    // 6. 字源网 (hanziyuan.net) 标准演变节点渲染
-    function getHanziYuanData(char) {
-      if (ETYMOLOGY_HANZIYUAN_DB[char]) {
-        return ETYMOLOGY_HANZIYUAN_DB[char];
+    // 6. 获取汉字配图与甲骨文单一数据
+    function getCharVisualData(char) {
+      if (CHAR_IMAGE_ORACLE_DB[char]) {
+        return CHAR_IMAGE_ORACLE_DB[char];
       }
       return {
         icon: `<svg viewBox="0 0 64 64"><rect x="6" y="6" width="52" height="52" rx="8" fill="#1890ff" fill-opacity="0.1"/><text x="32" y="40" font-size="24" font-weight="bold" fill="#1890ff" text-anchor="middle">${char}</text></svg>`,
-        nodes: [
-          { name: '甲骨', type: 'text', content: char },
-          { name: '金文', type: 'text', content: char },
-          { name: '小篆', type: 'text', content: char },
-          { name: '楷书', type: 'text', content: char }
-        ]
+        oracle: null
       };
     }
 
@@ -646,7 +704,6 @@
         const chars = (rawPhrase.match(/[\u4e00-\u9fa5]/g) || []).join('');
         if (!chars) continue;
 
-        // 多音字语境精准注音
         const contextualPinyins = getContextualPinyinList(chars);
         const phrasePinyinStr = contextualPinyins.join(' ');
         
@@ -673,40 +730,37 @@
           </div>
         `;
 
-        // 逐字生成纯净字卡（单字不带任何释义，仅字源、拼音与单列描红）
+        // 逐字生成纯净字卡（单字不带任何释义，仅专属插图、甲骨文单链接、多音字精准发音与单列描红）
         for (let cIdx = 0; cIdx < chars.length; cIdx++) {
           const char = chars[cIdx];
           const charPy = contextualPinyins[cIdx] || pinyin(char, { toneType: 'symbol' });
           const firstGridId = `grid-demo-${globalGridIdx}`;
 
-          const hyData = getHanziYuanData(char);
+          const visualData = getCharVisualData(char);
 
-          // 演变节点：链接直达字源网（hanziyuan.net）
-          const evoHtml = hyData.nodes.map((node, idx) => `
-            <a class="evo-node" href="https://hanziyuan.net/#${encodeURIComponent(char)}" target="_blank" title="在字源网 (hanziyuan.net) 查看「${char}」的${node.name}原图考据">
-              <div class="evo-glyph">
-                ${node.type === 'svg' ? node.content : `<span class="evo-glyph-text">${node.content}</span>`}
-              </div>
-              <div class="evo-label">${node.name}</div>
+          // 仅存在甲骨文时才生成单个甲骨文点击链接
+          const oracleHtml = visualData.oracle ? `
+            <a class="oracle-link-badge" href="https://hanziyuan.net/#${encodeURIComponent(char)}" target="_blank" title="在字源网 (hanziyuan.net) 查看「${char}」的甲骨文原图考据">
+              <div class="oracle-glyph">${visualData.oracle}</div>
+              <div class="oracle-label">甲骨文</div>
             </a>
-            ${idx < hyData.nodes.length - 1 ? '<span class="evo-arrow">→</span>' : ''}
-          `).join('');
+          ` : '';
 
           const card = document.createElement('div');
           card.className = 'char-card';
 
           card.innerHTML = `
-            <!-- 左侧：专属配图 + 字源网演变轨迹 -->
+            <!-- 左侧：专属配图 + 单一甲骨文演变链接 (若无甲骨文则不显示) -->
             <div class="char-left-zone">
-              <div class="pic-badge" title="${char} 的专属图解">${hyData.icon}</div>
-              <div class="etymology-box" title="点击可在字源网 (hanziyuan.net) 查看原图考据">${evoHtml}</div>
+              <div class="pic-badge" title="${char} 的专属图解">${visualData.icon}</div>
+              ${oracleHtml}
             </div>
 
-            <!-- 中间：单字多音字读音 + 笔顺演示 + 朗读 -->
+            <!-- 中间：单字多音字读音 + 笔顺演示 + 多音字纠正发音按钮 -->
             <div class="char-badge">
               <div class="char-pinyin-small">${charPy}</div>
               <div class="btn-action-group">
-                <button class="btn-small-audio" onclick="speakText('${char}')" title="朗读此字">🔊</button>
+                <button class="btn-small-audio" onclick="speakCharWithPinyin('${char}', '${charPy}')" title="按当前语境拼音朗读该字">🔊</button>
                 <button class="btn-animate" onclick="playStroke('${firstGridId}', '${char}')" title="播放笔顺">▶ 笔顺</button>
               </div>
             </div>
