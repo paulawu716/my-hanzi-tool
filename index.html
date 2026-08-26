@@ -200,11 +200,11 @@
 
     /* 单字卡片 */
     .char-card {
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       background: #ffffff;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
-      padding: 10px 12px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -253,40 +253,41 @@
       cursor: pointer;
     }
 
-    /* 2. 中间：分步笔顺分解图 (Step 1, Step 2...) + 田字格 */
+    /* 2. 中间：紧凑微型分步笔顺分解图 + 下方田字格练习区 */
     .middle-practice-zone {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
       flex-shrink: 0;
     }
 
-    /* StrokeOrder 风格分步笔顺分解栏 */
+    /* 紧凑型笔顺容器：尽量一行容纳，超长自动折成两行 */
     .stroke-steps-container {
       display: flex;
       align-items: center;
-      gap: 6px;
-      overflow-x: auto;
-      padding: 2px 0;
-      max-width: 440px;
+      gap: 4px;
+      flex-wrap: wrap; /* 放不下时自适应折为两行 */
+      max-width: 360px;
+      padding: 1px 0;
     }
     .stroke-step-card {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px;
+      gap: 1px;
     }
+    /* 微型分步格（18px 紧凑设计） */
     .step-grid-box {
-      width: 28px;
-      height: 28px;
-      border: 1.5px solid #38bdf8;
+      width: 18px;
+      height: 18px;
+      border: 1px solid #38bdf8;
       border-radius: 2px;
       position: relative;
       background:
-        linear-gradient(to top right, transparent calc(50% - 0.5px), #e0f2fe 50%, transparent calc(50% + 0.5px)),
-        linear-gradient(to bottom right, transparent calc(50% - 0.5px), #e0f2fe 50%, transparent calc(50% + 0.5px)),
-        linear-gradient(to right, transparent calc(50% - 0.5px), #e0f2fe 50%, transparent calc(50% + 0.5px)),
-        linear-gradient(to bottom, transparent calc(50% - 0.5px), #e0f2fe 50%, transparent calc(50% + 0.5px));
+        linear-gradient(to top right, transparent calc(50% - 0.5px), #f0f9ff 50%, transparent calc(50% + 0.5px)),
+        linear-gradient(to bottom right, transparent calc(50% - 0.5px), #f0f9ff 50%, transparent calc(50% + 0.5px)),
+        linear-gradient(to right, transparent calc(50% - 0.5px), #f0f9ff 50%, transparent calc(50% + 0.5px)),
+        linear-gradient(to bottom, transparent calc(50% - 0.5px), #f0f9ff 50%, transparent calc(50% + 0.5px));
       background-size: 100% 100%;
       display: flex;
       align-items: center;
@@ -294,14 +295,14 @@
       background-color: #fff;
     }
     .step-grid-box svg {
-      width: 24px;
-      height: 24px;
+      width: 15px;
+      height: 15px;
     }
     .step-label {
-      font-size: 8px;
-      color: #0284c7;
+      font-size: 7px;
+      color: #0369a1;
       line-height: 1;
-      transform: scale(0.85);
+      transform: scale(0.8);
       white-space: nowrap;
     }
 
@@ -396,7 +397,7 @@
 
   <!-- 控制工具栏 -->
   <div class="controls">
-    <input type="text" id="textInput" value="十, 上下, 牛马, 行, 快乐, 睡觉, 中国银行" placeholder="输入任意词语或句子，田字格上方将自动生成分步笔顺拆解图..." />
+    <input type="text" id="textInput" value="十, 上下, 牛马, 行, 快乐, 睡觉, 中国银行" placeholder="输入任意词语或句子，田字格上方将自动生成紧凑分步笔顺图..." />
     
     <select id="langSelect" onchange="generateSheet()">
       <option value="de">🇩🇪 德语 (Deutsch)</option>
@@ -494,8 +495,8 @@
       return '横';
     }
 
-    // 2. 动态生成 StrokeOrder 风格的分步笔画分解图（带黑色累加与红色高亮）
-    async function renderStrokeOrderSteps(char, targetElemId) {
+    // 2. 紧凑型 StrokeOrder 分步笔画分解图（微型紧凑，自适应一行/双行）
+    async function renderCompactStrokeSteps(char, targetElemId) {
       const container = document.getElementById(targetElemId);
       if (!container) return;
 
@@ -509,30 +510,29 @@
         let stepsHtml = '';
 
         for (let i = 0; i < totalStrokes; i++) {
-          // 构造分步 SVG：前 i-1 笔为黑色，第 i 笔为红色高亮，后续笔画为浅灰色
           let pathsHtml = '';
 
-          // 1. 浅灰底模（尚未写到的笔画）
+          // 1. 浅灰底模（尚未书写的后续笔画）
           for (let bg = 0; bg < totalStrokes; bg++) {
-            pathsHtml += `<path d="${charData.strokes[bg]}" fill="#e2e8f0" transform="scale(0.024, -0.024) translate(0, -900)"/>`;
+            pathsHtml += `<path d="${charData.strokes[bg]}" fill="#e2e8f0" transform="scale(0.018, -0.018) translate(0, -900)"/>`;
           }
 
-          // 2. 前序已写完的笔画（黑色）
+          // 2. 前序已写好的笔画（黑色）
           for (let prev = 0; prev < i; prev++) {
-            pathsHtml += `<path d="${charData.strokes[prev]}" fill="#262626" transform="scale(0.024, -0.024) translate(0, -900)"/>`;
+            pathsHtml += `<path d="${charData.strokes[prev]}" fill="#262626" transform="scale(0.018, -0.018) translate(0, -900)"/>`;
           }
 
           // 3. 当前步骤正在书写的笔画（红色高亮）
-          pathsHtml += `<path d="${charData.strokes[i]}" fill="#ff4d4f" transform="scale(0.024, -0.024) translate(0, -900)"/>`;
+          pathsHtml += `<path d="${charData.strokes[i]}" fill="#ff4d4f" transform="scale(0.018, -0.018) translate(0, -900)"/>`;
 
-          const strokeName = strokeNames[i] || `第${i+1}笔`;
+          const strokeName = strokeNames[i] || `${i+1}`;
 
           stepsHtml += `
             <div class="stroke-step-card" title="第 ${i+1} 步: ${strokeName}">
               <div class="step-grid-box">
-                <svg viewBox="0 0 24 24">${pathsHtml}</svg>
+                <svg viewBox="0 0 18 18">${pathsHtml}</svg>
               </div>
-              <div class="step-label">Step ${i+1} (${strokeName})</div>
+              <div class="step-label">${strokeName}</div>
             </div>
           `;
         }
@@ -951,7 +951,7 @@
           </div>
         `;
 
-        // 逐字生成字卡：左(拼音在上方/发音/笔顺) ➔ 中(StrokeOrder分步笔顺分解图 + 田字格) ➔ 右(权威汉字演变)
+        // 逐字生成字卡：左(拼音在上方/发音/笔顺) ➔ 中(紧凑分步笔顺图 + 田字格) ➔ 右(权威汉字演变)
         for (let cIdx = 0; cIdx < chars.length; cIdx++) {
           const char = chars[cIdx];
           const charPy = contextualPinyins[cIdx] || pinyin(char, { toneType: 'symbol' });
@@ -986,10 +986,10 @@
               </div>
             </div>
 
-            <!-- 2. 中间：StrokeOrder分步笔画拆解栏 + 下方田字格练习区 -->
+            <!-- 2. 中间：紧凑型分步笔顺拆解图 (放不下时自适应折为两行) + 下方田字格练习区 -->
             <div class="middle-practice-zone">
-              <div class="stroke-steps-container" id="${strokeStepsId}" title="StrokeOrder 标准分步书写笔顺图">
-                <span style="font-size:10px; color:#94a3b8;">笔顺分解加载中...</span>
+              <div class="stroke-steps-container" id="${strokeStepsId}" title="StrokeOrder 紧凑分步笔顺图">
+                <span style="font-size:9px; color:#94a3b8;">笔顺分解中...</span>
               </div>
               <div class="grid-list-middle" id="grid-list-${globalGridIdx}"></div>
             </div>
@@ -1014,8 +1014,8 @@
           wordBlock.appendChild(card);
           container.appendChild(wordBlock);
 
-          // 渲染 StrokeOrder 风格分步笔顺分解图（黑色累加+红色高亮当前笔画）
-          renderStrokeOrderSteps(char, strokeStepsId);
+          // 渲染微型紧凑分步笔顺分解图（18px，前序黑色+当前红色+后续浅灰，自适应折行）
+          renderCompactStrokeSteps(char, strokeStepsId);
 
           HanziWriter.create(firstGridId, char, {
             width: 38, height: 38, padding: 2, strokeColor: '#000000', showOutline: false
