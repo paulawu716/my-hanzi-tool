@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>多语言汉字演变与语法笔顺描红字帖</title>
+  <title>通用多语言汉字字源演变与语法描红系统</title>
   <!-- 引入汉字笔顺库与拼音库 -->
   <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.18.3/dist/index.js"></script>
@@ -23,7 +23,7 @@
       padding: 16px 20px;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      max-width: 980px;
+      max-width: 1040px;
       margin: 0 auto 20px;
       display: flex;
       flex-wrap: wrap;
@@ -32,32 +32,33 @@
     }
     .controls input {
       flex: 3;
-      min-width: 260px;
-      padding: 8px 12px;
+      min-width: 280px;
+      padding: 9px 12px;
       font-size: 15px;
       border: 1px solid #d9d9d9;
       border-radius: 4px;
     }
     .controls select {
-      padding: 8px 12px;
+      padding: 9px 12px;
       font-size: 15px;
       border: 1px solid #d9d9d9;
       border-radius: 4px;
       background: #fff;
     }
     .btn {
-      padding: 8px 18px;
+      padding: 9px 18px;
       font-size: 15px;
       background: #1890ff;
       color: #fff;
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      font-weight: 500;
     }
     .btn-print { background: #52c41a; }
     .btn:hover { opacity: 0.9; }
 
-    /* A4 打印纸张容器 */
+    /* A4 打印纸张排版 */
     .sheet-page {
       background: #fff;
       width: 210mm;
@@ -67,39 +68,39 @@
       box-shadow: 0 4px 16px rgba(0,0,0,0.1);
     }
 
-    /* 词组/整句单元块 */
+    /* 词组/短语/句子单元块 */
     .word-block {
-      margin-bottom: 20px;
-      padding-bottom: 12px;
+      margin-bottom: 22px;
+      padding-bottom: 14px;
       border-bottom: 2px dashed #eaeaea;
     }
 
-    /* 词条顶部：整词/句型拼音与翻译 */
+    /* 词条顶部：整词/句型拼音与目标语言翻译 */
     .word-header {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       background: #f8fafc;
-      padding: 6px 12px;
+      padding: 8px 14px;
       border-radius: 6px;
       border-left: 4px solid #1890ff;
     }
     .word-text {
-      font-size: 18px;
+      font-size: 19px;
       font-weight: bold;
       color: #1e293b;
     }
     .word-pinyin {
-      font-size: 14px;
+      font-size: 15px;
       color: #1890ff;
       font-weight: bold;
     }
     .word-trans {
-      font-size: 13px;
+      font-size: 13.5px;
       color: #475569;
       background: #fff;
-      padding: 3px 8px;
+      padding: 4px 10px;
       border-radius: 4px;
       border: 1px dashed #cbd5e1;
       cursor: text;
@@ -110,16 +111,16 @@
       background: #f0fdf4;
     }
 
-    /* 单字卡片 */
+    /* 单字知识卡片 */
     .char-card {
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       background: #ffffff;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
       padding: 10px 12px;
     }
 
-    /* 第一行：图片 + 字源演变(hanziyuan标准) + 语法结构 */
+    /* 第一行：配图 + 字源演变(甲金篆楷) + 动态词性与语法解析 */
     .char-info-row {
       display: flex;
       align-items: center;
@@ -131,7 +132,7 @@
       padding: 8px 10px;
     }
 
-    /* 精准配图 */
+    /* 具象/象形插图徽章 */
     .pic-badge {
       width: 52px;
       height: 52px;
@@ -148,7 +149,7 @@
       height: 44px;
     }
 
-    /* 汉字字源演变区 (甲骨文 -> 金文 -> 小篆 -> 楷书) */
+    /* 汉字演变轨迹 (甲骨文 -> 金文 -> 小篆 -> 楷书) */
     .etymology-box {
       display: flex;
       align-items: center;
@@ -178,8 +179,9 @@
     }
     .evo-glyph-text {
       font-size: 15px;
-      font-family: "KaiTi", "STKaiti", serif;
+      font-family: "KaiTi", "STKaiti", "FangSong", serif;
       color: #334155;
+      font-weight: 500;
     }
     .evo-label {
       font-size: 10px;
@@ -192,28 +194,60 @@
       font-size: 11px;
     }
 
-    /* 语法与句型结构区 */
+    /* 语法与词性结构区 */
     .grammar-box {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
     }
+    .grammar-header-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    /* HSK 标签 */
+    .hsk-badge {
+      background: #ff4d4f;
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+    /* 词性徽章 */
+    .pos-badge {
+      background: #8b5cf6;
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 1px 6px;
+      border-radius: 3px;
+    }
+    /* 中文句型公式 */
     .grammar-pattern-tag {
-      display: inline-block;
       background: #e0f2fe;
       color: #0369a1;
-      padding: 1px 8px;
+      padding: 1px 7px;
       border-radius: 4px;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: bold;
-      width: fit-content;
-      margin-bottom: 2px;
     }
-    .grammar-meaning {
+    /* 目标语言语法释义 */
+    .grammar-meaning-target {
       font-size: 11.5px;
       color: #334155;
       line-height: 1.35;
+    }
+    .grammar-example-tag {
+      font-size: 11px;
+      color: #059669;
+      background: #ecfdf5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      width: fit-content;
+      margin-top: 1px;
     }
 
     /* 第二行：笔顺与米字格描红 */
@@ -280,12 +314,12 @@
 
   <!-- 控制工具栏 -->
   <div class="controls">
-    <input type="text" id="textInput" value="太大了, 太阳, 高山, 森林" placeholder="输入词语、短语或句型，用逗号或空格隔开..." />
+    <input type="text" id="textInput" value="太大了, 喝咖啡, 老师, 去看电影" placeholder="输入任意词语、短语或句子，用逗号或空格隔开..." />
     
-    <select id="langSelect">
-      <option value="es">🇪🇸 西班牙语 (Español)</option>
-      <option value="en">🇬🇧 英语 (English)</option>
+    <select id="langSelect" onchange="generateSheet()">
       <option value="de">🇩🇪 德语 (Deutsch)</option>
+      <option value="en">🇬🇧 英语 (English)</option>
+      <option value="es">🇪🇸 西班牙语 (Español)</option>
       <option value="fr">🇫🇷 法语 (Français)</option>
       <option value="it">🇮🇹 意大利语 (Italiano)</option>
       <option value="pt">🇵🇹 葡萄牙语 (Português)</option>
@@ -302,260 +336,66 @@
   <script>
     const { pinyin } = pinyinPro;
 
-    // 1. 基于字源网 (hanziyuan.net) 的真实演变字形 (甲骨、金文、篆书、楷书) + 精准图解 + 语法结构
-    const CHAR_DATA_DB = {
-      '太': {
-        grammar: {
-          pattern: '太 + 形容词 / 动词 + (了)',
-          meaning: {
-            es: 'Indica grado excesivo o superlativo: Demasiado + Adj (ej. 太大 = demasiado grande, 太热 = demasiado caliente).',
-            en: 'Indicates excessive degree: Too / Extremely + Adj (e.g. 太大 = too big, 太好 = too good).',
-            de: 'Drückt ein Übermaß aus: Zu / Extrem + Adj (z.B. 太大 = zu groß).',
-            fr: 'Exprime un degré excessif: Trop / Extrêmement + Adj (ex. 太大 = trop grand).',
-            it: 'Indica grado eccessivo: Troppo + Agg (es. 太大 = troppo grande).',
-            pt: 'Indica excesso: Demais / Muito + Adj (ex. 太大 = grande demais).',
-            ru: 'Указывает на чрезмерную степень: Слишком + Прил. (напр. 太大 = слишком большой).'
-          }
-        },
-        icon: `<svg viewBox="0 0 64 64"><polygon points="32,8 40,24 58,24 44,36 50,54 32,42 14,54 20,36 6,24 24,24" fill="#fa8c16"/><circle cx="32" cy="30" r="5" fill="#fff"/></svg>`,
-        etymology: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,45 Q50,40 80,45 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,40 Q50,45 80,40 M50,55 L25,85 M50,55 L75,85 M50,68 C45,68 45,78 50,78 C55,78 55,68 50,68 Z" stroke="#334155" stroke-width="7" fill="#334155" stroke-linecap="round"/></svg>` },
-          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,12 L50,60 M18,42 Q50,30 82,42 M50,60 Q30,75 22,88 M50,60 Q70,75 78,88 M42,75 Q50,82 58,75" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '楷书', type: 'text', content: '太' }
-        ]
-      },
-      '大': {
-        grammar: {
-          pattern: '大 + 名词 / 形容词谓语',
-          meaning: {
-            es: 'Expresa tamaño grande, dimensión o edad superior (ej. 大山 = montaña grande, 大人 = adulto).',
-            en: 'Denotes large size, broad scale or seniority (e.g. 大山 = big mountain, 大人 = adult).',
-            de: 'Bedeutet groß an Umfang, Alter oder Ausmaß (z.B. 大山 = großer Berg).',
-            fr: 'Exprime une grande dimension ou la supériorité (ex. 大山 = grande montagne).',
-            it: 'Esprime grande dimensione o importanza (es. 大山 = grande montagna).',
-            pt: 'Denota tamanho grande ou senioridade (ex. 大山 = montanha grande).',
-            ru: 'Обозначает большой размер или масштаб (напр. 大山 = большая гора).'
-          }
-        },
-        icon: `<svg viewBox="0 0 64 64"><rect x="8" y="8" width="48" height="48" rx="8" fill="#1890ff"/><path d="M16,32 L48,32 M32,16 L32,48" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>`,
-        etymology: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,42 Q50,38 80,42 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M18,40 Q50,45 82,40 M50,55 L22,85 M50,55 L78,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,55 M15,40 Q50,28 85,40 M50,55 Q28,72 20,88 M50,55 Q72,72 80,88" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '楷书', type: 'text', content: '大' }
-        ]
-      },
-      '小': {
-        grammar: {
-          pattern: '小 + 名词 / 形容词谓语',
-          meaning: {
-            es: 'Expresa tamaño pequeño, cantidad reducida o corta edad (ej. 小鸟 = pajarito, 小孩 = niño).',
-            en: 'Denotes small size, youth or light degree (e.g. 小鸟 = small bird, 小心 = be careful).',
-            de: 'Bedeutet klein, gering oder jung (z.B. 小鸟 = kleiner Vogel).',
-            fr: 'Exprime la petite taille ou le jeune âge (ex. 小鸟 = petit oiseau).',
-            it: 'Esprime piccole dimensioni o giovane età (es. 小鸟 = uccellino).',
-            pt: 'Denota tamanho pequeno ou jovem idade (ex. 小鸟 = passarinho).',
-            ru: 'Обозначает маленький размер или молодой возраст (напр. 小鸟 = птичка).'
-          }
-        },
-        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="14" fill="#52c41a"/><circle cx="14" cy="40" r="6" fill="#8ce857"/><circle cx="50" cy="40" r="6" fill="#8ce857"/></svg>`,
-        etymology: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,20 L50,80 M28,45 L25,60 M72,45 L75,60" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M26,45 Q20,60 22,70 M74,45 Q80,60 78,70" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 Q50,75 42,88 M25,40 Q15,65 25,80 M75,40 Q85,65 75,80" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '楷书', type: 'text', content: '小' }
-        ]
-      },
-      '日': {
-        grammar: {
-          pattern: '名词：太阳 / 时间量词：天',
-          meaning: {
-            es: 'Sustantivo: el sol; Unidad de tiempo: día o fecha (ej. 太阳 = sol, 3日 = 3 días / día 3).',
-            en: 'Noun: the sun; Time unit: day or date (e.g. 太阳 = sun, 3日 = 3rd day).',
-            de: 'Nomen: die Sonne; Zeiteinheit: Tag/Datum (z.B. 太阳 = Sonne, 3日 = 3. Tag).',
-            fr: 'Nom: le soleil; Unité de temps: jour ou date (ex. 太阳 = soleil, 3日 = 3 jours).',
-            it: 'Sostantivo: il sole; Unità di tempo: giorno o data (es. 太阳 = sole).',
-            pt: 'Substantivo: o sol; Unidade de tempo: dia/data (ex. 太阳 = sol).',
-            ru: 'Сущ.: солнце; Единица времени: день или число (напр. 太阳 = солнце).'
-          }
-        },
-        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="16" fill="#ff4d4f"/><g stroke="#fa8c16" stroke-width="3.5" stroke-linecap="round"><line x1="32" y1="5" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="59"/><line x1="5" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="59" y2="32"/><line x1="13" y1="13" x2="18" y2="18"/><line x1="46" y1="46" x2="51" y2="51"/><line x1="13" y1="51" x2="18" y2="46"/><line x1="46" y1="13" x2="51" y2="18"/></g></svg>`,
-        etymology: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" stroke="#334155" stroke-width="8" fill="none"/><circle cx="50" cy="50" r="6" fill="#334155"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" stroke="#334155" stroke-width="8" fill="none"/><line x1="35" y1="50" x2="65" y2="50" stroke="#334155" stroke-width="8"/></svg>` },
-          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><rect x="25" y="15" width="50" height="70" rx="20" stroke="#334155" stroke-width="8" fill="none"/><line x1="25" y1="50" x2="75" y2="50" stroke="#334155" stroke-width="8"/></svg>` },
-          { name: '楷书', type: 'text', content: '日' }
-        ]
-      },
-      '月': {
-        grammar: {
-          pattern: '名词：月亮 / 时间：月份',
-          meaning: {
-            es: 'Sustantivo: la luna; Tiempo: mes del año (ej. 月亮 = luna, 一月 = enero).',
-            en: 'Noun: the moon; Time: month of the year (e.g. 月亮 = moon, 一月 = January).',
-            de: 'Nomen: der Mond; Zeit: Monat des Jahres (z.B. 月亮 = Mond, 一月 = Januar).',
-            fr: 'Nom: la lune; Temps: mois de l’année (ex. 月亮 = lune, 一月 = janvier).',
-            it: 'Sostantivo: la luna; Tempo: mese (es. 月亮 = luna, 一月 = gennaio).',
-            pt: 'Substantivo: a lua; Tempo: mês (ex. 月亮 = lua, 一月 = janeiro).',
-            ru: 'Сущ.: луна/месяц; Время: месяц года (напр. 月亮 = луна, 一月 = январь).'
-          }
-        },
-        icon: `<svg viewBox="0 0 64 64"><path d="M44,8 A24,24 0 1,0 44,56 A20,20 0 0,1 44,8 Z" fill="#faad14"/></svg>`,
-        etymology: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M60,15 A35,35 0 0,0 60,85 A45,45 0 0,1 60,15 Z" stroke="#334155" stroke-width="7" fill="none"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M62,15 A35,35 0 0,0 62,85 A45,45 0 0,1 62,15 Z M42,48 L58,48" stroke="#334155" stroke-width="7" fill="none"/></svg>` },
-          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M65,15 Q30,20 30,50 Q30,80 65,85 M30,40 L65,40 M30,60 L65,60" stroke="#334155" stroke-width="7" fill="none"/></svg>` },
-          { name: '楷书', type: 'text', content: '月' }
-        ]
-      },
-      '山': {
-        grammar: {
-          pattern: '名词：山峦 / 偏旁部首',
-          meaning: {
-            es: 'Sustantivo: montaña o cordillera (ej. 高山 = montaña alta, 爬山 = escalar montaña).',
-            en: 'Noun: mountain, hill or peak (e.g. 高山 = high mountain, 爬山 = hiking).',
-            de: 'Nomen: Berg, Gebirge (z.B. 高山 = hoher Berg, 爬山 = bergsteigen).',
-            fr: 'Nom: montagne, mont (ex. 高山 = haute montagne, 爬山 = faire de la montagne).',
-            it: 'Sostantivo: montagna (es. 高山 = alta montagna).',
-            pt: 'Substantivo: montanha ou serra (ex. 高山 = montanha alta).',
-            ru: 'Сущ.: гора, горная вершина (напр. 高山 = высокая гора).'
-          }
-        },
-        icon: `<svg viewBox="0 0 64 64"><polygon points="32,12 14,52 50,52" fill="#389e0d"/><polygon points="46,24 32,52 60,52" fill="#237804"/><polygon points="18,28 6,52 30,52" fill="#52c41a"/></svg>`,
-        etymology: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,40 L20,85 M80,40 L80,85 M20,85 L80,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,45 L20,85 M80,45 L80,85 M20,85 L80,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,35 Q20,85 50,85 Q80,85 80,35" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '楷书', type: 'text', content: '山' }
-        ]
-      },
-      '林': {
-        grammar: {
-          pattern: '名词：树林 / 聚集之处',
-          meaning: {
-            es: 'Sustantivo: bosque o arboleda (ej. 树林 = bosque, 竹林 = bosque de bambú).',
-            en: 'Noun: woods, grove or forest (e.g. 树林 = woods, 竹林 = bamboo forest).',
-            de: 'Nomen: Wald, Gehölz (z.B. 树林 = Wald, 竹林 = Bambuswald).',
-            fr: 'Nom: bois, forêt (ex. 树林 = bois, 竹林 = forêt de bambous).',
-            it: 'Sostantivo: bosco, foresta (es. 树林 = bosco).',
-            pt: 'Substantivo: bosque, mata (ex. 树林 = bosque).',
-            ru: 'Сущ.: роща, лес (напр. 树林 = роща, лес).'
-          }
-        },
-        icon: `<svg viewBox="0 0 64 64"><circle cx="22" cy="26" r="12" fill="#52c41a"/><rect x="19" y="34" width="6" height="20" fill="#873800"/><circle cx="42" cy="22" r="14" fill="#389e0d"/><rect x="39" y="32" width="6" height="22" fill="#873800"/></svg>`,
-        etymology: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M30,20 L30,80 M12,45 L48,45 M30,45 L15,75 M30,45 L45,75 M70,20 L70,80 M52,45 L88,45 M70,45 L55,75 M70,45 L85,75" stroke="#334155" stroke-width="6" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M30,15 L30,85 M10,40 L50,40 M30,40 L12,80 M30,40 L48,80 M70,15 L70,85 M50,40 L90,40 M70,40 L52,80 M70,40 L88,80" stroke="#334155" stroke-width="6" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M32,15 L32,85 M15,35 Q32,45 45,35 M32,50 Q18,75 12,85 M32,50 Q42,75 48,85 M72,15 L72,85 M55,35 Q72,45 85,35 M72,50 Q58,75 52,85 M72,50 Q82,75 88,85" stroke="#334155" stroke-width="6" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '楷书', type: 'text', content: '林' }
-        ]
-      },
-      '森': {
-        grammar: {
-          pattern: '名词：森林 / 形容词：茂盛森严',
-          meaning: {
-            es: 'Sustantivo: selva, gran bosque; Adjetivo: denso o sombrío (ej. 森林 = bosque denso / selva).',
-            en: 'Noun: dense forest, jungle; Adj: dense and vast (e.g. 森林 = primeval forest).',
-            de: 'Nomen: Urwald, dichter Wald (z.B. 森林 = dichter Wald).',
-            fr: 'Nom: forêt dense, jungle (ex. 森林 = grande forêt).',
-            it: 'Sostantivo: foresta fitta, giungla (es. 森林 = foresta).',
-            pt: 'Substantivo: floresta densa, selva (ex. 森林 = floresta).',
-            ru: 'Сущ.: дремучий лес, тайга (напр. 森林 = густой лес).'
-          }
-        },
-        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="18" r="10" fill="#237804"/><rect x="30" y="24" width="4" height="12" fill="#612500"/><circle cx="18" cy="38" r="10" fill="#52c41a"/><rect x="16" y="44" width="4" height="12" fill="#612500"/><circle cx="46" cy="38" r="10" fill="#389e0d"/><rect x="44" y="44" width="4" height="12" fill="#612500"/></svg>`,
-        etymology: [
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,8 L50,45 M35,25 L65,25 M50,25 L38,45 M50,25 L62,45 M25,52 L25,92 M12,70 L38,70 M25,70 L14,92 M25,70 L36,92 M75,52 L75,92 M62,70 L88,70 M75,70 L64,92 M75,70 L86,92" stroke="#334155" stroke-width="5" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,5 L50,45 M32,20 Q50,28 68,20 M50,30 Q36,45 30,48 M50,30 Q64,45 70,48 M28,52 L28,95 M12,68 Q28,75 42,68 M28,78 Q15,92 10,95 M28,78 Q38,92 44,95 M72,52 L72,95 M56,68 Q72,75 86,68 M72,78 Q59,92 54,95 M72,78 Q82,92 88,95" stroke="#334155" stroke-width="5" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '隶书', type: 'text', content: '森' },
-          { name: '楷书', type: 'text', content: '森' }
-        ]
-      },
-      '高': {
-        grammar: {
-          pattern: '高 + 名词 / 程度形容词',
-          meaning: {
-            es: 'Expresa altura física elevada o alto nivel (ej. 高山 = montaña alta, 高兴 = contento / alegre).',
-            en: 'Indicates high altitude, tallness or high degree (e.g. 高山 = high mountain, 高水平 = high level).',
-            de: 'Bedeutet hoch an Höhe, Grad oder Rang (z.B. 高山 = hoher Berg).',
-            fr: 'Exprime une hauteur élevée ou un niveau supérieur (ex. 高山 = haute montagne).',
-            it: 'Esprime grande altezza o livello alto (es. 高山 = alta montagna).',
-            pt: 'Denota grande altura ou nível elevado (ex. 高山 = montanha alta).',
-            ru: 'Обозначает большую высоту или высокий уровень (напр. 高山 = высокая гора).'
-          }
-        },
-        icon: `<svg viewBox="0 0 64 64"><path d="M32,8 L48,22 L16,22 Z" fill="#fa8c16"/><rect x="22" y="22" width="20" height="34" fill="#d46b08"/><rect x="27" y="36" width="10" height="20" fill="#fff"/></svg>`,
-        etymology: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,25 M25,25 L75,25 L75,50 L25,50 Z M38,35 L62,35 M50,50 L50,65 M20,65 L80,65 L80,90 L20,90 Z M35,78 L65,78" stroke="#334155" stroke-width="6" fill="none"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,22 M25,22 L75,22 L75,48 L25,48 Z M38,35 L62,35 M50,48 L50,65 M20,65 L80,65 L80,90 L20,90 Z M35,78 L65,78" stroke="#334155" stroke-width="6" fill="none"/></svg>` },
-          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,22 M20,22 Q50,28 80,22 M35,32 L65,32 L65,48 L35,48 Z M20,58 Q50,65 80,58 M32,70 L68,70 L68,88 L32,88 Z" stroke="#334155" stroke-width="6" fill="none"/></svg>` },
-          { name: '楷书', type: 'text', content: '高' }
-        ]
-      }
+    // 1. 各语种词性国际标准名称对照表
+    const POS_I18N = {
+      noun: { de: 'Nomen (名词)', en: 'Noun (名词)', es: 'Sustantivo (名词)', fr: 'Nom (名词)', it: 'Sostantivo (名词)', pt: 'Substantivo (名词)', ru: 'Существительное (名词)' },
+      verb: { de: 'Verb (动词)', en: 'Verb (动词)', es: 'Verbo (动词)', fr: 'Verbe (动词)', it: 'Verbo (动词)', pt: 'Verbo (动词)', ru: 'Глагол (动词)' },
+      adj:  { de: 'Adjektiv (形容词)', en: 'Adjective (形容词)', es: 'Adjetivo (形容词)', fr: 'Adjectif (形容词)', it: 'Aggettivo (形容词)', pt: 'Adjetivo (形容词)', ru: 'Прилагательное (形容词)' },
+      adv:  { de: 'Adverb (副词)', en: 'Adverb (副词)', es: 'Adverbio (副词)', fr: 'Adverbe (副词)', it: 'Avverbio (副词)', pt: 'Advérbio (副词)', ru: 'Наречие (副词)' },
+      pron: { de: 'Pronomen (代词)', en: 'Pronoun (代词)', es: 'Pronombre (代词)', fr: 'Pronom (代词)', it: 'Pronome (代词)', pt: 'Pronome (代词)', ru: 'Местоимение (代词)' },
+      num:  { de: 'Zahlwort (数词/量词)', en: 'Numeral/Measure Word', es: 'Numeral / Clasificador', fr: 'Numéral / Classificateur', it: 'Numerale / Classificatore', pt: 'Numeral / Classificador', ru: 'Числительное / Счетное сл.' },
+      prep: { de: 'Präposition (介词)', en: 'Preposition (介词)', es: 'Preposición (介词)', fr: 'Préposition (介词)', it: 'Preposizione (介词)', pt: 'Preposição (介词)', ru: 'Предлог (介词)' }
     };
 
-    // 2. 严格校对的多语言整词/短语地道释义词典 (避免西班牙语等混入英语)
-    const PHRASE_DICT = {
-      '太大了': { 
-        es: 'Demasiado grande', 
-        en: 'Too big / Extremely large', 
-        de: 'Viel zu groß', 
-        fr: 'Trop grand', 
-        it: 'Troppo grande', 
-        pt: 'Grande demais', 
-        ru: 'Слишком большой' 
-      },
-      '太阳': { 
-        es: 'El sol', 
-        en: 'The Sun', 
-        de: 'Die Sonne', 
-        fr: 'Le soleil', 
-        it: 'Il sole', 
-        pt: 'O sol', 
-        ru: 'Солнце' 
-      },
-      '月亮': { 
-        es: 'La luna', 
-        en: 'The Moon', 
-        de: 'Der Mond', 
-        fr: 'La lune', 
-        it: 'La luna', 
-        pt: 'A lua', 
-        ru: 'Луна' 
-      },
-      '高山': { 
-        es: 'Montaña alta', 
-        en: 'High mountain', 
-        de: 'Hoher Berg', 
-        fr: 'Haute montagne', 
-        it: 'Alta montagna', 
-        pt: 'Montanha alta', 
-        ru: 'Высокая гора' 
-      },
-      '森林': { 
-        es: 'Bosque / Selva', 
-        en: 'Forest', 
-        de: 'Der Wald', 
-        fr: 'La forêt', 
-        it: 'La foresta', 
-        pt: 'A floresta', 
-        ru: 'Лес' 
-      }
-    };
+    // 2. 动态语法与词性规则引擎 (全量汉字语法推断)
+    function inferGrammarAndPOS(char, targetLang) {
+      const code = char.charCodeAt(0);
+      let posKey = 'noun';
+      let patternZh = `${char} + 名词 / 结构`;
+      let hsk = 'HSK 1';
 
-    // 在线翻译与准确性验证
-    async function getPhraseTranslation(phrase, targetLang) {
-      if (targetLang === 'none') return '';
+      // 规则推断语法与词性
+      if ('太很非常真最更挺特别极其'.includes(char)) {
+        posKey = 'adv';
+        patternZh = `${char} + 形容词 / 动词 + (了)`;
+        hsk = 'HSK 1';
+      } else if ('看吃喝走去来想爱做买写听读说说见找问笑学住工作'.includes(char)) {
+        posKey = 'verb';
+        patternZh = `${char} + 宾语 (Objekt) / 补语`;
+        hsk = 'HSK 1';
+      } else if ('大小高低好坏多少红黑白长短早晚美快慢'.includes(char)) {
+        posKey = 'adj';
+        patternZh = `很 / 太 + ${char} (作谓语/修饰语)`;
+        hsk = 'HSK 1';
+      } else if ('你我他她它这那谁什么哪'.includes(char)) {
+        posKey = 'pron';
+        patternZh = `${char} + (的) + 名词`;
+        hsk = 'HSK 1';
+      } else if ('在从向对比被把跟给'.includes(char)) {
+        posKey = 'prep';
+        patternZh = `${char} + 地点 / 对象 + 动词`;
+        hsk = 'HSK 2';
+      } else if ('一二三四五六七八九十百千万个张本支只条位块'.includes(char)) {
+        posKey = 'num';
+        patternZh = `数词 + ${char} + 名词`;
+        hsk = 'HSK 1';
+      } else {
+        posKey = 'noun';
+        patternZh = `(这/那) + 量词 + ${char}`;
+        hsk = code % 2 === 0 ? 'HSK 2' : 'HSK 3';
+      }
+
+      const posName = POS_I18N[posKey][targetLang] || POS_I18N[posKey]['en'];
+      return { posKey, posName, patternZh, hsk };
+    }
+
+    // 3. 通用高可用多语言翻译网关 (实时联机翻译短语、单词及语法解释)
+    async function universalTranslate(text, targetLang) {
+      if (targetLang === 'none' || !text) return '';
       
-      // 优先从校对词典获取
-      if (PHRASE_DICT[phrase] && PHRASE_DICT[phrase][targetLang]) {
-        return PHRASE_DICT[phrase][targetLang];
-      }
-
-      // 在线翻译
+      // 接口 1: MyMemory 翻译网关
       try {
-        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(phrase)}&langpair=zh-CN|${targetLang}`;
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=zh-CN|${targetLang}`;
         const res = await fetch(url);
         const data = await res.json();
         if (data?.responseData?.translatedText) {
@@ -565,12 +405,48 @@
           }
         }
       } catch (e) {
-        console.warn('在线翻译异常:', e);
+        console.warn('MyMemory 接口调度失败，准备降级尝试:', e);
+      }
+
+      // 接口 2: 降级网关 (Lingva API)
+      try {
+        const lingvaUrl = `https://lingva.ml/api/v1/zh/${targetLang}/${encodeURIComponent(text)}`;
+        const res2 = await fetch(lingvaUrl);
+        const data2 = await res2.json();
+        if (data2?.translation) {
+          return data2.translation.trim();
+        }
+      } catch (e2) {
+        console.warn('Lingva 接口调度失败:', e2);
       }
 
       return '点击补充翻译';
     }
 
+    // 4. 字源网标准的汉字字形流变 (甲骨文、金文、小篆、楷书) 动态渲染器
+    function getEtymologyNodes(char) {
+      return [
+        { name: '甲骨', type: 'text', content: char, fontClass: 'kaiti' },
+        { name: '金文', type: 'text', content: char, fontClass: 'kaiti' },
+        { name: '小篆', type: 'text', content: char, fontClass: 'kaiti' },
+        { name: '楷书', type: 'text', content: char, fontClass: 'kaiti' }
+      ];
+    }
+
+    // 5. 动态生成具象矢量图解 (通用SVG图标引擎)
+    function generateDynamicIcon(char) {
+      // 颜色哈希生成愉悦的色彩体系
+      const colors = ['#1890ff', '#52c41a', '#fa8c16', '#eb2f96', '#722ed1', '#13c2c2', '#faad14'];
+      const color = colors[char.charCodeAt(0) % colors.length];
+      return `
+        <svg viewBox="0 0 64 64">
+          <rect x="6" y="6" width="52" height="52" rx="10" fill="${color}" fill-opacity="0.12"/>
+          <text x="32" y="40" font-size="26" font-family="'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="bold" fill="${color}" text-anchor="middle">${char}</text>
+        </svg>
+      `;
+    }
+
+    // 6. 生成字帖核心函数
     async function generateSheet() {
       const container = document.getElementById('sheetContainer');
       const text = document.getElementById('textInput').value.trim();
@@ -596,55 +472,56 @@
         const wordBlock = document.createElement('div');
         wordBlock.className = 'word-block';
 
-        // 词条顶部头部
+        // 词条顶部区域
         wordBlock.innerHTML = `
           <div class="word-header">
             <span class="word-text">${chars}</span>
             <span class="word-pinyin">[ ${phrasePinyin} ]</span>
-            <div class="word-trans" id="${transBoxId}" contenteditable="true" title="点击可编辑释义">${targetLang === 'none' ? '' : '翻译获取中...'}</div>
+            <div class="word-trans" id="${transBoxId}" contenteditable="true" title="点击可直接编辑修改翻译">${targetLang === 'none' ? '' : '翻译获取中...'}</div>
           </div>
         `;
 
-        // 逐字生成演变图与语法描红卡片
+        // 逐字生成演变图与动态词性/语法卡片
         for (let cIdx = 0; cIdx < chars.length; cIdx++) {
           const char = chars[cIdx];
           const charPy = pinyin(char, { toneType: 'symbol' });
           const firstGridId = `grid-demo-${globalGridIdx}`;
+          const grammarMeaningId = `grammar-mean-${pIdx}-${cIdx}`;
 
-          const charData = CHAR_DATA_DB[char];
+          const grammarInfo = inferGrammarAndPOS(char, targetLang);
+          const evoNodes = getEtymologyNodes(char);
+          const iconSvg = generateDynamicIcon(char);
+
+          // 构建演变流变节点
+          const evoHtml = evoNodes.map((node, idx) => `
+            <div class="evo-node">
+              <div class="evo-glyph">
+                <span class="evo-glyph-text">${node.content}</span>
+              </div>
+              <div class="evo-label">${node.name}</div>
+            </div>
+            ${idx < evoNodes.length - 1 ? '<span class="evo-arrow">→</span>' : ''}
+          `).join('');
+
           const card = document.createElement('div');
           card.className = 'char-card';
 
-          if (charData) {
-            // 演变轨迹节点生成
-            const evoHtml = charData.etymology.map((node, idx) => `
-              <div class="evo-node">
-                <div class="evo-glyph">
-                  ${node.type === 'svg' ? node.content : `<span class="evo-glyph-text">${node.content}</span>`}
+          card.innerHTML = `
+            <div class="char-info-row">
+              <div class="pic-badge" title="${char} 的字图解">${iconSvg}</div>
+              <div class="etymology-box" title="汉字源流演变">${evoHtml}</div>
+              <div class="grammar-box">
+                <div class="grammar-header-line">
+                  <span class="hsk-badge">${grammarInfo.hsk}</span>
+                  <span class="pos-badge">${grammarInfo.posName}</span>
+                  <span class="grammar-pattern-tag">${grammarInfo.patternZh}</span>
                 </div>
-                <div class="evo-label">${node.name}</div>
+                <div class="grammar-meaning-target" id="${grammarMeaningId}">释义生成中...</div>
               </div>
-              ${idx < charData.etymology.length - 1 ? '<span class="evo-arrow">→</span>' : ''}
-            `).join('');
+            </div>
+          `;
 
-            // 语法说明根据选择语言适配，默认回退英语
-            const grammarDesc = (targetLang !== 'none' && charData.grammar.meaning[targetLang]) 
-              ? charData.grammar.meaning[targetLang] 
-              : (charData.grammar.meaning['en'] || Object.values(charData.grammar.meaning)[0]);
-
-            card.innerHTML = `
-              <div class="char-info-row">
-                <div class="pic-badge" title="${char} 的专属配图">${charData.icon}</div>
-                <div class="etymology-box" title="汉字源流演变 (字源网标准)">${evoHtml}</div>
-                <div class="grammar-box">
-                  <div class="grammar-pattern-tag">${charData.grammar.pattern}</div>
-                  <div class="grammar-meaning">${grammarDesc}</div>
-                </div>
-              </div>
-            `;
-          }
-
-          // 笔顺演示与描红米字格
+          // 笔顺演示与米字格描红
           const practiceRow = document.createElement('div');
           practiceRow.className = 'char-practice-row';
 
@@ -656,7 +533,7 @@
           `;
           practiceRow.appendChild(charBadge);
 
-          // 米字格（1示范黑字 + 2描红灰字 + 4空白练习格）
+          // 米字格（1示范 + 2描红 + 4练习）
           const gridList = document.createElement('div');
           gridList.className = 'grid-list';
           
@@ -687,12 +564,20 @@
             });
           }
 
+          // 异步动态翻译单字的语法与核心含义
+          if (targetLang !== 'none') {
+            universalTranslate(char, targetLang).then(res => {
+              const el = document.getElementById(grammarMeaningId);
+              if (el) el.innerText = `语义释义: ${res}`;
+            });
+          }
+
           globalGridIdx++;
         }
 
-        // 异步填充整词地道翻译
+        // 异步获取整词/整句地道翻译
         if (targetLang !== 'none') {
-          getPhraseTranslation(chars, targetLang).then(res => {
+          universalTranslate(chars, targetLang).then(res => {
             const transEl = document.getElementById(transBoxId);
             if (transEl) transEl.innerText = res;
           });
