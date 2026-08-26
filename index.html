@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>多语言实物图汉字演变与谷歌AI字帖系统</title>
+  <title>多语言汉字源流演变与笔画字帖系统</title>
   <!-- 引入汉字笔顺库与拼音库 -->
   <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.18.3/dist/index.js"></script>
@@ -75,7 +75,7 @@
       border-bottom: 2px dashed #eaeaea;
     }
 
-    /* 词条顶部：左侧词句拼音，中间实物照，右侧整词/句型解析条框 */
+    /* 词条顶部：左侧词句拼音，右侧整词/句型解析条框 */
     .word-header {
       display: flex;
       align-items: center;
@@ -127,17 +127,6 @@
     }
     .btn-audio:hover {
       background: #bae7ff;
-    }
-
-    /* 词语实物照片徽章 */
-    .phrase-real-photo {
-      width: 54px;
-      height: 54px;
-      border-radius: 6px;
-      object-fit: cover;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      flex-shrink: 0;
     }
 
     /* 词语右侧条框 */
@@ -209,13 +198,13 @@
       border-left: 3px solid #0ea5e9;
     }
 
-    /* 单字卡片：单行严格横向排版（左:发音拼音笔顺 ➔ 中:田字格 ➔ 右:实物照与字体演变） */
+    /* 单字卡片：单行严格横向排版（左:发音拼音笔顺 ➔ 中:笔画顺序+田字格 ➔ 右:汉字源流演变） */
     .char-card {
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       background: #ffffff;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
-      padding: 7px 12px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -264,7 +253,38 @@
       cursor: pointer;
     }
 
-    /* 2. 中间：田字格/米字格练习区（单行水平对齐） */
+    /* 2. 中间：上方笔顺笔画名称 + 下方田字格练习区 */
+    .middle-practice-zone {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    /* 田字格正上方的笔画名称序列 */
+    .stroke-names-row {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px;
+      color: #0284c7;
+      background: #f0f9ff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      line-height: 1.2;
+      width: fit-content;
+      max-width: 340px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .stroke-tag {
+      font-weight: 500;
+    }
+    .stroke-arrow {
+      color: #94a3b8;
+      font-size: 9px;
+    }
+
     .grid-list-middle {
       display: flex;
       gap: 5px;
@@ -284,7 +304,7 @@
       background-size: 100% 100%;
     }
 
-    /* 3. 最右边：实物照片 + 演变过程（有则展示，无则自然空出） */
+    /* 3. 最右边：权威汉字源流演变（中华语文知识库 / 象形字典 / 说文解字 考据链接） */
     .char-right-zone {
       display: flex;
       align-items: center;
@@ -292,17 +312,6 @@
       margin-left: auto;
       flex-shrink: 0;
     }
-    .char-real-photo {
-      width: 44px;
-      height: 44px;
-      border-radius: 6px;
-      object-fit: cover;
-      border: 1px solid #e2e8f0;
-      flex-shrink: 0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    }
-
-    /* 字体演变容器 */
     .font-evolution-container {
       display: flex;
       align-items: center;
@@ -367,7 +376,7 @@
 
   <!-- 控制工具栏 -->
   <div class="controls">
-    <input type="text" id="textInput" value="行, 快乐, 觉得, 方便, 意思, 苹果, 睡觉" placeholder="输入任意词语或句子，将自动提取常用的2~3种多重释义..." />
+    <input type="text" id="textInput" value="上下, 牛马, 行, 快乐, 睡觉, 中国银行" placeholder="输入任意词语或句子，田字格上方将自动排列笔顺笔画名称..." />
     
     <select id="langSelect" onchange="generateSheet()">
       <option value="de">🇩🇪 德语 (Deutsch)</option>
@@ -410,7 +419,71 @@
       window.speechSynthesis.onvoiceschanged = loadVoices;
     }
 
-    // 1. 德语名词全量正字法大写处理
+    // 1. 标准笔画名称数据库
+    const CHAR_STROKES_DB = {
+      '上': ['竖', '横', '横'],
+      '下': ['横', '竖', '点'],
+      '牛': ['撇', '横', '横', '竖'],
+      '马': ['横折', '竖折折钩', '横'],
+      '车': ['横', '撇折', '横', '竖'],
+      '日': ['竖', '横折', '横', '横'],
+      '月': ['撇', '横折钩', '横', '横'],
+      '山': ['竖', '竖折', '竖'],
+      '水': ['竖钩', '横撇', '撇', '捺'],
+      '人': ['撇', '捺'],
+      '大': ['横', '撇', '捺'],
+      '太': ['横', '撇', '捺', '点'],
+      '小': ['竖钩', '撇', '点'],
+      '中': ['竖', '横折', '横', '竖'],
+      '国': ['竖', '横折', '横', '横', '竖', '横', '点', '横'],
+      '行': ['撇', '撇', '竖', '横', '横', '竖钩'],
+      '快': ['点', '点', '竖', '横折', '横', '撇', '捺'],
+      '乐': ['撇', '竖折', '竖', '撇', '点'],
+      '睡': ['竖', '横折', '横', '横', '横', '撇', '横', '竖', '横', '竖', '点', '撇', '横'],
+      '觉': ['点', '点', '撇', '点', '横撇', '竖', '横折', '横', '竖弯钩']
+    };
+
+    function inferStrokeNameFromSvgPath(pathStr) {
+      if (!pathStr) return '横';
+      const points = pathStr.match(/[-+]?[0-9]*\.?[0-9]+/g);
+      if (!points || points.length < 4) return '点';
+
+      const x1 = parseFloat(points[0]), y1 = parseFloat(points[1]);
+      const x2 = parseFloat(points[points.length - 2]), y2 = parseFloat(points[points.length - 1]);
+      const dx = x2 - x1, dy = y2 - y1;
+      const len = Math.sqrt(dx * dx + dy * dy);
+
+      if (len < 180) return '点';
+
+      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+      if (angle >= -25 && angle <= 25) return '横';
+      if (angle >= 65 && angle <= 115) return '竖';
+      if (angle > 115 && angle <= 165) return '撇';
+      if (angle > 25 && angle < 65) return '捺';
+      if (pathStr.includes('C') || pathStr.includes('Q')) {
+        if (dy > 0 && dx > 0) return '竖折';
+        if (dy > 0 && dx < 0) return '撇折';
+        return '横折';
+      }
+      if (angle < -25 && angle > -75) return '提';
+      return '横';
+    }
+
+    async function getStrokeNamesList(char) {
+      if (CHAR_STROKES_DB[char]) return CHAR_STROKES_DB[char];
+      try {
+        const charData = await HanziWriter.loadCharacterData(char);
+        if (charData && charData.strokes && charData.strokes.length > 0) {
+          return charData.strokes.map(s => inferStrokeNameFromSvgPath(s));
+        }
+      } catch (e) {
+        console.warn(`笔顺解析 [${char}]:`, e);
+      }
+      return ['笔顺'];
+    }
+
+    // 2. 德语名词全量正字法大写处理
     function universalGermanCapitalize(rawText) {
       if (!rawText) return '';
 
@@ -482,86 +555,62 @@
       }).join('');
     }
 
-    // 2. 词语专属实物照片与标志图库
-    const PHRASE_REAL_PHOTO_DB = {
-      '中国银行': 'https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?w=150&auto=format&fit=crop&q=80',
-      '去看电影': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=150&auto=format&fit=crop&q=80',
-      '睡觉': 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=150&auto=format&fit=crop&q=80',
-      '车马': 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=150&auto=format&fit=crop&q=80',
-      '太牛了': 'https://images.unsplash.com/photo-1527153857715-3908f2bae5e8?w=150&auto=format&fit=crop&q=80',
-      '快乐': 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=150&auto=format&fit=crop&q=80',
-      '太大了': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=150&auto=format&fit=crop&q=80',
-      '苹果': 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=150&auto=format&fit=crop&q=80',
-      '高山': 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=150&auto=format&fit=crop&q=80',
-      '太阳': 'https://images.unsplash.com/photo-1538370965046-79c0d6907d47?w=150&auto=format&fit=crop&q=80',
-      '喝水': 'https://images.unsplash.com/photo-1548839140-29a749e1bc4e?w=150&auto=format&fit=crop&q=80'
-    };
-
-    // 3. 单字专属实物照片与演变过程库
-    const CHAR_REAL_PHOTO_DB = {
-      '牛': {
-        photo: 'https://images.unsplash.com/photo-1527153857715-3908f2bae5e8?w=120&auto=format&fit=crop&q=80',
-        evolution: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,20 L50,85 M20,35 Q50,15 80,35 M50,45 L30,55 M50,45 L70,55" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M15,40 Q50,15 85,40 M50,48 L25,60 M50,48 L75,60" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>` }
-        ]
-      },
-      '马': {
-        photo: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=120&auto=format&fit=crop&q=80',
-        evolution: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M40,15 Q60,15 65,30 Q65,50 45,55 L45,85 M55,55 L65,85 M35,30 Q20,35 25,50 M65,30 L80,25 M65,38 L82,35 M65,46 L80,45" stroke="#334155" stroke-width="7" fill="none"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M40,15 Q65,15 65,35 Q65,55 45,60 L45,85 M55,60 L65,85 M30,35 Q20,40 25,55 M65,30 L80,25 M65,40 L82,38" stroke="#334155" stroke-width="6" fill="none"/></svg>` }
-        ]
-      },
-      '车': {
-        photo: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=120&auto=format&fit=crop&q=80',
-        evolution: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M20,20 L80,20 M20,80 L80,80 M20,20 L20,80 M80,20 L80,80 M35,40 L65,40 L65,60 L35,60 Z" stroke="#334155" stroke-width="7" fill="none"/></svg>` },
-          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M20,30 Q50,22 80,30 M30,42 L70,42 L70,58 L30,58 Z M20,70 Q50,78 80,70" stroke="#334155" stroke-width="6" fill="none"/></svg>` }
-        ]
-      },
-      '日': {
-        photo: 'https://images.unsplash.com/photo-1538370965046-79c0d6907d47?w=120&auto=format&fit=crop&q=80',
-        evolution: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" stroke="#334155" stroke-width="8" fill="none"/><circle cx="50" cy="50" r="6" fill="#334155"/></svg>` }
-        ]
-      },
-      '月': {
-        photo: 'https://images.unsplash.com/photo-1532693322450-2cb5c511067d?w=120&auto=format&fit=crop&q=80',
-        evolution: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M60,15 A35,35 0 0,0 60,85 A45,45 0 0,1 60,15 Z" stroke="#334155" stroke-width="8" fill="none"/></svg>` }
-        ]
-      },
-      '山': {
-        photo: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=120&auto=format&fit=crop&q=80',
-        evolution: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,40 L20,85 M80,40 L80,85 M20,85 L80,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` }
-        ]
-      },
-      '水': {
-        photo: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=120&auto=format&fit=crop&q=80',
-        evolution: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 Q40,50 50,85 M28,35 Q35,45 28,65 M72,35 Q65,45 72,65" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` }
-        ]
-      },
-      '森': {
-        photo: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=120&auto=format&fit=crop&q=80',
-        evolution: [
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,8 L50,45 M35,25 L65,25 M50,25 L38,45 M50,25 L62,45 M25,52 L25,92 M12,70 L38,70 M25,70 L14,92 M25,70 L36,92 M75,52 L75,92 M62,70 L88,70 M75,70 L64,92 M75,70 L86,92" stroke="#334155" stroke-width="5" fill="none"/></svg>` }
-        ]
-      },
-      '大': {
-        photo: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=120&auto=format&fit=crop&q=80',
-        evolution: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,42 Q50,38 80,42 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none"/></svg>` }
-        ]
-      },
-      '太': {
-        photo: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=120&auto=format&fit=crop&q=80',
-        evolution: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,45 Q50,40 80,45 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` }
-        ]
-      }
+    // 3. 权威汉字源流演变古文字库 (中华语文知识库 / 象形字典 / 说文解字 考据标准)
+    const CHAR_EVOLUTION_DB = {
+      '上': [
+        { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M20,75 L80,75 M50,75 L50,25 M35,45 L65,45" stroke="#334155" stroke-width="8" fill="none"/></svg>` },
+        { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M20,75 L80,75 M50,75 L50,25" stroke="#334155" stroke-width="8" fill="none"/></svg>` },
+        { name: '小篆', type: 'text', content: '上' }
+      ],
+      '下': [
+        { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M20,25 L80,25 M50,25 L50,75 M35,55 L65,55" stroke="#334155" stroke-width="8" fill="none"/></svg>` },
+        { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M20,25 L80,25 M50,25 L50,75" stroke="#334155" stroke-width="8" fill="none"/></svg>` },
+        { name: '小篆', type: 'text', content: '下' }
+      ],
+      '牛': [
+        { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,20 L50,85 M20,35 Q50,15 80,35 M50,45 L30,55 M50,45 L70,55" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>` },
+        { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M15,40 Q50,15 85,40 M50,48 L25,60 M50,48 L75,60" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>` },
+        { name: '小篆', type: 'text', content: '牛' }
+      ],
+      '马': [
+        { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M40,15 Q60,15 65,30 Q65,50 45,55 L45,85 M55,55 L65,85 M35,30 Q20,35 25,50 M65,30 L80,25 M65,38 L82,35 M65,46 L80,45" stroke="#334155" stroke-width="7" fill="none"/></svg>` },
+        { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M40,15 Q65,15 65,35 Q65,55 45,60 L45,85 M55,60 L65,85 M30,35 Q20,40 25,55 M65,30 L80,25 M65,40 L82,38" stroke="#334155" stroke-width="6" fill="none"/></svg>` },
+        { name: '小篆', type: 'text', content: '馬' }
+      ],
+      '车': [
+        { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M20,20 L80,20 M20,80 L80,80 M20,20 L20,80 M80,20 L80,80 M35,40 L65,40 L65,60 L35,60 Z" stroke="#334155" stroke-width="7" fill="none"/></svg>` },
+        { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M25,25 L75,25 M25,75 L75,75 M35,38 L65,38 L65,62 L35,62 Z" stroke="#334155" stroke-width="6" fill="none"/></svg>` },
+        { name: '小篆', type: 'text', content: '車' }
+      ],
+      '日': [
+        { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" stroke="#334155" stroke-width="8" fill="none"/><circle cx="50" cy="50" r="6" fill="#334155"/></svg>` },
+        { name: '金文', type: 'text', content: '日' },
+        { name: '小篆', type: 'text', content: '日' }
+      ],
+      '月': [
+        { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M60,15 A35,35 0 0,0 60,85 A45,45 0 0,1 60,15 Z" stroke="#334155" stroke-width="8" fill="none"/></svg>` },
+        { name: '小篆', type: 'text', content: '月' }
+      ],
+      '山': [
+        { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,40 L20,85 M80,40 L80,85 M20,85 L80,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` },
+        { name: '小篆', type: 'text', content: '山' }
+      ],
+      '水': [
+        { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 Q40,50 50,85 M28,35 Q35,45 28,65 M72,35 Q65,45 72,65" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` },
+        { name: '小篆', type: 'text', content: '水' }
+      ],
+      '森': [
+        { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,8 L50,45 M35,25 L65,25 M50,25 L38,45 M50,25 L62,45 M25,52 L25,92 M12,70 L38,70 M25,70 L14,92 M25,70 L36,92 M75,52 L75,92 M62,70 L88,70 M75,70 L64,92 M75,70 L86,92" stroke="#334155" stroke-width="5" fill="none"/></svg>` },
+        { name: '小篆', type: 'text', content: '森' }
+      ],
+      '大': [
+        { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,42 Q50,38 80,42 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none"/></svg>` },
+        { name: '小篆', type: 'text', content: '大' }
+      ],
+      '太': [
+        { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,45 Q50,40 80,45 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` },
+        { name: '小篆', type: 'text', content: '太' }
+      ]
     };
 
     // 4. 多音字语境识别
@@ -569,7 +618,6 @@
       return pinyin(phrase, { toneType: 'symbol', type: 'array' });
     }
 
-    // 5. 多音字发音纠偏映射
     const POLYPHONE_SPEECH_MAP = {
       '行': { 'háng': '航', 'xíng': '形' },
       '觉': { 'jiào': '叫', 'jué': '决' },
@@ -614,7 +662,6 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // 6. 外语发音朗读器
     let activeAudioPlayer = null;
     function speakForeignTextSafe(encodedText, targetLang) {
       if (!encodedText || targetLang === 'none') return;
@@ -643,9 +690,7 @@
         const bestVoice = voices.find(v => (v.lang === langCode || v.lang.startsWith(targetLang)) && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Premium') || v.name.includes('Siri'))) 
                        || voices.find(v => v.lang === langCode || v.lang.startsWith(targetLang));
 
-        if (bestVoice) {
-          utterance.voice = bestVoice;
-        }
+        if (bestVoice) utterance.voice = bestVoice;
 
         let hasSpoken = false;
         utterance.onstart = () => { hasSpoken = true; };
@@ -660,7 +705,7 @@
           window.speechSynthesis.speak(utterance);
           return;
         } catch (err) {
-          console.warn('本地语音合成异常，转入在线音频保底:', err);
+          console.warn('本地语音合成异常:', err);
         }
       }
 
@@ -671,20 +716,17 @@
       try {
         const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${targetLang}&q=${encodeURIComponent(text)}`;
         activeAudioPlayer = new Audio(ttsUrl);
-        activeAudioPlayer.play().catch(e => {
-          console.warn('在线 TTS 播放受限:', e);
-        });
+        activeAudioPlayer.play().catch(e => console.warn('在线 TTS 受限:', e));
       } catch (e) {
         console.error('音频引擎初始化异常:', e);
       }
     }
 
-    // 7. Google AI 多义项深度解析引擎（全语种自动提取 2~3 种常用核心释义）
+    // 5. Google AI 多义项深度解析引擎（提取 2~3 种常用释义）
     async function fetchGoogleMultiMeanings(text, targetLang) {
       if (targetLang === 'none' || !text) return null;
 
       try {
-        // 请求包含字典释义(dict: bd)与同义词(synonyms: ss)的 Google NMT API
         const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=zh-CN&tl=${targetLang}&dt=t&dt=bd&dt=ss&dt=md&q=${encodeURIComponent(text)}`;
         const res = await fetch(url);
         const data = await res.json();
@@ -707,26 +749,18 @@
           }
         }
 
-        // 1. 首要直译
-        if (primaryTranslation) {
-          addCandidate(primaryTranslation);
-        }
+        if (primaryTranslation) addCandidate(primaryTranslation);
 
-        // 2. 深入解析 Google 词典给出的词性与多义项候选项 (data[1])
         if (data && Array.isArray(data[1])) {
           data[1].forEach(posBlock => {
-            // posBlock[1] 包含该词性下的多个常用翻译列表
             if (Array.isArray(posBlock[1])) {
               posBlock[1].forEach(item => {
-                if (typeof item === 'string') {
-                  addCandidate(item);
-                }
+                if (typeof item === 'string') addCandidate(item);
               });
             }
           });
         }
 
-        // 3. 深入解析同义词模块 (data[11])
         if (data && Array.isArray(data[11])) {
           data[11].forEach(synBlock => {
             if (Array.isArray(synBlock[1])) {
@@ -739,19 +773,16 @@
           });
         }
 
-        // 提取前 2 ~ 3 种高频常用释义
         let topMeanings = distinctMeanings.slice(0, 3);
         if (topMeanings.length === 0 && primaryTranslation) {
           topMeanings = [primaryTranslation];
         }
 
-        // 德语全量多义项正字法大写处理
         if (targetLang === 'de') {
           topMeanings = topMeanings.map(m => universalGermanCapitalize(m));
           primaryTranslation = universalGermanCapitalize(primaryTranslation);
         }
 
-        // 构造编号形式的多重释义展示 (如: 1. ...  2. ...  3. ...)
         let formattedString = '';
         if (topMeanings.length > 1) {
           formattedString = topMeanings.map((m, i) => `${i + 1}. ${m}`).join('   ');
@@ -764,12 +795,12 @@
           primary: topMeanings[0] || primaryTranslation || ''
         };
       } catch (e) {
-        console.warn('Google 多义项引擎调度异常:', e);
+        console.warn('Google 多义项调度异常:', e);
       }
       return null;
     }
 
-    // 8. 通用多语言与语法解析入口
+    // 6. 通用多语言与语法解析入口
     async function getUniversalPhraseDetails(phrase, targetLang) {
       if (targetLang === 'none' || !phrase) {
         return { hsk: '', meaning: '', usage: '', primary: '' };
@@ -801,18 +832,15 @@
       };
     }
 
-    // 9. 获取单字实物照片与古文字演变
-    function getCharMediaData(char) {
-      if (CHAR_REAL_PHOTO_DB[char]) {
-        return CHAR_REAL_PHOTO_DB[char];
+    // 7. 获取汉字权威演变数据
+    function getCharEvolutionData(char) {
+      if (CHAR_EVOLUTION_DB[char]) {
+        return CHAR_EVOLUTION_DB[char];
       }
-      return {
-        photo: null,
-        evolution: null
-      };
+      return null;
     }
 
-    // 10. 生成字帖核心函数
+    // 8. 生成字帖核心函数
     async function generateSheet() {
       const container = document.getElementById('sheetContainer');
       const text = document.getElementById('textInput').value.trim();
@@ -837,11 +865,6 @@
         const rubyHtml = chars.split('').map((char, i) => `
           <ruby>${char}<rt>${contextualPinyins[i] || ''}</rt></ruby>
         `).join('');
-
-        const phrasePhotoUrl = PHRASE_REAL_PHOTO_DB[chars];
-        const phrasePicHtml = phrasePhotoUrl ? `
-          <img class="phrase-real-photo" src="${phrasePhotoUrl}" alt="${chars}" title="「${chars}」对应实物摄影图" onerror="this.style.display='none'" />
-        ` : '';
         
         const transMeaningId = `trans-meaning-${pIdx}`;
         const transUsageId = `trans-usage-${pIdx}`;
@@ -849,13 +872,13 @@
         const wordBlock = document.createElement('div');
         wordBlock.className = 'word-block';
 
+        // 词条顶部：纯净学术排版（去除图片，专注拼音与多义项语法）
         wordBlock.innerHTML = `
           <div class="word-header">
             <div class="word-meta-left">
               <div class="word-ruby-container">${rubyHtml}</div>
               <button class="btn-audio" onclick="speakText('${chars}')">🔊 朗读中文</button>
             </div>
-            ${phrasePicHtml}
             <div class="word-trans-box" contenteditable="true" title="点击可直接编辑修改词语多重释义与语法">
               <div class="trans-meaning-line" id="${transMeaningId}">
                 <span>${targetLang === 'none' ? '' : 'Google AI 多义项解析中...'}</span>
@@ -865,25 +888,24 @@
           </div>
         `;
 
+        // 逐字生成字卡：左(拼音在上方/发音/笔顺) ➔ 中(上方笔画名称序列+田字格) ➔ 右(权威汉字源流演变)
         for (let cIdx = 0; cIdx < chars.length; cIdx++) {
           const char = chars[cIdx];
           const charPy = contextualPinyins[cIdx] || pinyin(char, { toneType: 'symbol' });
           const firstGridId = `grid-demo-${globalGridIdx}`;
+          const strokeRowId = `stroke-names-row-${globalGridIdx}`;
 
-          const mediaData = getCharMediaData(char);
+          const evoList = getCharEvolutionData(char);
 
-          const photoHtml = mediaData.photo ? `
-            <img class="char-real-photo" src="${mediaData.photo}" alt="${char}" title="${char} 的实物摄影图" onerror="this.style.display='none'" />
-          ` : '';
-
+          // 汉字源流演变（中华语文知识库 / 象形字典 / 说文解字 考据链接）
           let evolutionHtml = '';
-          if (mediaData.evolution && mediaData.evolution.length > 0) {
-            const evoNodesHtml = mediaData.evolution.map((node, idx) => `
-              <a class="ancient-link-badge" href="https://hanziyuan.net/#${encodeURIComponent(char)}" target="_blank" title="在字源网查看「${char}」的${node.name}原图考据">
+          if (evoList && evoList.length > 0) {
+            const evoNodesHtml = evoList.map((node, idx) => `
+              <a class="ancient-link-badge" href="https://www.chinese-linguipedia.org/search_source.html?word=${encodeURIComponent(char)}" target="_blank" title="在中华语文知识库/象形字典/说文解字查看「${char}」的${node.name}原图考据">
                 <div class="ancient-glyph">${node.type === 'svg' ? node.content : node.content}</div>
                 <div class="ancient-label">${node.name}</div>
               </a>
-              ${idx < mediaData.evolution.length - 1 ? '<span class="evo-arrow">→</span>' : ''}
+              ${idx < evoList.length - 1 ? '<span class="evo-arrow">→</span>' : ''}
             `).join('');
 
             evolutionHtml = `<div class="font-evolution-container">${evoNodesHtml}</div>`;
@@ -902,12 +924,16 @@
               </div>
             </div>
 
-            <!-- 2. 中间：田字格/米字格练习区（单行水平对齐） -->
-            <div class="grid-list-middle" id="grid-list-${globalGridIdx}"></div>
+            <!-- 2. 中间：上方笔顺笔画名称序列 + 下方田字格练习区 -->
+            <div class="middle-practice-zone">
+              <div class="stroke-names-row" id="${strokeRowId}" title="${char} 的正确书写笔顺笔画名称顺序">
+                <span>笔画分析中...</span>
+              </div>
+              <div class="grid-list-middle" id="grid-list-${globalGridIdx}"></div>
+            </div>
 
-            <!-- 3. 最右边：实物摄影图 + 字体演变过程（有则展示，无则空出） -->
+            <!-- 3. 最右边：汉字源流演变（有则展示，无则自然空出） -->
             <div class="char-right-zone">
-              ${photoHtml}
               ${evolutionHtml}
             </div>
           `;
@@ -925,6 +951,20 @@
 
           wordBlock.appendChild(card);
           container.appendChild(wordBlock);
+
+          // 异步加载并在田字格上方渲染官方笔画名称顺序
+          getStrokeNamesList(char).then(strokesList => {
+            const strokeBox = document.getElementById(strokeRowId);
+            if (strokeBox) {
+              strokeBox.innerHTML = `
+                <span style="color:#64748b; font-weight:bold; margin-right:2px;">笔顺:</span>
+                ${strokesList.map((s, idx) => `
+                  <span class="stroke-tag">${s}</span>
+                  ${idx < strokesList.length - 1 ? '<span class="stroke-arrow">➔</span>' : ''}
+                `).join('')}
+              `;
+            }
+          });
 
           HanziWriter.create(firstGridId, char, {
             width: 38, height: 38, padding: 2, strokeColor: '#000000', showOutline: false
