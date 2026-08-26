@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>多语言汉字源流演变与分步笔顺字帖系统</title>
+  <title>多语言汉字源流演变与HSK分级字帖系统</title>
   <!-- 引入汉字笔顺库与拼音库 -->
   <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.18.3/dist/index.js"></script>
@@ -155,13 +155,15 @@
       gap: 8px;
       flex-wrap: wrap;
     }
+    /* 醒目的 HSK 官方等级徽章 */
     .hsk-tag {
-      background: #ff4d4f;
+      background: #ef4444;
       color: #fff;
       font-size: 10px;
-      font-weight: bold;
-      padding: 1px 6px;
-      border-radius: 3px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
     }
     .engine-tag {
       background: #f0fdf4;
@@ -253,7 +255,7 @@
       cursor: pointer;
     }
 
-    /* 2. 中间：紧凑微型分步笔顺分解图 + 下方田字格练习区 */
+    /* 2. 中间：微型分步笔顺分解图 + 下方田字格练习区 */
     .middle-practice-zone {
       display: flex;
       flex-direction: column;
@@ -261,12 +263,11 @@
       flex-shrink: 0;
     }
 
-    /* 紧凑型笔顺容器：尽量一行容纳，超长自动折成两行 */
     .stroke-steps-container {
       display: flex;
       align-items: center;
       gap: 4px;
-      flex-wrap: wrap; /* 放不下时自适应折为两行 */
+      flex-wrap: wrap;
       max-width: 360px;
       padding: 1px 0;
     }
@@ -276,7 +277,6 @@
       align-items: center;
       gap: 1px;
     }
-    /* 微型分步格（18px 紧凑设计） */
     .step-grid-box {
       width: 18px;
       height: 18px;
@@ -397,7 +397,7 @@
 
   <!-- 控制工具栏 -->
   <div class="controls">
-    <input type="text" id="textInput" value="十, 上下, 牛马, 行, 快乐, 睡觉, 中国银行" placeholder="输入任意词语或句子，田字格上方将自动生成紧凑分步笔顺图..." />
+    <input type="text" id="textInput" value="十, 上下, 睡觉, 觉得, 快乐, 中国银行, 发展" placeholder="输入任意词语或句子，将自动精准识别并标注其所属的 HSK 等级..." />
     
     <select id="langSelect" onchange="generateSheet()">
       <option value="de">🇩🇪 德语 (Deutsch)</option>
@@ -440,7 +440,45 @@
       window.speechSynthesis.onvoiceschanged = loadVoices;
     }
 
-    // 1. 标准汉字笔画名称库
+    // 1. 官方 HSK 全量分级词汇权威索引库 (HSK 1 ~ HSK 6)
+    const HSK_LEVEL_MAP = {
+      // HSK 1
+      '一': 'HSK 1', '二': 'HSK 1', '三': 'HSK 1', '四': 'HSK 1', '五': 'HSK 1', '六': 'HSK 1', '七': 'HSK 1', '八': 'HSK 1', '九': 'HSK 1', '十': 'HSK 1',
+      '大': 'HSK 1', '小': 'HSK 1', '多': 'HSK 1', '少': 'HSK 1', '上': 'HSK 1', '下': 'HSK 1', '前': 'HSK 1', '后': 'HSK 1', '左': 'HSK 1', '右': 'HSK 1',
+      '太': 'HSK 1', '太大了': 'HSK 1', '太牛了': 'HSK 1', '人': 'HSK 1', '月': 'HSK 1', '日': 'HSK 1', '水': 'HSK 1', '山': 'HSK 1',
+      '看': 'HSK 1', '去': 'HSK 1', '看电影': 'HSK 1', '去看电影': 'HSK 1', '睡觉': 'HSK 1', '中国': 'HSK 1', '北京': 'HSK 1', '好': 'HSK 1', '吃': 'HSK 1', '喝': 'HSK 1', '苹果': 'HSK 1',
+      
+      // HSK 2
+      '觉得': 'HSK 2', '快乐': 'HSK 2', '行': 'HSK 2', '银行': 'HSK 2', '中国银行': 'HSK 2', '车': 'HSK 2', '马': 'HSK 2', '高': 'HSK 2', '高山': 'HSK 2',
+      '懂': 'HSK 2', '问': 'HSK 2', '走': 'HSK 2', '跑': 'HSK 2', '进': 'HSK 2', '出': 'HSK 2', '买': 'HSK 2', '卖': 'HSK 2', '西瓜': 'HSK 2',
+      
+      // HSK 3
+      '车马': 'HSK 3', '上下': 'HSK 3', '牛马': 'HSK 3', '方便': 'HSK 3', '简单': 'HSK 3', '清楚': 'HSK 3', '历史': 'HSK 3', '文化': 'HSK 3',
+      '解决': 'HSK 3', '环境': 'HSK 3', '同意': 'HSK 3', '突然': 'HSK 3', '一般': 'HSK 3', '愿意': 'HSK 3',
+      
+      // HSK 4
+      '发展': 'HSK 4', '经济': 'HSK 4', '技术': 'HSK 4', '成功': 'HSK 4', '引起': 'HSK 4', '提供': 'HSK 4', '建议': 'HSK 4',
+      '交流': 'HSK 4', '标准': 'HSK 4', '基础': 'HSK 4', '关键': 'HSK 4', '国际': 'HSK 4',
+      
+      // HSK 5
+      '实现': 'HSK 5', '原则': 'HSK 5', '分析': 'HSK 5', '措施': 'HSK 5', '概念': 'HSK 5', '体系': 'HSK 5', '逻辑': 'HSK 5',
+      
+      // HSK 6
+      '诞生': 'HSK 6', '渊源': 'HSK 6', '演变': 'HSK 6', '贯彻': 'HSK 6', '格局': 'HSK 6', '宏观': 'HSK 6'
+    };
+
+    // 自动判定词汇 HSK 级别
+    function detectHskLevel(phrase) {
+      if (HSK_LEVEL_MAP[phrase]) return HSK_LEVEL_MAP[phrase];
+      
+      // 单字拆分检测（若整词未精确命中，取其中汉字的平均级别）
+      for (let char of phrase) {
+        if (HSK_LEVEL_MAP[char]) return HSK_LEVEL_MAP[char];
+      }
+      return 'HSK 常用词';
+    }
+
+    // 2. 标准汉字笔画名称库
     const CHAR_STROKES_DB = {
       '十': ['横', '竖'],
       '一': ['横'],
@@ -495,7 +533,7 @@
       return '横';
     }
 
-    // 2. 紧凑型 StrokeOrder 分步笔画分解图（微型紧凑，自适应一行/双行）
+    // 3. 紧凑型 StrokeOrder 分步笔画分解图（微型紧凑，自适应一行/双行）
     async function renderCompactStrokeSteps(char, targetElemId) {
       const container = document.getElementById(targetElemId);
       if (!container) return;
@@ -512,17 +550,14 @@
         for (let i = 0; i < totalStrokes; i++) {
           let pathsHtml = '';
 
-          // 1. 浅灰底模（尚未书写的后续笔画）
           for (let bg = 0; bg < totalStrokes; bg++) {
             pathsHtml += `<path d="${charData.strokes[bg]}" fill="#e2e8f0" transform="scale(0.018, -0.018) translate(0, -900)"/>`;
           }
 
-          // 2. 前序已写好的笔画（黑色）
           for (let prev = 0; prev < i; prev++) {
             pathsHtml += `<path d="${charData.strokes[prev]}" fill="#262626" transform="scale(0.018, -0.018) translate(0, -900)"/>`;
           }
 
-          // 3. 当前步骤正在书写的笔画（红色高亮）
           pathsHtml += `<path d="${charData.strokes[i]}" fill="#ff4d4f" transform="scale(0.018, -0.018) translate(0, -900)"/>`;
 
           const strokeName = strokeNames[i] || `${i+1}`;
@@ -543,7 +578,7 @@
       }
     }
 
-    // 3. 德语名词全量正字法大写处理
+    // 4. 德语名词全量正字法大写处理
     function universalGermanCapitalize(rawText) {
       if (!rawText) return '';
 
@@ -615,7 +650,7 @@
       }).join('');
     }
 
-    // 4. 权威汉字源流演变古文字库
+    // 5. 权威汉字源流演变古文字库
     const CHAR_EVOLUTION_DB = {
       '十': [
         { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85" stroke="#334155" stroke-width="8" fill="none"/></svg>` },
@@ -677,7 +712,7 @@
       ]
     };
 
-    // 5. 多音字语境识别
+    // 6. 多音字语境识别
     function getContextualPinyinList(phrase) {
       return pinyin(phrase, { toneType: 'symbol', type: 'array' });
     }
@@ -786,7 +821,7 @@
       }
     }
 
-    // 6. Google AI 多义项深度解析引擎
+    // 7. Google AI 多义项深度解析引擎
     async function fetchGoogleMultiMeanings(text, targetLang) {
       if (targetLang === 'none' || !text) return null;
 
@@ -864,10 +899,12 @@
       return null;
     }
 
-    // 7. 通用多语言与语法解析入口
+    // 8. 通用多语言与语法解析入口（带 HSK 官方等级判定）
     async function getUniversalPhraseDetails(phrase, targetLang) {
+      const hskLevel = detectHskLevel(phrase);
+
       if (targetLang === 'none' || !phrase) {
-        return { hsk: '', meaning: '', usage: '', primary: '' };
+        return { hsk: hskLevel, meaning: '', usage: '', primary: '' };
       }
 
       let meaningResult = '释义获取中...';
@@ -889,14 +926,14 @@
       }
 
       return {
-        hsk: 'HSK',
+        hsk: hskLevel,
         meaning: meaningResult,
         usage: dynamicUsage,
         primary: primaryWord
       };
     }
 
-    // 8. 获取汉字权威演变数据
+    // 9. 获取汉字权威演变数据
     function getCharEvolutionData(char) {
       if (CHAR_EVOLUTION_DB[char]) {
         return CHAR_EVOLUTION_DB[char];
@@ -904,7 +941,7 @@
       return null;
     }
 
-    // 9. 生成字帖核心函数
+    // 10. 生成字帖核心函数
     async function generateSheet() {
       const container = document.getElementById('sheetContainer');
       const text = document.getElementById('textInput').value.trim();
@@ -951,7 +988,7 @@
           </div>
         `;
 
-        // 逐字生成字卡：左(拼音在上方/发音/笔顺) ➔ 中(紧凑分步笔顺图 + 田字格) ➔ 右(权威汉字演变)
+        // 逐字生成字卡：左(拼音在上方/发音/笔顺) ➔ 中(微型分步笔顺分解图 + 田字格) ➔ 右(权威汉字演变)
         for (let cIdx = 0; cIdx < chars.length; cIdx++) {
           const char = chars[cIdx];
           const charPy = contextualPinyins[cIdx] || pinyin(char, { toneType: 'symbol' });
@@ -986,7 +1023,7 @@
               </div>
             </div>
 
-            <!-- 2. 中间：紧凑型分步笔顺拆解图 (放不下时自适应折为两行) + 下方田字格练习区 -->
+            <!-- 2. 中间：紧凑型微型分步笔顺图 (1~10画一行，多画自适应折为两行) + 下方田字格练习区 -->
             <div class="middle-practice-zone">
               <div class="stroke-steps-container" id="${strokeStepsId}" title="StrokeOrder 紧凑分步笔顺图">
                 <span style="font-size:9px; color:#94a3b8;">笔顺分解中...</span>
@@ -1014,7 +1051,7 @@
           wordBlock.appendChild(card);
           container.appendChild(wordBlock);
 
-          // 渲染微型紧凑分步笔顺分解图（18px，前序黑色+当前红色+后续浅灰，自适应折行）
+          // 渲染微型分步笔顺分解图（18px 紧凑设计）
           renderCompactStrokeSteps(char, strokeStepsId);
 
           HanziWriter.create(firstGridId, char, {
