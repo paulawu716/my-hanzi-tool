@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>多语言图文汉字演变与谷歌AI字帖系统</title>
+  <title>多语言实物图汉字演变与谷歌AI字帖系统</title>
   <!-- 引入汉字笔顺库与拼音库 -->
   <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.18.3/dist/index.js"></script>
@@ -75,7 +75,7 @@
       border-bottom: 2px dashed #eaeaea;
     }
 
-    /* 词条顶部：左侧拼音置于汉字上方 + 词语专属图片 + 右侧整词解析条框 */
+    /* 词条顶部：左侧词句拼音，中间实物照，右侧整词/句型解析条框 */
     .word-header {
       display: flex;
       align-items: center;
@@ -87,7 +87,7 @@
       border-left: 4px solid #1890ff;
     }
     
-    /* 词语区：拼音在字上方 */
+    /* 词语区：拼音在字正上方 */
     .word-meta-left {
       display: flex;
       flex-direction: column;
@@ -100,7 +100,6 @@
       align-items: flex-end;
       gap: 4px;
     }
-    /* Ruby 拼音位于汉字上方样式 */
     ruby {
       ruby-align: center;
       ruby-position: over;
@@ -112,7 +111,6 @@
       font-size: 12px;
       font-weight: 600;
       color: #1890ff;
-      letter-spacing: 0;
       line-height: 1.2;
     }
     .btn-audio {
@@ -131,25 +129,18 @@
       background: #bae7ff;
     }
 
-    /* 词语专属实物/标志插图徽章 */
-    .phrase-pic-badge {
-      width: 52px;
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #fff;
+    /* 词语实物照片徽章 */
+    .phrase-real-photo {
+      width: 54px;
+      height: 54px;
       border-radius: 6px;
+      object-fit: cover;
       border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
       flex-shrink: 0;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-    .phrase-pic-badge svg {
-      width: 44px;
-      height: 44px;
     }
 
-    /* 词语右侧条框：HSK等级 + 谷歌翻译多重释义 + 外语朗读 + 语法用法 */
+    /* 词语右侧条框 */
     .word-trans-box {
       flex: 1;
       background: #fff;
@@ -197,13 +188,13 @@
       border: 1px solid #b7eb8f;
       color: #389e0d;
       font-size: 10.5px;
-      padding: 1px 6px;
+      padding: 2px 7px;
       border-radius: 3px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 3px;
-      font-weight: normal;
+      font-weight: 500;
     }
     .btn-foreign-audio:hover {
       background: #d9f7be;
@@ -227,7 +218,7 @@
       border-left: 3px solid #0ea5e9;
     }
 
-    /* 单字卡片：单行严格横向排版（左:发音拼音笔顺 ➔ 中:田字格 ➔ 右:字体演变配图） */
+    /* 单字卡片：单行严格横向排版（左:发音拼音笔顺 ➔ 中:田字格 ➔ 右:实物照与字体演变） */
     .char-card {
       margin-bottom: 10px;
       background: #ffffff;
@@ -236,13 +227,13 @@
       padding: 7px 12px;
       display: flex;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: space-between;
       gap: 12px;
       flex-wrap: nowrap;
       overflow-x: hidden;
     }
 
-    /* 1. 最左边：单字拼音（置于上方） + 按钮组 */
+    /* 1. 最左边：单字拼音在正上方 + 按钮组 */
     .char-badge-left {
       width: 65px;
       text-align: center;
@@ -302,7 +293,7 @@
       background-size: 100% 100%;
     }
 
-    /* 3. 最右边：不同字体、汉字演变轨迹与配图区（若无则自然空出） */
+    /* 3. 最右边：实物照片 + 演变过程（有则展示，无则自然空出） */
     .char-right-zone {
       display: flex;
       align-items: center;
@@ -310,23 +301,17 @@
       margin-left: auto;
       flex-shrink: 0;
     }
-    .pic-badge {
+    .char-real-photo {
       width: 44px;
       height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #f8fafc;
       border-radius: 6px;
+      object-fit: cover;
       border: 1px solid #e2e8f0;
       flex-shrink: 0;
-    }
-    .pic-badge svg {
-      width: 36px;
-      height: 36px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
 
-    /* 字体与演变过程节点展示 */
+    /* 字体演变容器 */
     .font-evolution-container {
       display: flex;
       align-items: center;
@@ -413,7 +398,7 @@
   <script>
     const { pinyin } = pinyinPro;
 
-    // 1. 各语言对应 TTS 语音合成代码
+    // 1. 各语言对应 TTS 语音合成代码映射
     const LANG_TTS_MAP = {
       de: 'de-DE',
       en: 'en-US',
@@ -424,87 +409,92 @@
       ru: 'ru-RU'
     };
 
-    // 2. 词语专属实物/标志/场景插图数据库（词语文字对应图片）
-    const PHRASE_IMAGE_DB = {
-      '中国银行': `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="#c9151e"/><circle cx="32" cy="32" r="22" fill="#fff"/><circle cx="32" cy="32" r="18" fill="#c9151e"/><rect x="25" y="25" width="14" height="14" fill="#fff"/><rect x="30" y="8" width="4" height="48" fill="#fff"/></svg>`,
-      '太牛了': `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="#fef3c7"/><circle cx="32" cy="36" r="14" fill="#d97706"/><path d="M20,24 Q14,14 24,22 M44,24 Q50,14 40,22" stroke="#78350f" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="32" cy="40" rx="8" ry="5" fill="#fcd34d"/><circle cx="48" cy="24" r="7" fill="#ef4444"/><path d="M46,24 L48,27 L52,21" stroke="#fff" stroke-width="2" fill="none"/></svg>`,
-      '车马': `<svg viewBox="0 0 64 64"><rect x="6" y="26" width="26" height="14" rx="2" fill="#38bdf8"/><circle cx="12" cy="44" r="5" fill="#1e293b"/><circle cx="26" cy="44" r="5" fill="#1e293b"/><path d="M32,34 L40,34" stroke="#94a3b8" stroke-width="2"/><path d="M40,46 Q44,22 56,20 Q60,20 60,28 Q60,38 48,42 L48,50" stroke="#ea580c" stroke-width="3" fill="#fed7aa"/></svg>`,
-      '去看电影': `<svg viewBox="0 0 64 64"><rect x="10" y="16" width="44" height="32" rx="4" fill="#1e293b"/><circle cx="22" cy="32" r="5" fill="#38bdf8"/><circle cx="42" cy="32" r="5" fill="#38bdf8"/><rect x="16" y="20" width="4" height="4" fill="#fff"/><rect x="44" y="20" width="4" height="4" fill="#fff"/><rect x="16" y="40" width="4" height="4" fill="#fff"/><rect x="44" y="40" width="4" height="4" fill="#fff"/></svg>`,
-      '睡觉': `<svg viewBox="0 0 64 64"><path d="M46,12 A20,20 0 1,0 46,50 A16,16 0 0,1 46,12 Z" fill="#facc15"/><rect x="12" y="38" width="28" height="14" rx="7" fill="#60a5fa"/><circle cx="18" cy="44" r="3" fill="#fff"/><text x="46" y="22" font-size="12" font-weight="bold" fill="#38bdf8">Z</text><text x="52" y="14" font-size="9" font-weight="bold" fill="#38bdf8">z</text></svg>`,
-      '快乐': `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="#fde047"/><circle cx="23" cy="26" r="3" fill="#1e293b"/><circle cx="41" cy="26" r="3" fill="#1e293b"/><path d="M20,36 Q32,48 44,36" stroke="#b45309" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`,
-      '太大了': `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="#e0f2fe"/><rect x="16" y="16" width="32" height="32" rx="6" fill="#3b82f6"/><path d="M22,32 L42,32 M32,22 L32,42" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>`
+    // 预热并缓存浏览器音色库，解决初次调用空列表问题
+    let cachedVoices = [];
+    function loadVoices() {
+      if ('speechSynthesis' in window) {
+        cachedVoices = window.speechSynthesis.getVoices();
+      }
+    }
+    loadVoices();
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
+    // 2. 词语专属实物照片与标志图库
+    const PHRASE_REAL_PHOTO_DB = {
+      '中国银行': 'https://images.unsplash.com/photo-1541354329998-f4d9a9f9297f?w=150&auto=format&fit=crop&q=80',
+      '去看电影': 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=150&auto=format&fit=crop&q=80',
+      '睡觉': 'https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=150&auto=format&fit=crop&q=80',
+      '车马': 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=150&auto=format&fit=crop&q=80',
+      '太牛了': 'https://images.unsplash.com/photo-1527153857715-3908f2bae5e8?w=150&auto=format&fit=crop&q=80',
+      '快乐': 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=150&auto=format&fit=crop&q=80',
+      '太大了': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=150&auto=format&fit=crop&q=80'
     };
 
-    // 3. 单字专属卡通插画 + 演变过程与不同字体库
-    const CHAR_MEDIA_DB = {
+    // 3. 单字专属实物照片与演变过程库
+    const CHAR_REAL_PHOTO_DB = {
       '牛': {
-        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="36" r="18" fill="#d97706"/><path d="M16,24 Q10,12 22,22 M48,24 Q54,12 42,22" stroke="#78350f" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="26" cy="34" r="3" fill="#1e293b"/><circle cx="38" cy="34" r="3" fill="#1e293b"/><ellipse cx="32" cy="42" rx="10" ry="7" fill="#fcd34d"/><circle cx="28" cy="42" r="1.5" fill="#78350f"/><circle cx="36" cy="42" r="1.5" fill="#78350f"/></svg>`,
+        photo: 'https://images.unsplash.com/photo-1527153857715-3908f2bae5e8?w=120&auto=format&fit=crop&q=80',
         evolution: [
           { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,20 L50,85 M20,35 Q50,15 80,35 M50,45 L30,55 M50,45 L70,55" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>` },
           { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M15,40 Q50,15 85,40 M50,48 L25,60 M50,48 L75,60" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>` }
         ]
       },
       '马': {
-        icon: `<svg viewBox="0 0 64 64"><path d="M18,50 Q22,18 42,16 Q48,16 48,26 Q48,38 34,42 L34,54 M42,42 L44,54" stroke="#ea580c" stroke-width="4" fill="#fed7aa" stroke-linecap="round"/><circle cx="38" cy="24" r="2.5" fill="#1e293b"/><path d="M26,18 Q32,8 38,18" stroke="#9a3412" stroke-width="3" fill="none"/></svg>`,
+        photo: 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=120&auto=format&fit=crop&q=80',
         evolution: [
           { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M40,15 Q60,15 65,30 Q65,50 45,55 L45,85 M55,55 L65,85 M35,30 Q20,35 25,50 M65,30 L80,25 M65,38 L82,35 M65,46 L80,45" stroke="#334155" stroke-width="7" fill="none"/></svg>` },
           { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M40,15 Q65,15 65,35 Q65,55 45,60 L45,85 M55,60 L65,85 M30,35 Q20,40 25,55 M65,30 L80,25 M65,40 L82,38" stroke="#334155" stroke-width="6" fill="none"/></svg>` }
         ]
       },
       '车': {
-        icon: `<svg viewBox="0 0 64 64"><rect x="14" y="24" width="36" height="16" rx="4" fill="#38bdf8"/><rect x="20" y="16" width="24" height="10" rx="2" fill="#bae6fd"/><circle cx="22" cy="44" r="6" fill="#1e293b"/><circle cx="42" cy="44" r="6" fill="#1e293b"/><circle cx="22" cy="44" r="2" fill="#fff"/><circle cx="42" cy="44" r="2" fill="#fff"/></svg>`,
+        photo: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=120&auto=format&fit=crop&q=80',
         evolution: [
           { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M20,20 L80,20 M20,80 L80,80 M20,20 L20,80 M80,20 L80,80 M35,40 L65,40 L65,60 L35,60 Z" stroke="#334155" stroke-width="7" fill="none"/></svg>` },
           { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M20,30 Q50,22 80,30 M30,42 L70,42 L70,58 L30,58 Z M20,70 Q50,78 80,70" stroke="#334155" stroke-width="6" fill="none"/></svg>` }
         ]
       },
-      '太': {
-        icon: `<svg viewBox="0 0 64 64"><polygon points="32,8 40,24 58,24 44,36 50,54 32,42 14,54 20,36 6,24 24,24" fill="#fbbf24"/><circle cx="32" cy="30" r="5" fill="#ea580c"/></svg>`,
-        evolution: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,45 Q50,40 80,45 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` },
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,40 Q50,45 80,40 M50,55 L25,85 M50,55 L75,85 M50,68 C45,68 45,78 50,78 C55,78 55,68 50,68 Z" stroke="#334155" stroke-width="7" fill="#334155"/></svg>` }
-        ]
-      },
-      '大': {
-        icon: `<svg viewBox="0 0 64 64"><rect x="8" y="8" width="48" height="48" rx="10" fill="#60a5fa"/><path d="M16,32 L48,32 M32,16 L32,48" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>`,
-        evolution: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,42 Q50,38 80,42 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none"/></svg>` }
-        ]
-      },
-      '行': {
-        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="18" r="8" fill="#475569"/><path d="M32,26 L32,42 M32,42 L20,58 M32,42 L44,58 M20,34 L44,34" stroke="#475569" stroke-width="4" stroke-linecap="round"/></svg>`,
-        evolution: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M30,15 L30,45 L15,45 M70,15 L70,45 L85,45 M15,55 L30,55 L30,85 M85,55 L70,55 L70,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` }
-        ]
-      },
-      '乐': {
-        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="20" fill="#fde047"/><circle cx="24" cy="28" r="3" fill="#1e293b"/><circle cx="40" cy="28" r="3" fill="#1e293b"/><path d="M22,38 Q32,48 42,38" stroke="#b45309" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
-        evolution: [
-          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,45 L50,85 M25,25 Q35,10 45,25 M55,25 Q65,10 75,25 M30,55 L50,45 L70,55" stroke="#334155" stroke-width="7" fill="none"/></svg>` }
-        ]
-      },
-      '森': {
-        icon: `<svg viewBox="0 0 64 64"><polygon points="32,10 22,26 42,26" fill="#15803d"/><polygon points="20,28 10,48 30,48" fill="#16a34a"/><polygon points="44,28 34,48 54,48" fill="#16a34a"/><rect x="29" y="48" width="6" height="10" fill="#78350f"/></svg>`,
-        evolution: [
-          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,8 L50,45 M35,25 L65,25 M50,25 L38,45 M50,25 L62,45 M25,52 L25,92 M12,70 L38,70 M25,70 L14,92 M25,70 L36,92 M75,52 L75,92 M62,70 L88,70 M75,70 L64,92 M75,70 L86,92" stroke="#334155" stroke-width="5" fill="none"/></svg>` }
-        ]
-      },
       '日': {
-        icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="16" fill="#ef4444"/><g stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round"><line x1="32" y1="5" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="59"/><line x1="5" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="59" y2="32"/></g></svg>`,
+        photo: 'https://images.unsplash.com/photo-1538370965046-79c0d6907d47?w=120&auto=format&fit=crop&q=80',
         evolution: [
           { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" stroke="#334155" stroke-width="8" fill="none"/><circle cx="50" cy="50" r="6" fill="#334155"/></svg>` }
         ]
       },
       '月': {
-        icon: `<svg viewBox="0 0 64 64"><path d="M44,8 A24,24 0 1,0 44,56 A20,20 0 0,1 44,8 Z" fill="#facc15"/></svg>`,
+        photo: 'https://images.unsplash.com/photo-1532693322450-2cb5c511067d?w=120&auto=format&fit=crop&q=80',
         evolution: [
           { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M60,15 A35,35 0 0,0 60,85 A45,45 0 0,1 60,15 Z" stroke="#334155" stroke-width="8" fill="none"/></svg>` }
         ]
       },
+      '山': {
+        photo: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=120&auto=format&fit=crop&q=80',
+        evolution: [
+          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,40 L20,85 M80,40 L80,85 M20,85 L80,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` }
+        ]
+      },
       '水': {
-        icon: `<svg viewBox="0 0 64 64"><path d="M32,10 C32,10 16,32 16,42 C16,52 24,58 32,58 C40,58 48,52 48,42 C48,32 32,10 32,10 Z" fill="#38bdf8"/></svg>`,
+        photo: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=120&auto=format&fit=crop&q=80',
         evolution: [
           { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 Q40,50 50,85 M28,35 Q35,45 28,65 M72,35 Q65,45 72,65" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` }
+        ]
+      },
+      '森': {
+        photo: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=120&auto=format&fit=crop&q=80',
+        evolution: [
+          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,8 L50,45 M35,25 L65,25 M50,25 L38,45 M50,25 L62,45 M25,52 L25,92 M12,70 L38,70 M25,70 L14,92 M25,70 L36,92 M75,52 L75,92 M62,70 L88,70 M75,70 L64,92 M75,70 L86,92" stroke="#334155" stroke-width="5" fill="none"/></svg>` }
+        ]
+      },
+      '大': {
+        photo: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=120&auto=format&fit=crop&q=80',
+        evolution: [
+          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,42 Q50,38 80,42 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none"/></svg>` }
+        ]
+      },
+      '太': {
+        photo: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=120&auto=format&fit=crop&q=80',
+        evolution: [
+          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,45 Q50,40 80,45 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` }
         ]
       }
     };
@@ -683,18 +673,76 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    function speakForeignText(rawText, targetLang) {
-      if (!('speechSynthesis' in window) || !rawText || targetLang === 'none') return;
-      window.speechSynthesis.cancel();
+    // 7. 强化版多语言双引擎外语发音朗读器（本地音色匹配 + Google 在线音频保底）
+    let activeAudioPlayer = null;
+    function speakForeignTextSafe(encodedText, targetLang) {
+      if (!encodedText || targetLang === 'none') return;
+      
+      const rawText = decodeURIComponent(encodedText);
+      // 清洗文本：提取首个义项，去除序号和标点符号
+      let cleanText = rawText.replace(/\d+\.\s*/g, '').split(/[\/;,\(]/)[0].trim();
+      if (!cleanText) cleanText = rawText;
 
-      let cleanText = rawText.replace(/\d+\.\s*/g, '').split(/[\/;]/)[0].trim();
-      const utterance = new SpeechSynthesisUtterance(cleanText);
-      utterance.lang = LANG_TTS_MAP[targetLang] || 'en-US';
-      utterance.rate = 0.9;
-      window.speechSynthesis.speak(utterance);
+      const langCode = LANG_TTS_MAP[targetLang] || 'en-US';
+
+      // 停止上一轮音频
+      if (activeAudioPlayer) {
+        activeAudioPlayer.pause();
+        activeAudioPlayer = null;
+      }
+
+      // 策略 A: 尝试 Web Speech API 并精确匹配音色
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.resume(); // 唤醒可能处于休眠状态的引擎
+
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.lang = langCode;
+        utterance.rate = 0.9;
+
+        // 查找匹配当前语种的最佳语音
+        const voices = cachedVoices.length ? cachedVoices : window.speechSynthesis.getVoices();
+        const matchedVoice = voices.find(v => v.lang === langCode || v.lang.startsWith(targetLang));
+        if (matchedVoice) {
+          utterance.voice = matchedVoice;
+        }
+
+        let hasSpoken = false;
+        utterance.onstart = () => { hasSpoken = true; };
+
+        // 如果在 300ms 内没有触发发声，自动无缝切换到策略 B (Google TTS 在线流)
+        setTimeout(() => {
+          if (!hasSpoken && !window.speechSynthesis.speaking) {
+            playGoogleTtsAudio(cleanText, targetLang);
+          }
+        }, 300);
+
+        try {
+          window.speechSynthesis.speak(utterance);
+          return;
+        } catch (err) {
+          console.warn('Web Speech API 调用失败，转入在线音频保底:', err);
+        }
+      }
+
+      // 策略 B: Google TTS 在线保底播放
+      playGoogleTtsAudio(cleanText, targetLang);
     }
 
-    // 7. Google AI 翻译引擎集成
+    // Google TTS 在线原生音频保底播放器
+    function playGoogleTtsAudio(text, targetLang) {
+      try {
+        const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${targetLang}&q=${encodeURIComponent(text)}`;
+        activeAudioPlayer = new Audio(ttsUrl);
+        activeAudioPlayer.play().catch(e => {
+          console.warn('在线 TTS 播放失败:', e);
+        });
+      } catch (e) {
+        console.error('音频引擎初始化异常:', e);
+      }
+    }
+
+    // 8. Google AI 翻译引擎集成
     async function fetchGoogleTranslate(text, targetLang) {
       if (targetLang === 'none' || !text) return null;
 
@@ -731,12 +779,12 @@
           primary: mainTranslation || candidates[0] || ''
         };
       } catch (e) {
-        console.warn('Google 翻译引擎调度异常:', e);
+        console.warn('Google 翻译调度异常:', e);
       }
       return null;
     }
 
-    // 8. 通用多语言与语法解析入口
+    // 9. 通用多语言与语法解析入口
     async function getUniversalPhraseDetails(phrase, targetLang) {
       if (targetLang === 'none' || !phrase) {
         return { hsk: '', meaning: '', slang: '', usage: '', primary: '' };
@@ -802,18 +850,18 @@
       };
     }
 
-    // 9. 获取单字插画与古文字演变
+    // 10. 获取单字实物照片与古文字演变
     function getCharMediaData(char) {
-      if (CHAR_MEDIA_DB[char]) {
-        return CHAR_MEDIA_DB[char];
+      if (CHAR_REAL_PHOTO_DB[char]) {
+        return CHAR_REAL_PHOTO_DB[char];
       }
       return {
-        icon: null,
+        photo: null,
         evolution: null
       };
     }
 
-    // 10. 生成字帖核心函数
+    // 11. 生成字帖核心函数
     async function generateSheet() {
       const container = document.getElementById('sheetContainer');
       const text = document.getElementById('textInput').value.trim();
@@ -833,7 +881,7 @@
         const chars = (rawPhrase.match(/[\u4e00-\u9fa5]/g) || []).join('');
         if (!chars) continue;
 
-        // 提取语境拼音数组
+        // 提取语境拼音
         const contextualPinyins = getContextualPinyinList(chars);
         
         // 构造拼音置于汉字正上方的 Ruby 结构
@@ -841,21 +889,20 @@
           <ruby>${char}<rt>${contextualPinyins[i] || ''}</rt></ruby>
         `).join('');
 
-        // 检查该词语是否有专属实物/标志配图
-        const phraseSvg = PHRASE_IMAGE_DB[chars];
-        const phrasePicHtml = phraseSvg ? `
-          <div class="phrase-pic-badge" title="「${chars}」对应专属实物/标志插图">${phraseSvg}</div>
+        // 词语专属实物摄影图
+        const phrasePhotoUrl = PHRASE_REAL_PHOTO_DB[chars];
+        const phrasePicHtml = phrasePhotoUrl ? `
+          <img class="phrase-real-photo" src="${phrasePhotoUrl}" alt="${chars}" title="「${chars}」对应实物/实景摄影图" onerror="this.style.display='none'" />
         ` : '';
         
         const transMeaningId = `trans-meaning-${pIdx}`;
         const transSlangId = `trans-slang-${pIdx}`;
         const transUsageId = `trans-usage-${pIdx}`;
-        const foreignAudioBtnId = `btn-foreign-audio-${pIdx}`;
 
         const wordBlock = document.createElement('div');
         wordBlock.className = 'word-block';
 
-        // 词条顶部：左侧 Ruby 拼音在汉字上方 + 词语专属实物配图 + 右侧集中展示多义项与语法用法
+        // 词条顶部：Ruby 拼音在汉字正上方 + 词语实物照 + 右侧多重释义与用法
         wordBlock.innerHTML = `
           <div class="word-header">
             <div class="word-meta-left">
@@ -873,7 +920,7 @@
           </div>
         `;
 
-        // 逐字生成纯净字卡：左(拼音在上方/发音/笔顺) ➔ 中(田字格) ➔ 右(字体演变/配图，有则显示，无则空出)
+        // 逐字生成纯净字卡：左(拼音在上/发音/笔顺) ➔ 中(田字格) ➔ 右(实物照 + 演变过程)
         for (let cIdx = 0; cIdx < chars.length; cIdx++) {
           const char = chars[cIdx];
           const charPy = contextualPinyins[cIdx] || pinyin(char, { toneType: 'symbol' });
@@ -881,12 +928,12 @@
 
           const mediaData = getCharMediaData(char);
 
-          // 1. 卡通插画（有才展示）
-          const picHtml = mediaData.icon ? `
-            <div class="pic-badge" title="${char} 的专属卡通配图">${mediaData.icon}</div>
+          // 1. 实物摄影图（有才展示）
+          const photoHtml = mediaData.photo ? `
+            <img class="char-real-photo" src="${mediaData.photo}" alt="${char}" title="${char} 的实物摄影图" onerror="this.style.display='none'" />
           ` : '';
 
-          // 2. 演变过程与不同字体（甲骨/金文/篆体等，有则带上，无则空着）
+          // 2. 演变过程（甲骨/金文等，有则带上，无则空着）
           let evolutionHtml = '';
           if (mediaData.evolution && mediaData.evolution.length > 0) {
             const evoNodesHtml = mediaData.evolution.map((node, idx) => `
@@ -916,10 +963,10 @@
             <!-- 2. 中间：田字格/米字格练习区（单行水平对齐） -->
             <div class="grid-list-middle" id="grid-list-${globalGridIdx}"></div>
 
-            <!-- 3. 最右边：不同字体演变过程与配图（有则展示，无则空出） -->
+            <!-- 3. 最右边：实物摄影图 + 字体演变过程（有则展示，无则空出） -->
             <div class="char-right-zone">
+              ${photoHtml}
               ${evolutionHtml}
-              ${picHtml}
             </div>
           `;
 
@@ -953,18 +1000,22 @@
           globalGridIdx++;
         }
 
-        // 异步填充整词的多重释义、网络表达、语法用法及外语发音
+        // 异步填充整词的多重释义、网络表达、语法用法及安全外语朗读
         if (targetLang !== 'none') {
           getUniversalPhraseDetails(chars, targetLang).then(res => {
             const mEl = document.getElementById(transMeaningId);
             const sEl = document.getElementById(transSlangId);
             const uEl = document.getElementById(transUsageId);
+            
+            // 采用 encodeURIComponent 对朗读文本进行安全编码，防止引号与特殊字符截断报错
+            const safeSpeakParam = encodeURIComponent(res.primary || res.meaning);
+
             if (mEl) {
               mEl.innerHTML = `
                 <span class="hsk-tag">${res.hsk}</span>
                 <span class="engine-tag">Google AI</span>
                 <span>${res.meaning}</span>
-                <button class="btn-foreign-audio" id="${foreignAudioBtnId}" onclick="speakForeignText('${res.primary || res.meaning}', '${targetLang}')">🔊 朗读翻译</button>
+                <button class="btn-foreign-audio" onclick="speakForeignTextSafe('${safeSpeakParam}', '${targetLang}')">🔊 朗读翻译</button>
               `;
             }
             if (sEl) sEl.innerText = res.slang;
