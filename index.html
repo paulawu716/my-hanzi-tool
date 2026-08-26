@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>我的汉字描红字帖生成器</title>
+  <!-- 引入汉字笔顺库与拼音库 -->
+  <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.18.3/dist/index.js"></script>
+  
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+    }
+
+    /* 顶部控制栏 */
+    .controls {
+      background: #fff;
+      padding: 16px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      max-width: 800px;
+      margin: 0 auto 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .controls input {
+      flex: 1;
+      min-width: 200px;
+      padding: 8px 12px;
+      font-size: 16px;
+      border: 1px solid #d9d9d9;
+      border-radius: 4px;
+    }
+    .btn {
+      padding: 8px 18px;
+      font-size: 15px;
+      background: #1890ff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-print { background: #52c41a; }
+    .btn:hover { opacity: 0.9; }
+
+    /* 字帖 A4 纸张预览容器 */
+    .sheet-page {
+      background: #fff;
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      padding: 15mm;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      box-sizing: border-box;
+    }
+
+    /* 单行字帖样式 */
+    .char-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      border-bottom: 1px dashed #e8e8e8;
+      padding-bottom: 8px;
+    }
+
+    /* 左侧汉字信息与演示 */
+    .char-meta {
+      width: 80px;
+      text-align: center;
+      margin-right: 12px;
+    }
+    .char-pinyin {
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+    .btn-animate {
+      padding: 3px 8px;
+      font-size: 12px;
+      background: #fa8c16;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    /* 米字格区域 */
+    .grid-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    /* 米字格容器 */
+    .mi-grid {
+      width: 60px;
+      height: 60px;
+      border: 1px solid #ff4d4f;
+      position: relative;
+      background:
+        linear-gradient(to top right, transparent calc(50% - 0.5px), #ffa39e 50%, transparent calc(50% + 0.5px)),
+        linear-gradient(to bottom right, transparent calc(50% - 0.5px), #ffa39e 50%, transparent calc(50% + 0.5px)),
+        linear-gradient(to right, transparent calc(50% - 0.5px), #ffa39e 50%, transparent calc(50% + 0.5px)),
+        linear-gradient(to bottom, transparent calc(50% - 0.5px), #ffa39e 50%, transparent calc(50% + 0.5px));
+      background-size: 100% 100%;
+    }
+
+    /* 打印适配样式：打印时隐藏控制栏与背景 */
+    @media print {
+      body { background: transparent; padding: 0; }
+      .controls { display: none !important; }
+      .sheet-page {
+        box-shadow: none;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      .btn-animate { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 控制工具栏 -->
+  <div class="controls">
+    <input type="text" id="textInput" value="天地玄黄宇宙洪荒" placeholder="输入要练习的汉字..." />
+    <button class="btn" onclick="generateSheet()">生成字帖</button>
+    <button class="btn btn-print" onclick="window.print()">🖨️ 打印字帖</button>
+  </div>
+
+  <!-- 字帖纸张 -->
+  <div class="sheet-page" id="sheetContainer"></div>
+
+  <script>
+    const { pinyin } = pinyinPro;
+
+    // 生成字帖核心函数
+    function generateSheet() {
+      const container = document.getElementById('sheetContainer');
+      const text = document.getElementById('textInput').value.trim();
+      container.innerHTML = '';
+
+      // 提取所有汉字字符
+      const chars = text.match(/[\u4e00-\u9fa5]/g) || [];
+      if (chars.length === 0) {
+        alert('请输入有效的中文汉字！');
+        return;
+      }
+
+      chars.forEach((char, charIdx) => {
+        // 1. 创建单行容器
+        const row = document.createElement('div');
+        row.className = 'char-row';
+
+        // 2. 生成拼音与控制区
+        const py = pinyin(char, { toneType: 'symbol' });
+        const metaBox = document.createElement('div');
+        metaBox.className = 'char-meta';
+        metaBox.innerHTML = `
+          <div class="char-pinyin">${py}</div>
+          <button class="btn-animate" onclick="playStroke('${charIdx}')">▶ 演示</button>
+        `;
+        row.appendChild(metaBox);
+
+        // 3. 生成米字格（1个范字 + 2个浅色描红 + 5个空白练习格）
+        const gridList = document.createElement('div');
+        gridList.className = 'grid-list';
+
+        // 总共 8 个格
+        for (let i = 0; i < 8; i++) {
+          const grid = document.createElement('div');
+          grid.className = 'mi-grid';
+          const targetId = `char-${charIdx}-grid-${i}`;
+          grid.id = targetId;
+          gridList.appendChild(grid);
+        }
+        row.appendChild(gridList);
+        container.appendChild(row);
+
+        // 4. 使用 HanziWriter 渲染汉字
+        // (1) 范字格：带黑色墨迹
+        HanziWriter.create(`char-${charIdx}-grid-0`, char, {
+          width: 60,
+          height: 60,
+          padding: 5,
+          strokeColor: '#000000',
+          showOutline: false
+        });
+
+        // (2) 描红格：带浅灰色底色，供描摹
+        for (let i = 1; i <= 2; i++) {
+          HanziWriter.create(`char-${charIdx}-grid-${i}`, char, {
+            width: 60,
+            height: 60,
+            padding: 5,
+            strokeColor: '#d9d9d9',
+            showOutline: false
+          });
+        }
+      });
+    }
+
+    // 笔顺动画演示
+    function playStroke(charIdx) {
+      const char = document.getElementById('textInput').value.match(/[\u4e00-\u9fa5]/g)[charIdx];
+      // 获取当前行的第一个格
+      const targetElem = document.getElementById(`char-${charIdx}-grid-0`);
+      targetElem.innerHTML = ''; // 清空重新初始化并播放
+      const writer = HanziWriter.create(targetElem.id, char, {
+        width: 60,
+        height: 60,
+        padding: 5,
+        strokeColor: '#1890ff',
+        strokeAnimationSpeed: 1,
+        delayBetweenStrokes: 200
+      });
+      writer.animateCharacter();
+    }
+
+    // 页面加载默认生成一次
+    window.onload = generateSheet;
+  </script>
+</body>
+</html>
