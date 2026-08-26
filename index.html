@@ -409,7 +409,7 @@
       ru: 'ru-RU'
     };
 
-    // 预热并缓存浏览器音色库，解决初次调用空列表问题
+    // 预热并缓存浏览器音色库，确保快速选取母语音色
     let cachedVoices = [];
     function loadVoices() {
       if ('speechSynthesis' in window) {
@@ -499,96 +499,69 @@
       }
     };
 
-    // 4. 词语多义项 + 语法句法功能库
+    // 4. 词语多义项 + 纯净目标语言真实语法功能库 (杜绝占位中文)
     const RICH_PHRASE_DB = {
       '太牛了': {
-        hsk: 'HSK 1 + 网络高频',
+        hsk: 'HSK 1',
         meaning: {
-          de: '1. Super stark / Genial!  2. Extrem beeindruckend (Slang)',
-          en: '1. Awesome / Incredible!  2. Badass / Outstanding (Slang)',
-          es: '1. ¡Increíble! / ¡Genial!  2. Súper impresionante / Una pasada',
-          fr: '1. Trop fort ! / Trop génial !  2. Époustouflant (Argot)',
-          it: '1. Troppo forte! / Fantastico!  2. Mitico (Slang)',
-          pt: '1. Demais! / Muito maneiro!  2. Incrível (Gíria)',
-          ru: '1. Круто! / Офигенно!  2. Слишком крутой / Мощный (Сленг)'
-        },
-        slang: {
-          de: '【网络/口语衍生】「牛/牛逼」在现代汉语中广泛用作形容词，表示能力极强、技术高超或令人佩服。',
-          en: '【Internet/Colloquial Slang】"牛" (lit. cow/ox) is widely used in modern slang meaning "badass / awesome / super capable".',
-          es: '【Jerga de Internet】"牛" se utiliza coloquialmente para describir a alguien o algo extraordinariamente hábil o genial.',
-          fr: '【Argot Internet】"牛" s’emploie familièrement pour désigner quelqu’un ou quelque chose de très fort ou balèze.',
-          it: '【Slang online】"牛" è un popolarissimo termine colloquiale che significa "fantastico / formidabile".',
-          pt: '【Gíria da Internet】"牛" é usado no dia a dia como "muito bom / fera / arrasou".',
-          ru: '【Интернет-сленг】«牛» в разговорной речи означает «крутой / мощный / молодец».'
+          de: '1. Super stark / Genial!  2. Extrem beeindruckend',
+          en: '1. Awesome / Incredible!  2. Badass / Outstanding',
+          es: '1. ¡Increíble! / ¡Genial!  2. Súper impresionante',
+          fr: '1. Trop fort ! / Trop génial !  2. Époustouflant',
+          it: '1. Troppo forte! / Fantastico!  2. Mitico',
+          pt: '1. Demais! / Muito maneiro!  2. Incrível',
+          ru: '1. Круто! / Офигенно!  2. Слишком крутой'
         },
         usage: {
-          de: '【语法与结构】太 + 形容词 (牛) + 了 ➔ 口语感叹句，作谓语或独立短语，用于强烈赞叹对方。',
-          en: '【Grammar & Pattern】太 + Adj (牛) + 了 ➔ Exclamatory sentence, acts as predicate or standalone exclamation.',
-          es: '【Gramática y estructura】太 + Adj (牛) + 了 ➔ Oración exclamativa coloquial para elogiar enfáticamente.',
-          fr: '【Grammaire et structure】太 + Adj (牛) + 了 ➔ Phrase exclamative servant de prédicat pour louer vivement.',
-          it: '【Grammatica e struttura】太 + Agg (牛) + 了 ➔ Espressione esclamativa usata per complimentarsi.',
-          pt: '【Gramática e estrutura】太 + Adj (牛) + 了 ➔ Frase exclamativa usada para elogios enfáticos.',
-          ru: '【Грамматика и конструкция】太 + Прил. (牛) + 了 ➔ Восклицательное предложение для выражения восхищения.'
-        }
-      },
-      '中国银行': {
-        hsk: 'HSK 2',
-        meaning: {
-          de: '1. Bank of China  2. Große chinesische Staatsbank',
-          en: '1. Bank of China (BOC)',
-          es: '1. Banco de China (Bank of China)',
-          fr: '1. Banque de Chine (Bank of China)',
-          it: '1. Banca di Cina (Bank of China)',
-          pt: '1. Banco da China (Bank of China)',
-          ru: '1. Банк Китая (Bank of China)'
-        },
-        slang: {
-          de: '【现代金融缩写】英文简称 BOC，中国四大国有大型商业银行之一。',
-          en: '【Modern Acronym】Abbreviated as BOC, one of China’s "Big Four" state-owned banks.',
-          es: '【Acrónimo oficial】Abreviado como BOC, uno de los cuatro grandes bancos estatales de China.',
-          fr: '【Sigle officiel】Abrégé en BOC, l’une des quatre grandes banques d’État chinoises.',
-          it: '【Sigla ufficiale】Siglata BOC, uno dei quattro principali colossi bancari statali.',
-          pt: '【Sigla oficial】Conhecido como BOC, um dos quatro grandes bancos estatais chineses.',
-          ru: '【Официальное сокращение】BOC, один из четырех крупнейших государственных банков Китая.'
-        },
-        usage: {
-          de: '【专有名词】常作地点状语或介词宾语（例：在 中国银行 换钱）。',
-          en: '【Proper Noun】Often used as prepositional object or place adverbial (e.g. at the Bank of China).',
-          es: '【Nombre propio】Funciona habitualmente como complemento de lugar (ej. en el Banco de China).',
-          fr: '【Nom propre】S’emploie comme complément circonstanciel de lieu (ex. à la Banque de Chine).',
-          it: '【Nome proprio】Usato come complemento di luogo (es. alla Banca di Cina).',
-          pt: '【Nome próprio】Usado como adjunto adverbial de lugar (ex. no Banco da China).',
-          ru: '【Собственное имя】Выступает обстоятельством места (напр. в Банке Китая).'
+          de: '太 + Adj (牛) + 了 ➔ Drückt im gesprochenen Chinesisch eine starke Bewunderung oder Begeisterung aus.',
+          en: '太 + Adj (牛) + 了 ➔ Exclamatory structure used to express great admiration or excitement.',
+          es: '太 + Adj (牛) + 了 ➔ Estructura exclamativa para expresar gran admiración o entusiasmo.',
+          fr: '太 + Adj (牛) + 了 ➔ Structure exclamative pour exprimer une vive admiration.',
+          it: '太 + Agg (牛) + 了 ➔ Costrutto esclamativo per esprimere grande ammirazione.',
+          pt: '太 + Adj (牛) + 了 ➔ Estrutura exclamativa para expressar forte admiração.',
+          ru: '太 + Прил. (牛) + 了 ➔ Восклицательная конструкция для выражения восторга.'
         }
       },
       '车马': {
         hsk: 'HSK 3',
         meaning: {
-          de: '1. Kutschen und Pferde  2. Verkehrsmittel / Reisen (historisch)',
-          en: '1. carriages and horses  2. ancient vehicles / transport',
-          es: '1. carruajes y caballos  2. vehículos y transporte antiguo',
-          fr: '1. voitures et chevaux  2. moyens de transport d’autrefois',
-          it: '1. carri e cavalli  2. veicoli d’epoca',
-          pt: '1. carruagens e cavalos  2. condução antiga',
+          de: '1. Kutschen und Pferde  2. Verkehrsmittel (historisch)',
+          en: '1. carriages and horses  2. ancient transport',
+          es: '1. carruajes y caballos  2. transporte antiguo',
+          fr: '1. voitures et chevaux  2. transports d’autrefois',
+          it: '1. carri e cavalli  2. veicoli storici',
+          pt: '1. carruagens e cavalos  2. transporte antigo',
           ru: '1. повозки и кони  2. старинный транспорт'
         },
-        slang: {
-          de: '【文学/文化拓展】常用于诗词（如「从前车马很慢」），象征旧时代从容悠缓的生活节奏。',
-          en: '【Literary Context】Frequently seen in poetry (e.g., "Carriages moved slowly in past times"), symbolizing leisurely old days.',
-          es: '【Contexto literario】Muy usado en poesía nostálgica evocando la vida pausada de tiempos antiguos.',
-          fr: '【Contexte littéraire】Évoque dans la poésie le rythme lent et poétique de la vie d’antan.',
-          it: '【Contesto letterario】Simboleggia nella poesia classica e moderna il ritmo calmo del passato.',
-          pt: '【Contexto literário】Simboliza o ritmo calmo e nostálgico dos tempos antigos na poesia.',
-          ru: '【Литературный контекст】Символизирует неспешный ритм жизни в старину.'
+        usage: {
+          de: 'Nomen (车 + 马) ➔ Symbolisiert in der Poesie oft das entschleunigte Leben vergangener Zeiten.',
+          en: 'Noun phrase (车 + 马) ➔ Often symbolizes the leisurely pace of old times in poetry.',
+          es: 'Frase nominal (车 + 马) ➔ Simboliza poéticamente el ritmo pausado de tiempos remotos.',
+          fr: 'Syntagme nominal (车 + 马) ➔ Évoque dans la poésie le rythme paisible du passé.',
+          it: 'Sintagma nominale (车 + 马) ➔ Simboleggia nella poesia il ritmo lento del passato.',
+          pt: 'Frase nominal (车 + 马) ➔ Simboliza na poesia o ritmo calmo dos tempos antigos.',
+          ru: 'Именная группа (车 + 马) ➔ В поэзии символизирует неспешный ритм старины.'
+        }
+      },
+      '中国银行': {
+        hsk: 'HSK 2',
+        meaning: {
+          de: '1. Bank of China (BOC)',
+          en: '1. Bank of China (BOC)',
+          es: '1. Banco de China (BOC)',
+          fr: '1. Banque de Chine (BOC)',
+          it: '1. Banca di Cina (BOC)',
+          pt: '1. Banco da China (BOC)',
+          ru: '1. Банк Китая (BOC)'
         },
         usage: {
-          de: '【词性与语法】并列名词短语 ➔ 车 (Wagen) + 马 (Pferd)，常在句中作主语或宾语。',
-          en: '【Grammar & POS】Coordinate Noun Phrase ➔ 车 (carriage) + 马 (horse), acts as subject or object.',
-          es: '【Gramática】Frase nominal coordinada ➔ 车 + 马, funciona como sujeto u objeto en la oración.',
-          fr: '【Grammaire】Syntagme nominal coordonné ➔ 车 + 马, employé comme sujet ou complément.',
-          it: '【Grammatica】Sintagma nominale ➔ 车 + 马, funge da soggetto o complemento.',
-          pt: '【Gramática】Sintagma nominal coordenado ➔ 车 + 马, atua como sujeito ou objeto.',
-          ru: '【Грамматика】Сочинительное именное словосочетание ➔ 车 + 马, выступает подлежащим или дополнением.'
+          de: 'Eigenname ➔ Eine der vier großen staatlichen Geschäftsbanken Chinas.',
+          en: 'Proper noun ➔ One of the major state-owned commercial banks in China.',
+          es: 'Nombre propio ➔ Uno de los cuatro grandes bancos estatales comerciales de China.',
+          fr: 'Nom propre ➔ L’une des quatre grandes banques commerciales d’État.',
+          it: 'Nome proprio ➔ Una delle principali banche commerciali statali cinesi.',
+          pt: 'Nome próprio ➔ Um dos quatro maiores bancos comerciais estatais da China.',
+          ru: 'Собственное имя ➔ Один из крупнейших государственных банков Китая.'
         }
       },
       '太大了': {
@@ -596,29 +569,62 @@
         meaning: {
           de: '1. viel zu groß / übermäßig groß  2. riesig',
           en: '1. too big / extremely large  2. oversized',
-          es: '1. demasiado grande / enorme  2. desmedido',
-          fr: '1. trop grand / démesuré  2. gigantesque',
-          it: '1. troppo grande  2. enorme',
-          pt: '1. grande demais  2. desmedido',
-          ru: '1. слишком большой  2. чересчур крупный'
-        },
-        slang: {
-          de: '【口语口头禅】常用于惊叹某事物的规模、反差或夸张程度（如「脑洞太大了」）。',
-          en: '【Colloquial Trend】Used emphatically to exaggerate gaps or ideas (e.g. "脑洞太大了" = wildly imaginative).',
-          es: '【Uso coloquial】Muy usado para exagerar dimensiones, impacto o sorpresa.',
-          fr: '【Usage familier】Employé pour exprimer l’exagération ou l’étonnement face à une immensité.',
-          it: '【Espressione comune】Usato nel parlato per evidenziare dimensioni eccessive o sorpresa.',
-          pt: '【Uso coloquial】Comum para enfatizar espanto ou exagero de tamanho.',
-          ru: '【Разговорное клише】Часто выражает крайнее удивление масштабом.'
+          es: '1. demasiado grande / enorme',
+          fr: '1. trop grand / démesuré',
+          it: '1. troppo grande / enorme',
+          pt: '1. grande demais / desmedido',
+          ru: '1. слишком большой / чересчур крупный'
         },
         usage: {
-          de: '【句型结构】太 + 形容词 + 了 ➔ 经典程度偏误句型，在句中作谓语（例：这件衣服太大了）。',
-          en: '【Pattern & Grammar】太 + Adj + 了 ➔ Classic degree pattern, acts as predicate (e.g. Clothes are too big).',
-          es: '【Estructura】太 + Adj + 了 ➔ Patrón de grado superlativo, actúa como predicado.',
-          fr: '【Structure】太 + Adj + 了 ➔ Structure de degré élevé, sert de prédicat.',
-          it: '【Struttura】太 + Agg + 了 ➔ Struttura che esprime grado eccessivo, funge da predicato.',
-          pt: '【Estrutura】太 + Adj + 了 ➔ Padrão de grau excessivo atuando como predicativo.',
-          ru: '【Грамматика】太 + Прил. + 了 ➔ Конструкция чрезмерной степени, выступает сказуемым.'
+          de: '太 + Adj (大) + 了 ➔ Zeigt ein übersteigertes Ausmaß an; fungiert im Satz als Prädikat.',
+          en: '太 + Adj (大) + 了 ➔ Indicates an excessive degree; serves as predicate in sentences.',
+          es: '太 + Adj (大) + 了 ➔ Indica un grado excesivo; funciona como predicado.',
+          fr: '太 + Adj (大) + 了 ➔ Exprime un degré excessif; employé comme prédicat.',
+          it: '太 + Agg (大) + 了 ➔ Indica grado eccessivo; funge da predicato nella frase.',
+          pt: '太 + Adj (大) + 了 ➔ Indica grau excessivo; atua como predicado na oração.',
+          ru: '太 + Прил. (大) + 了 ➔ Указывает на чрезмерную степень признака; сказуемое.'
+        }
+      },
+      '去看电影': {
+        hsk: 'HSK 1',
+        meaning: {
+          de: '1. ins Kino gehen / einen Film ansehen',
+          en: '1. go to see a movie / go to the cinema',
+          es: '1. ir al cine / ver una película',
+          fr: '1. aller au cinéma / voir un film',
+          it: '1. andare al cinema / vedere un film',
+          pt: '1. ir ao cinema / assistir a um filme',
+          ru: '1. идти в кино / смотреть фильм'
+        },
+        usage: {
+          de: '去 + Verb (看电影) ➔ Drückt das Ziel oder die Absicht einer Ortsbewegung aus.',
+          en: '去 + Verb (看电影) ➔ Expresses the purpose of going somewhere.',
+          es: '去 + Verbo (看电影) ➔ Expresa el propósito del desplazamiento.',
+          fr: '去 + Verbe (看电影) ➔ Exprime le but d’un déplacement.',
+          it: '去 + Verbo (看电影) ➔ Esprime lo scopo di un movimento.',
+          pt: '去 + Verbo (看电影) ➔ Indica o objetivo do deslocamento.',
+          ru: '去 + Глагол (看电影) ➔ Выражает цель движения.'
+        }
+      },
+      '睡觉': {
+        hsk: 'HSK 1',
+        meaning: {
+          de: '1. schlafen / zu Bett gehen',
+          en: '1. sleep / go to bed',
+          es: '1. dormir / ir a dormir',
+          fr: '1. dormir / se coucher',
+          it: '1. dormire / coricarsi',
+          pt: '1. dormir / deitar-se',
+          ru: '1. спать / ложиться спать'
+        },
+        usage: {
+          de: 'Trennbares Verb (睡 + 觉) ➔ z.B. 睡了一个好觉 (gut geschlafen).',
+          en: 'Separable verb (睡 + 觉) ➔ e.g. 睡了一个好觉 (had a good sleep).',
+          es: 'Verbo separable (睡 + 觉) ➔ ej. 睡了一个好觉 (dormí muy bien).',
+          fr: 'Verbe dissociable (睡 + 觉) ➔ ex. 睡了一个好觉 (bien dormi).',
+          it: 'Verbo separabile (睡 + 觉) ➔ es. 睡了一个好觉 (fatto una bella dormita).',
+          pt: 'Verbo separável (睡 + 觉) ➔ ex. 睡了一个好觉 (dormi muito bem).',
+          ru: 'Разделимый глагол (睡 + 觉) ➔ напр. 睡了一个好觉 (хорошо выспался).'
         }
       }
     };
@@ -673,69 +679,70 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // 7. 强化版多语言双引擎外语发音朗读器（本地音色匹配 + Google 在线音频保底）
+    // 7. 高保真外语发音朗读器（精准音色过滤 + 智能文本清洗）
     let activeAudioPlayer = null;
     function speakForeignTextSafe(encodedText, targetLang) {
       if (!encodedText || targetLang === 'none') return;
       
       const rawText = decodeURIComponent(encodedText);
-      // 清洗文本：提取首个义项，去除序号和标点符号
-      let cleanText = rawText.replace(/\d+\.\s*/g, '').split(/[\/;,\(]/)[0].trim();
+      // 过滤清洗：只保留核心外语词汇，移除序号、括号注释等
+      let cleanText = rawText.replace(/^\d+\.\s*/, '').split(/[\/;,\(]/)[0].trim();
       if (!cleanText) cleanText = rawText;
 
       const langCode = LANG_TTS_MAP[targetLang] || 'en-US';
 
-      // 停止上一轮音频
       if (activeAudioPlayer) {
         activeAudioPlayer.pause();
         activeAudioPlayer = null;
       }
 
-      // 策略 A: 尝试 Web Speech API 并精确匹配音色
+      // 策略 A: Web Speech API 母语高品质音色优先匹配
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        window.speechSynthesis.resume(); // 唤醒可能处于休眠状态的引擎
+        window.speechSynthesis.resume();
 
         const utterance = new SpeechSynthesisUtterance(cleanText);
         utterance.lang = langCode;
         utterance.rate = 0.9;
+        utterance.pitch = 1.0;
 
-        // 查找匹配当前语种的最佳语音
         const voices = cachedVoices.length ? cachedVoices : window.speechSynthesis.getVoices();
-        const matchedVoice = voices.find(v => v.lang === langCode || v.lang.startsWith(targetLang));
-        if (matchedVoice) {
-          utterance.voice = matchedVoice;
+        // 优先匹配包含 Google、Natural、Premium、Siri 或确切语种的本地音色，避免机械杂音
+        const bestVoice = voices.find(v => (v.lang === langCode || v.lang.startsWith(targetLang)) && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Premium') || v.name.includes('Siri'))) 
+                       || voices.find(v => v.lang === langCode || v.lang.startsWith(targetLang));
+
+        if (bestVoice) {
+          utterance.voice = bestVoice;
         }
 
         let hasSpoken = false;
         utterance.onstart = () => { hasSpoken = true; };
 
-        // 如果在 300ms 内没有触发发声，自动无缝切换到策略 B (Google TTS 在线流)
+        // 若本地音色 250ms 内未响应，自动降级至 Google TTS 在线高清音频
         setTimeout(() => {
           if (!hasSpoken && !window.speechSynthesis.speaking) {
             playGoogleTtsAudio(cleanText, targetLang);
           }
-        }, 300);
+        }, 250);
 
         try {
           window.speechSynthesis.speak(utterance);
           return;
         } catch (err) {
-          console.warn('Web Speech API 调用失败，转入在线音频保底:', err);
+          console.warn('本地语音合成异常，转入在线音频保底:', err);
         }
       }
 
-      // 策略 B: Google TTS 在线保底播放
+      // 策略 B: Google TTS 原生音频流保底
       playGoogleTtsAudio(cleanText, targetLang);
     }
 
-    // Google TTS 在线原生音频保底播放器
     function playGoogleTtsAudio(text, targetLang) {
       try {
         const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${targetLang}&q=${encodeURIComponent(text)}`;
         activeAudioPlayer = new Audio(ttsUrl);
         activeAudioPlayer.play().catch(e => {
-          console.warn('在线 TTS 播放失败:', e);
+          console.warn('在线 TTS 播放受限:', e);
         });
       } catch (e) {
         console.error('音频引擎初始化异常:', e);
@@ -784,10 +791,10 @@
       return null;
     }
 
-    // 9. 通用多语言与语法解析入口
+    // 9. 通用多语言与语法解析入口（已移除所有通用模板中文占位文字）
     async function getUniversalPhraseDetails(phrase, targetLang) {
       if (targetLang === 'none' || !phrase) {
-        return { hsk: '', meaning: '', slang: '', usage: '', primary: '' };
+        return { hsk: '', meaning: '', usage: '', primary: '' };
       }
 
       if (RICH_PHRASE_DB[phrase]) {
@@ -796,8 +803,7 @@
         return {
           hsk: item.hsk,
           meaning: m,
-          slang: item.slang[targetLang] || item.slang['en'],
-          usage: item.usage[targetLang] || item.usage['en'],
+          usage: item.usage ? (item.usage[targetLang] || item.usage['en']) : '',
           primary: m.replace(/\d+\.\s*/g, '').split(/[\/;]/)[0].trim()
         };
       }
@@ -812,40 +818,18 @@
         meaningResult = '点击补充词语释义';
       }
 
-      let inferredStructure = `【句型与用法】`;
+      // 仅保留明确的语法句型提示，移除一切通用空话
+      let dynamicUsage = '';
       if (phrase.startsWith('太') && phrase.endsWith('了')) {
-        inferredStructure = `【句型结构】太 + 形容词/动词 + 了 ➔ 表示程度极高或过分 (Too / Zu + Adj)`;
+        dynamicUsage = `太 + Adj + 了 ➔ (Exclamatory / Degree Pattern)`;
       } else if (phrase.includes('不') || phrase.includes('没')) {
-        inferredStructure = `【否定句式】不 / 没 + 动词/形容词 ➔ 表示否定结构 (Negation)`;
-      } else {
-        inferredStructure = `【词语用法】常用中文词组/表达，请结合语境在句中作主语、谓语或宾语。`;
+        dynamicUsage = `不 / 没 + Verb / Adj ➔ (Negation)`;
       }
 
-      const usageTips = {
-        de: `${inferredStructure} (Im deutschen Satzkontext anwenden)`,
-        en: `${inferredStructure} (Apply according to context)`,
-        es: `${inferredStructure} (Usar según la función sintáctica)`,
-        fr: `${inferredStructure} (À employer selon la syntaxe)`,
-        it: `${inferredStructure} (Da applicare secondo il contesto)`,
-        pt: `${inferredStructure} (Usar conforme o contexto sintático)`,
-        ru: `${inferredStructure} (Используется в соответствии с контекстом)`
-      };
-
-      const inferredSlang = {
-        de: `【现代词汇/网络用法】适用于现代中文日常交际、网络社交与书面表达。`,
-        en: `【Modern/Online Slang】Widely used in modern Chinese daily conversations and online media.`,
-        es: `【Uso actual y redes】Ampliamente utilizado en la comunicación cotidiana y redes sociales.`,
-        fr: `【Usage moderne et web】Couramment employé dans la communication chinoise actuelle et sur internet.`,
-        it: `【Uso moderno / online】Comunemente impiegato nella comunicazione contemporanea e sul web.`,
-        pt: `【Uso moderno / web】Muito usado na comunicação do dia a dia e mídias sociais.`,
-        ru: `【Современное/сетевое употребление】Широко используется в разговорной речи и интернет-среде.`
-      };
-
       return {
-        hsk: 'HSK 常用词',
+        hsk: 'HSK',
         meaning: meaningResult,
-        slang: inferredSlang[targetLang] || inferredSlang['en'],
-        usage: usageTips[targetLang] || usageTips['en'],
+        usage: dynamicUsage,
         primary: primaryWord
       };
     }
@@ -881,7 +865,6 @@
         const chars = (rawPhrase.match(/[\u4e00-\u9fa5]/g) || []).join('');
         if (!chars) continue;
 
-        // 提取语境拼音
         const contextualPinyins = getContextualPinyinList(chars);
         
         // 构造拼音置于汉字正上方的 Ruby 结构
@@ -892,17 +875,16 @@
         // 词语专属实物摄影图
         const phrasePhotoUrl = PHRASE_REAL_PHOTO_DB[chars];
         const phrasePicHtml = phrasePhotoUrl ? `
-          <img class="phrase-real-photo" src="${phrasePhotoUrl}" alt="${chars}" title="「${chars}」对应实物/实景摄影图" onerror="this.style.display='none'" />
+          <img class="phrase-real-photo" src="${phrasePhotoUrl}" alt="${chars}" title="「${chars}」对应实物摄影图" onerror="this.style.display='none'" />
         ` : '';
         
         const transMeaningId = `trans-meaning-${pIdx}`;
-        const transSlangId = `trans-slang-${pIdx}`;
         const transUsageId = `trans-usage-${pIdx}`;
 
         const wordBlock = document.createElement('div');
         wordBlock.className = 'word-block';
 
-        // 词条顶部：Ruby 拼音在汉字正上方 + 词语实物照 + 右侧多重释义与用法
+        // 词条顶部：纯净多语言解析
         wordBlock.innerHTML = `
           <div class="word-header">
             <div class="word-meta-left">
@@ -910,12 +892,11 @@
               <button class="btn-audio" onclick="speakText('${chars}')">🔊 朗读中文</button>
             </div>
             ${phrasePicHtml}
-            <div class="word-trans-box" contenteditable="true" title="点击可直接编辑修改词语含义、网络用法与语法">
+            <div class="word-trans-box" contenteditable="true" title="点击可直接编辑修改词语含义与语法">
               <div class="trans-meaning-line" id="${transMeaningId}">
                 <span>${targetLang === 'none' ? '' : 'Google AI 释义加载中...'}</span>
               </div>
-              <div class="trans-slang-line" id="${transSlangId}">${targetLang === 'none' ? '' : '常用/网络表达加载中...'}</div>
-              <div class="trans-usage-line" id="${transUsageId}">${targetLang === 'none' ? '' : '语法用法解析中...'}</div>
+              <div class="trans-usage-line" id="${transUsageId}" style="display:none;"></div>
             </div>
           </div>
         `;
@@ -1000,14 +981,12 @@
           globalGridIdx++;
         }
 
-        // 异步填充整词的多重释义、网络表达、语法用法及安全外语朗读
+        // 异步填充整词的多重释义、真实语法用法及外语发音
         if (targetLang !== 'none') {
           getUniversalPhraseDetails(chars, targetLang).then(res => {
             const mEl = document.getElementById(transMeaningId);
-            const sEl = document.getElementById(transSlangId);
             const uEl = document.getElementById(transUsageId);
             
-            // 采用 encodeURIComponent 对朗读文本进行安全编码，防止引号与特殊字符截断报错
             const safeSpeakParam = encodeURIComponent(res.primary || res.meaning);
 
             if (mEl) {
@@ -1018,8 +997,14 @@
                 <button class="btn-foreign-audio" onclick="speakForeignTextSafe('${safeSpeakParam}', '${targetLang}')">🔊 朗读翻译</button>
               `;
             }
-            if (sEl) sEl.innerText = res.slang;
-            if (uEl) uEl.innerText = res.usage;
+            if (uEl) {
+              if (res.usage) {
+                uEl.style.display = 'block';
+                uEl.innerText = res.usage;
+              } else {
+                uEl.style.display = 'none';
+              }
+            }
           });
         }
       }
