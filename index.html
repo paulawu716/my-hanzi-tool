@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>通用多语言汉字多音字精校与语音字帖系统</title>
+  <title>通用多语言汉字多义项与多音字语音字帖系统</title>
   <!-- 引入汉字笔顺库与拼音库 -->
   <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.18.3/dist/index.js"></script>
@@ -75,7 +75,7 @@
       border-bottom: 2px dashed #eaeaea;
     }
 
-    /* 词条头部：拼音 + 发音提示 + 目标语言翻译 */
+    /* 词条头部：拼音 + 发音提示 + 目标语言多义项翻译 */
     .word-header {
       display: flex;
       align-items: center;
@@ -114,13 +114,14 @@
     }
     .word-trans {
       font-size: 13.5px;
-      color: #475569;
+      color: #334155;
       background: #fff;
       padding: 4px 10px;
       border-radius: 4px;
       border: 1px dashed #cbd5e1;
       cursor: text;
       flex: 1;
+      line-height: 1.4;
     }
     .word-trans:focus {
       outline: 1px solid #1890ff;
@@ -136,7 +137,7 @@
       padding: 10px 12px;
     }
 
-    /* 第一行：配图 + 字源演变(甲金篆楷) + 语法解析 */
+    /* 第一行：配图 + 字源演变(甲金篆楷) + 多重语法释义 */
     .char-info-row {
       display: flex;
       align-items: center;
@@ -187,11 +188,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-    .evo-glyph svg {
-      width: 24px;
-      height: 24px;
-      fill: #334155;
     }
     .evo-glyph-text {
       font-size: 15px;
@@ -332,7 +328,7 @@
 
   <!-- 控制工具栏 -->
   <div class="controls">
-    <input type="text" id="textInput" value="中国银行, 去看电影, 睡觉, 觉得太好了" placeholder="输入任意词语或句子（已精准支持多音字语境识别）..." />
+    <input type="text" id="textInput" value="太大了, 中国银行, 去看电影, 觉得, 快乐" placeholder="输入任意词语或句子（自动解析多重常用释义与多音字）..." />
     
     <select id="langSelect" onchange="generateSheet()">
       <option value="de">🇩🇪 德语 (Deutsch)</option>
@@ -365,28 +361,160 @@
       prep: { de: 'Präposition (介词)', en: 'Preposition (介词)', es: 'Preposición (介词)', fr: 'Préposition (介词)', it: 'Preposizione (介词)', pt: 'Preposizione (介词)', ru: 'Предлог (介词)' }
     };
 
-    // 2. 核心：基于语境的多音字精准解析算法 (Context-Aware Polyphonic Pipeline)
+    // 2. 常用高频词多义项地道词典（支持多种常见表达）
+    const RICH_DICT = {
+      '太大了': {
+        de: '1. viel zu groß / übermäßig groß  2. übergroß',
+        en: '1. too big / extremely large  2. oversized',
+        es: '1. demasiado grande / excesivamente grande  2. enorme',
+        fr: '1. trop grand / excessivement grand  2. surdimensionné',
+        it: '1. troppo grande / eccessivamente grande  2. enorme',
+        pt: '1. grande demais / excessivamente grande  2. desmedido',
+        ru: '1. слишком большой  2. чересчур крупный'
+      },
+      '中国银行': {
+        de: '1. Bank of China  2. Chinesische Zentral-/Handelsbank',
+        en: '1. Bank of China (BOC)',
+        es: '1. Banco de China (Bank of China)',
+        fr: '1. Banque de Chine (Bank of China)',
+        it: '1. Banca di Cina (Bank of China)',
+        pt: '1. Banco da China (Bank of China)',
+        ru: '1. Банк Китая (Bank of China)'
+      },
+      '看电影': {
+        de: '1. ins Kino gehen  2. einen Film ansehen / schauen',
+        en: '1. watch a movie  2. go to the cinema',
+        es: '1. ver una película  2. ir al cine',
+        fr: '1. regarder un film  2. aller au cinéma',
+        it: '1. guardare un film  2. andare al cinema',
+        pt: '1. ver um filme  2. ir ao cinema',
+        ru: '1. смотреть фильм  2. ходить в кино'
+      },
+      '觉得': {
+        de: '1. finden / meinen / glauben  2. sich fühlen (spüren)',
+        en: '1. feel / think  2. perceive / believe',
+        es: '1. sentir / creer  2. parecer / opinar',
+        fr: '1. penser / trouver  2. ressentir / avoir l’impression',
+        it: '1. pensare / ritenere  2. sentirsi',
+        pt: '1. achar / pensar  2. sentir-se',
+        ru: '1. считать / думать  2. чувствовать'
+      },
+      '快乐': {
+        de: '1. glücklich / fröhlich  2. heiter / erfreut',
+        en: '1. happy / joyful  2. cheerful / delighted',
+        es: '1. feliz / alegre  2. contento',
+        fr: '1. heureux / joyeux  2. gai / content',
+        it: '1. felice / allegro  2. gioioso',
+        pt: '1. feliz / alegre  2. contente',
+        ru: '1. счастливый / радостный  2. весёлый'
+      },
+      '太': {
+        de: '1. zu / allzu (Grad)  2. äußerst / höchst (sehr)  3. ältester (Verwandtschaft)',
+        en: '1. too / overly (degree)  2. extremely / utmost  3. highest/greatest',
+        es: '1. demasiado (grado)  2. sumamente / extremadamente  3. supremo',
+        fr: '1. trop (degré)  2. extrêmement / très  3. le plus ancien/haut',
+        it: '1. troppo (grado)  2. estremamente / assai  3. supremo',
+        pt: '1. demais (grau)  2. extremamente / sumamente  3. supremo',
+        ru: '1. слишком / чересчур  2. чрезвычайно / крайне  3. наивысший'
+      },
+      '大': {
+        de: '1. groß / riesig (Umfang)  2. alt (Alter)  3. bedeutend / wichtig',
+        en: '1. big / large  2. old (age)  3. major / greatly',
+        es: '1. grande / amplio  2. mayor (edad)  3. importante / grave',
+        fr: '1. grand / large  2. âgé  3. important / majeur',
+        it: '1. grande / vasto  2. anziano (età)  3. importante',
+        pt: '1. grande / amplo  2. velho (idade)  3. principal',
+        ru: '1. большой / крупный  2. взрослый (возраст)  3. важный / великий'
+      },
+      '行': {
+        de: '1. gehen / reisen (xíng)  2. in Ordnung / fähig (xíng)  3. Bank / Branche / Reihe (háng)',
+        en: '1. walk / travel (xíng)  2. OK / capable (xíng)  3. bank / profession / line (háng)',
+        es: '1. andar / viajar (xíng)  2. estar bien / capaz (xíng)  3. banco / fila / sector (háng)',
+        fr: '1. marcher / voyager (xíng)  2. d’accord / capable (xíng)  3. banque / ligne / métier (háng)',
+        it: '1. camminare (xíng)  2. va bene (xíng)  3. banca / fila / mestiere (háng)',
+        pt: '1. andar / viajar (xíng)  2. tudo bem / capaz (xíng)  3. banco / profissão / fila (háng)',
+        ru: '1. идти / ходить (xíng)  2. сойдёт / ладно (xíng)  3. банк / ряд / профессия (háng)'
+      }
+    };
+
+    // 3. 基于语境的多音字提取
     function getContextualPinyinList(phrase) {
-      // 在整词/整句语境下统一计算拼音数组，确保多音字在上下文中的读音完全准确
-      const pinyinArray = pinyin(phrase, { toneType: 'symbol', type: 'array' });
-      return pinyinArray;
+      return pinyin(phrase, { toneType: 'symbol', type: 'array' });
     }
 
-    // 3. Web Speech API 原生高保真语音朗读提示
+    // 4. Web Speech API 原生语音朗读
     function speakText(text) {
       if (!('speechSynthesis' in window)) {
         alert('当前浏览器暂不支持语音合成朗读功能');
         return;
       }
-      window.speechSynthesis.cancel(); // 停止当前正在播放的声音
+      window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'zh-CN';
-      utterance.rate = 0.85; // 稍慢语速，适合对外汉语跟读
+      utterance.rate = 0.85;
       utterance.pitch = 1.0;
       window.speechSynthesis.speak(utterance);
     }
 
-    // 4. 动态语法与词性规则引擎
+    // 5. 动态多义项翻译与聚合网关
+    async function getRichMultiTranslation(text, targetLang) {
+      if (targetLang === 'none' || !text) return '';
+
+      // 1. 优先从精校多义项词库中获取
+      if (RICH_DICT[text] && RICH_DICT[text][targetLang]) {
+        return RICH_DICT[text][targetLang];
+      }
+
+      // 2. 联机调用并聚合多重释义 (MyMemory 包含 matches 候选项)
+      try {
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=zh-CN|${targetLang}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        const candidateSet = new Set();
+        if (data?.responseData?.translatedText) {
+          const mainTrans = data.responseData.translatedText.trim();
+          if (!mainTrans.startsWith('MYMEMORY WARNING') && !mainTrans.includes('QUERY LENGTH LIMIT')) {
+            candidateSet.add(mainTrans.toLowerCase());
+          }
+        }
+        
+        // 抓取近义词/其它匹配选项
+        if (Array.isArray(data?.matches)) {
+          data.matches.forEach(m => {
+            if (m.translation && m.quality > 40) {
+              const clean = m.translation.trim().toLowerCase();
+              if (!clean.includes('http') && clean !== text.toLowerCase() && clean.length < 40) {
+                candidateSet.add(clean);
+              }
+            }
+          });
+        }
+
+        const candidates = Array.from(candidateSet).slice(0, 3);
+        if (candidates.length > 0) {
+          return candidates.map((c, i) => `${i + 1}. ${c}`).join('  ');
+        }
+      } catch (e) {
+        console.warn('MyMemory 调度异常:', e);
+      }
+
+      // 3. 降级备用接口
+      try {
+        const lingvaUrl = `https://lingva.ml/api/v1/zh/${targetLang}/${encodeURIComponent(text)}`;
+        const res2 = await fetch(lingvaUrl);
+        const data2 = await res2.json();
+        if (data2?.translation) {
+          return `1. ${data2.translation.trim()}`;
+        }
+      } catch (e2) {
+        console.warn('Lingva 调度异常:', e2);
+      }
+
+      return '点击补充多重常用释义';
+    }
+
+    // 6. 动态语法与词性分析
     function inferGrammarAndPOS(char, targetLang) {
       const code = char.charCodeAt(0);
       let posKey = 'noun';
@@ -397,11 +525,11 @@
         posKey = 'adv';
         patternZh = `${char} + 形容词 / 动词 + (了)`;
         hsk = 'HSK 1';
-      } else if ('看吃喝走去来想爱做买写听读说说见找问笑学住工作睡觉行'.includes(char)) {
+      } else if ('看吃喝走去来想爱做买写听读说说见找问笑学住工作睡觉行觉'.includes(char)) {
         posKey = 'verb';
         patternZh = `${char} + 宾语 (Objekt) / 补语`;
         hsk = 'HSK 1';
-      } else if ('大小高低好坏多少红黑白长短早晚美快慢'.includes(char)) {
+      } else if ('大小高低好坏多少红黑白长短早晚美快慢乐'.includes(char)) {
         posKey = 'adj';
         patternZh = `很 / 太 + ${char} (作谓语/修饰语)`;
         hsk = 'HSK 1';
@@ -427,39 +555,6 @@
       return { posKey, posName, patternZh, hsk };
     }
 
-    // 5. 通用多语言翻译网关
-    async function universalTranslate(text, targetLang) {
-      if (targetLang === 'none' || !text) return '';
-      
-      try {
-        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=zh-CN|${targetLang}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data?.responseData?.translatedText) {
-          const trans = data.responseData.translatedText.trim();
-          if (!trans.startsWith('MYMEMORY WARNING') && !trans.includes('QUERY LENGTH LIMIT')) {
-            return trans;
-          }
-        }
-      } catch (e) {
-        console.warn('MyMemory 调度失败:', e);
-      }
-
-      try {
-        const lingvaUrl = `https://lingva.ml/api/v1/zh/${targetLang}/${encodeURIComponent(text)}`;
-        const res2 = await fetch(lingvaUrl);
-        const data2 = await res2.json();
-        if (data2?.translation) {
-          return data2.translation.trim();
-        }
-      } catch (e2) {
-        console.warn('Lingva 调度失败:', e2);
-      }
-
-      return '点击补充释义';
-    }
-
-    // 6. 字形流变与通用插图
     function getEtymologyNodes(char) {
       return [
         { name: '甲骨', content: char },
@@ -500,7 +595,7 @@
         const chars = (rawPhrase.match(/[\u4e00-\u9fa5]/g) || []).join('');
         if (!chars) continue;
 
-        // 【多音字核心】：整句语境提取拼音列表，确保每个字拿到它在当前词里的专属正确发音
+        // 提取整句多音字语境下的拼音列表
         const contextualPinyins = getContextualPinyinList(chars);
         const phrasePinyinStr = contextualPinyins.join(' ');
         const transBoxId = `trans-box-${pIdx}`;
@@ -508,20 +603,19 @@
         const wordBlock = document.createElement('div');
         wordBlock.className = 'word-block';
 
-        // 词条顶部头部 + 整词语音朗读按钮
+        // 词条顶部头部 + 语音朗读 + 多义项翻译展示区
         wordBlock.innerHTML = `
           <div class="word-header">
             <span class="word-text">${chars}</span>
             <span class="word-pinyin">[ ${phrasePinyinStr} ]</span>
             <button class="btn-audio" onclick="speakText('${chars}')">🔊 朗读词句</button>
-            <div class="word-trans" id="${transBoxId}" contenteditable="true" title="点击可直接编辑修改翻译">${targetLang === 'none' ? '' : '翻译获取中...'}</div>
+            <div class="word-trans" id="${transBoxId}" contenteditable="true" title="点击可直接编辑修改多重释义">${targetLang === 'none' ? '' : '多义项解析中...'}</div>
           </div>
         `;
 
-        // 逐字生成演变图与带有语境多音字读音的字卡
+        // 逐字生成字卡
         for (let cIdx = 0; cIdx < chars.length; cIdx++) {
           const char = chars[cIdx];
-          // 准确取出语境下的单字拼音（自动解决如银行 háng、行走 xíng 等多音字问题）
           const charPy = contextualPinyins[cIdx] || pinyin(char, { toneType: 'symbol' });
           const firstGridId = `grid-demo-${globalGridIdx}`;
           const grammarMeaningId = `grammar-mean-${pIdx}-${cIdx}`;
@@ -553,12 +647,12 @@
                   <span class="pos-badge">${grammarInfo.posName}</span>
                   <span class="grammar-pattern-tag">${grammarInfo.patternZh}</span>
                 </div>
-                <div class="grammar-meaning-target" id="${grammarMeaningId}">释义生成中...</div>
+                <div class="grammar-meaning-target" id="${grammarMeaningId}" contenteditable="true" title="点击可编辑">常用义项加载中...</div>
               </div>
             </div>
           `;
 
-          // 笔顺演示、单字读音与米字格描红
+          // 笔顺演示与米字格
           const practiceRow = document.createElement('div');
           practiceRow.className = 'char-practice-row';
 
@@ -604,20 +698,20 @@
             });
           }
 
-          // 异步动态翻译单字的含义
+          // 异步加载单字多义项
           if (targetLang !== 'none') {
-            universalTranslate(char, targetLang).then(res => {
+            getRichMultiTranslation(char, targetLang).then(res => {
               const el = document.getElementById(grammarMeaningId);
-              if (el) el.innerText = `语义释义: ${res}`;
+              if (el) el.innerText = `常用释义: ${res}`;
             });
           }
 
           globalGridIdx++;
         }
 
-        // 异步获取整词/整句地道翻译
+        // 异步加载整词/短语多重常用翻译
         if (targetLang !== 'none') {
-          universalTranslate(chars, targetLang).then(res => {
+          getRichMultiTranslation(chars, targetLang).then(res => {
             const transEl = document.getElementById(transBoxId);
             if (transEl) transEl.innerText = res;
           });
