@@ -186,96 +186,34 @@
       border-left: 3px solid #0ea5e9;
     }
 
-    /* 单字卡片：单行严格对齐（无折行） */
+    /* 单字卡片：严格单行横向排版（左:发音拼音笔顺 ➔ 中:田字格 ➔ 右:字体演变配图） */
     .char-card {
       margin-bottom: 10px;
       background: #ffffff;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
-      padding: 7px 10px;
+      padding: 7px 12px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+      justify-content: flex-start;
+      gap: 12px;
       flex-wrap: nowrap;
       overflow-x: hidden;
     }
 
-    /* 左侧：专属卡通配图 + 单一甲骨文/金文链接节点 */
-    .char-left-zone {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-    .pic-badge {
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #f8fafc;
-      border-radius: 6px;
-      border: 1px solid #e2e8f0;
-      flex-shrink: 0;
-    }
-    .pic-badge svg {
-      width: 38px;
-      height: 38px;
-    }
-
-    /* 古文字链接单个节点（甲骨文优先，无则降级为金文） */
-    .ancient-link-badge {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: #f8fafc;
-      border: 1px solid #edf2f7;
-      padding: 2px 6px;
-      border-radius: 6px;
-      text-decoration: none;
-      color: #334155;
-      width: 42px;
-      height: 44px;
-      transition: all 0.2s;
-    }
-    .ancient-link-badge:hover {
-      border-color: #1890ff;
-      background: #e6f7ff;
-    }
-    .ancient-glyph {
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .ancient-glyph svg {
-      width: 22px;
-      height: 22px;
-      fill: #334155;
-    }
-    .ancient-label {
-      font-size: 9px;
-      color: #8c8c8c;
-      transform: scale(0.85);
-      margin-top: 1px;
-    }
-
-    /* 中间：单字多音字读音 + 笔顺演示 + 纠偏发音 */
-    .char-badge {
-      width: 55px;
+    /* 1. 最左边：单字多音字读音 + 笔顺演示 + 纠偏发音 */
+    .char-badge-left {
+      width: 65px;
       text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px;
+      gap: 3px;
       flex-shrink: 0;
     }
     .char-pinyin-small {
       color: #1890ff;
-      font-size: 13.5px;
+      font-size: 14px;
       font-weight: bold;
     }
     .btn-action-group {
@@ -283,7 +221,7 @@
       gap: 3px;
     }
     .btn-small-audio {
-      padding: 1px 4px;
+      padding: 1px 5px;
       font-size: 10px;
       background: #52c41a;
       color: #fff;
@@ -292,7 +230,7 @@
       cursor: pointer;
     }
     .btn-animate {
-      padding: 1px 4px;
+      padding: 1px 5px;
       font-size: 10px;
       background: #fa8c16;
       color: #fff;
@@ -301,8 +239,8 @@
       cursor: pointer;
     }
 
-    /* 右侧：单列米字格/田字格（绝不换行） */
-    .grid-list {
+    /* 2. 中间：田字格/米字格练习区（单行水平排列） */
+    .grid-list-middle {
       display: flex;
       gap: 5px;
       flex-wrap: nowrap;
@@ -319,6 +257,80 @@
         linear-gradient(to right, transparent calc(50% - 0.5px), #ffa39e 50%, transparent calc(50% + 0.5px)),
         linear-gradient(to bottom, transparent calc(50% - 0.5px), #ffa39e 50%, transparent calc(50% + 0.5px));
       background-size: 100% 100%;
+    }
+
+    /* 3. 最右边：不同字体、汉字演变轨迹与配图区（若无则自然空出） */
+    .char-right-zone {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto; /* 靠最右对齐 */
+      flex-shrink: 0;
+    }
+    .pic-badge {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      flex-shrink: 0;
+    }
+    .pic-badge svg {
+      width: 36px;
+      height: 36px;
+    }
+
+    /* 字体与演变过程节点展示 */
+    .font-evolution-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #f8fafc;
+      border: 1px solid #edf2f7;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+    .ancient-link-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #334155;
+      width: 36px;
+      height: 40px;
+      transition: all 0.2s;
+    }
+    .ancient-link-badge:hover {
+      background: #e6f7ff;
+      border-radius: 4px;
+    }
+    .ancient-glyph {
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-family: "KaiTi", "STKaiti", "FangSong", serif;
+    }
+    .ancient-glyph svg {
+      width: 20px;
+      height: 20px;
+      fill: #334155;
+    }
+    .ancient-label {
+      font-size: 8.5px;
+      color: #8c8c8c;
+      transform: scale(0.85);
+      margin-top: 1px;
+    }
+    .evo-arrow {
+      color: #cbd5e1;
+      font-size: 10px;
     }
 
     /* 打印适配 */
@@ -358,88 +370,82 @@
   <script>
     const { pinyin } = pinyinPro;
 
-    // 1. 汉字专属卡通插画 + 古文字库（优先甲骨文，若无则自动降级展示金文）
+    // 1. 汉字专属卡通插画 + 演变过程与不同字体库 (若有则展示在最右侧，没有则自然留空)
     const CHAR_MEDIA_DB = {
       '牛': {
         icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="36" r="18" fill="#d97706"/><path d="M16,24 Q10,12 22,22 M48,24 Q54,12 42,22" stroke="#78350f" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="26" cy="34" r="3" fill="#1e293b"/><circle cx="38" cy="34" r="3" fill="#1e293b"/><ellipse cx="32" cy="42" rx="10" ry="7" fill="#fcd34d"/><circle cx="28" cy="42" r="1.5" fill="#78350f"/><circle cx="36" cy="42" r="1.5" fill="#78350f"/></svg>`,
-        ancient: {
-          type: '甲骨文',
-          svg: `<svg viewBox="0 0 100 100"><path d="M50,20 L50,85 M20,35 Q50,15 80,35 M50,45 L30,55 M50,45 L70,55" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>`
-        }
+        evolution: [
+          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,20 L50,85 M20,35 Q50,15 80,35 M50,45 L30,55 M50,45 L70,55" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>` },
+          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M15,40 Q50,15 85,40 M50,48 L25,60 M50,48 L75,60" stroke="#334155" stroke-width="7" fill="none" stroke-linecap="round"/></svg>` }
+        ]
       },
       '马': {
         icon: `<svg viewBox="0 0 64 64"><path d="M18,50 Q22,18 42,16 Q48,16 48,26 Q48,38 34,42 L34,54 M42,42 L44,54" stroke="#ea580c" stroke-width="4" fill="#fed7aa" stroke-linecap="round"/><circle cx="38" cy="24" r="2.5" fill="#1e293b"/><path d="M26,18 Q32,8 38,18" stroke="#9a3412" stroke-width="3" fill="none"/></svg>`,
-        ancient: {
-          type: '甲骨文',
-          svg: `<svg viewBox="0 0 100 100"><path d="M40,15 Q60,15 65,30 Q65,50 45,55 L45,85 M55,55 L65,85 M35,30 Q20,35 25,50 M65,30 L80,25 M65,38 L82,35 M65,46 L80,45" stroke="#334155" stroke-width="7" fill="none"/></svg>`
-        }
+        evolution: [
+          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M40,15 Q60,15 65,30 Q65,50 45,55 L45,85 M55,55 L65,85 M35,30 Q20,35 25,50 M65,30 L80,25 M65,38 L82,35 M65,46 L80,45" stroke="#334155" stroke-width="7" fill="none"/></svg>` },
+          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M40,15 Q65,15 65,35 Q65,55 45,60 L45,85 M55,60 L65,85 M30,35 Q20,40 25,55 M65,30 L80,25 M65,40 L82,38" stroke="#334155" stroke-width="6" fill="none"/></svg>` }
+        ]
       },
       '车': {
         icon: `<svg viewBox="0 0 64 64"><rect x="14" y="24" width="36" height="16" rx="4" fill="#38bdf8"/><rect x="20" y="16" width="24" height="10" rx="2" fill="#bae6fd"/><circle cx="22" cy="44" r="6" fill="#1e293b"/><circle cx="42" cy="44" r="6" fill="#1e293b"/><circle cx="22" cy="44" r="2" fill="#fff"/><circle cx="42" cy="44" r="2" fill="#fff"/></svg>`,
-        ancient: {
-          type: '甲骨文',
-          svg: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M20,20 L80,20 M20,80 L80,80 M20,20 L20,80 M80,20 L80,80 M35,40 L65,40 L65,60 L35,60 Z" stroke="#334155" stroke-width="7" fill="none"/></svg>`
-        }
+        evolution: [
+          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M20,20 L80,20 M20,80 L80,80 M20,20 L20,80 M80,20 L80,80 M35,40 L65,40 L65,60 L35,60 Z" stroke="#334155" stroke-width="7" fill="none"/></svg>` },
+          { name: '小篆', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,10 L50,90 M20,30 Q50,22 80,30 M30,42 L70,42 L70,58 L30,58 Z M20,70 Q50,78 80,70" stroke="#334155" stroke-width="6" fill="none"/></svg>` }
+        ]
       },
       '太': {
         icon: `<svg viewBox="0 0 64 64"><polygon points="32,8 40,24 58,24 44,36 50,54 32,42 14,54 20,36 6,24 24,24" fill="#fbbf24"/><circle cx="32" cy="30" r="5" fill="#ea580c"/></svg>`,
-        ancient: {
-          type: '甲骨文',
-          svg: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,45 Q50,40 80,45 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>`
-        }
+        evolution: [
+          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,45 Q50,40 80,45 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` },
+          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,40 Q50,45 80,40 M50,55 L25,85 M50,55 L75,85 M50,68 C45,68 45,78 50,78 C55,78 55,68 50,68 Z" stroke="#334155" stroke-width="7" fill="#334155"/></svg>` }
+        ]
       },
       '大': {
         icon: `<svg viewBox="0 0 64 64"><rect x="8" y="8" width="48" height="48" rx="10" fill="#60a5fa"/><path d="M16,32 L48,32 M32,16 L32,48" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>`,
-        ancient: {
-          type: '甲骨文',
-          svg: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,42 Q50,38 80,42 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none"/></svg>`
-        }
+        evolution: [
+          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 L50,85 M20,42 Q50,38 80,42 M50,55 L25,85 M50,55 L75,85" stroke="#334155" stroke-width="8" fill="none"/></svg>` }
+        ]
       },
       '行': {
         icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="18" r="8" fill="#475569"/><path d="M32,26 L32,42 M32,42 L20,58 M32,42 L44,58 M20,34 L44,34" stroke="#475569" stroke-width="4" stroke-linecap="round"/></svg>`,
-        ancient: {
-          type: '甲骨文',
-          svg: `<svg viewBox="0 0 100 100"><path d="M30,15 L30,45 L15,45 M70,15 L70,45 L85,45 M15,55 L30,55 L30,85 M85,55 L70,55 L70,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>`
-        }
+        evolution: [
+          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M30,15 L30,45 L15,45 M70,15 L70,45 L85,45 M15,55 L30,55 L30,85 M85,55 L70,55 L70,85" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` }
+        ]
       },
       '乐': {
         icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="20" fill="#fde047"/><circle cx="24" cy="28" r="3" fill="#1e293b"/><circle cx="40" cy="28" r="3" fill="#1e293b"/><path d="M22,38 Q32,48 42,38" stroke="#b45309" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
-        ancient: {
-          type: '甲骨文',
-          svg: `<svg viewBox="0 0 100 100"><path d="M50,45 L50,85 M25,25 Q35,10 45,25 M55,25 Q65,10 75,25 M30,55 L50,45 L70,55" stroke="#334155" stroke-width="7" fill="none"/></svg>`
-        }
+        evolution: [
+          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,45 L50,85 M25,25 Q35,10 45,25 M55,25 Q65,10 75,25 M30,55 L50,45 L70,55" stroke="#334155" stroke-width="7" fill="none"/></svg>` }
+        ]
       },
       '森': {
         icon: `<svg viewBox="0 0 64 64"><polygon points="32,10 22,26 42,26" fill="#15803d"/><polygon points="20,28 10,48 30,48" fill="#16a34a"/><polygon points="44,28 34,48 54,48" fill="#16a34a"/><rect x="29" y="48" width="6" height="10" fill="#78350f"/></svg>`,
-        ancient: {
-          type: '金文',
-          svg: `<svg viewBox="0 0 100 100"><path d="M50,8 L50,45 M35,25 L65,25 M50,25 L38,45 M50,25 L62,45 M25,52 L25,92 M12,70 L38,70 M25,70 L14,92 M25,70 L36,92 M75,52 L75,92 M62,70 L88,70 M75,70 L64,92 M75,70 L86,92" stroke="#334155" stroke-width="5" fill="none"/></svg>`
-        }
+        evolution: [
+          { name: '金文', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,8 L50,45 M35,25 L65,25 M50,25 L38,45 M50,25 L62,45 M25,52 L25,92 M12,70 L38,70 M25,70 L14,92 M25,70 L36,92 M75,52 L75,92 M62,70 L88,70 M75,70 L64,92 M75,70 L86,92" stroke="#334155" stroke-width="5" fill="none"/></svg>` },
+          { name: '小篆', type: 'text', content: '森' }
+        ]
       },
       '日': {
         icon: `<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="16" fill="#ef4444"/><g stroke="#f59e0b" stroke-width="3.5" stroke-linecap="round"><line x1="32" y1="5" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="59"/><line x1="5" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="59" y2="32"/></g></svg>`,
-        ancient: {
-          type: '甲骨文',
-          svg: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" stroke="#334155" stroke-width="8" fill="none"/><circle cx="50" cy="50" r="6" fill="#334155"/></svg>`
-        }
+        evolution: [
+          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="32" stroke="#334155" stroke-width="8" fill="none"/><circle cx="50" cy="50" r="6" fill="#334155"/></svg>` }
+        ]
       },
       '月': {
         icon: `<svg viewBox="0 0 64 64"><path d="M44,8 A24,24 0 1,0 44,56 A20,20 0 0,1 44,8 Z" fill="#facc15"/></svg>`,
-        ancient: {
-          type: '甲骨文',
-          svg: `<svg viewBox="0 0 100 100"><path d="M60,15 A35,35 0 0,0 60,85 A45,45 0 0,1 60,15 Z" stroke="#334155" stroke-width="8" fill="none"/></svg>`
-        }
+        evolution: [
+          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M60,15 A35,35 0 0,0 60,85 A45,45 0 0,1 60,15 Z" stroke="#334155" stroke-width="8" fill="none"/></svg>` }
+        ]
       },
       '水': {
         icon: `<svg viewBox="0 0 64 64"><path d="M32,10 C32,10 16,32 16,42 C16,52 24,58 32,58 C40,58 48,52 48,42 C48,32 32,10 32,10 Z" fill="#38bdf8"/></svg>`,
-        ancient: {
-          type: '甲骨文',
-          svg: `<svg viewBox="0 0 100 100"><path d="M50,15 Q40,50 50,85 M28,35 Q35,45 28,65 M72,35 Q65,45 72,65" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>`
-        }
+        evolution: [
+          { name: '甲骨', type: 'svg', content: `<svg viewBox="0 0 100 100"><path d="M50,15 Q40,50 50,85 M28,35 Q35,45 28,65 M72,35 Q65,45 72,65" stroke="#334155" stroke-width="8" fill="none" stroke-linecap="round"/></svg>` }
+        ]
       }
     };
 
-    // 2. 词语多义项 + 网络词汇/常用衍生表达 + HSK等级 + 语法句法功能库
+    // 2. 词语多义项 + 语法句法功能库
     const RICH_PHRASE_DB = {
       '太牛了': {
         hsk: 'HSK 1 + 网络高频',
@@ -613,12 +619,11 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // 5. Google AI 翻译引擎集成 (Google NMT API 集成)
+    // 5. Google AI 翻译引擎集成
     async function fetchGoogleTranslate(text, targetLang) {
       if (targetLang === 'none' || !text) return null;
 
       try {
-        // 请求 Google 官方翻译端点，包含词条 (dict) 与备选词汇 (synonyms)
         const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=zh-CN&tl=${targetLang}&dt=t&dt=bd&dt=rm&q=${encodeURIComponent(text)}`;
         const res = await fetch(url);
         const data = await res.json();
@@ -633,7 +638,6 @@
           candidateSet.add(mainTranslation.toLowerCase());
         }
 
-        // 提取 Google 词典给出的扩展义项与多重释义
         if (data && data[1] && Array.isArray(data[1])) {
           data[1].forEach(entry => {
             if (Array.isArray(entry[1])) {
@@ -652,7 +656,7 @@
           isGoogle: true
         };
       } catch (e) {
-        console.warn('Google 翻译引擎调度异常，尝试备用通道:', e);
+        console.warn('Google 翻译引擎调度异常:', e);
       }
       return null;
     }
@@ -663,7 +667,6 @@
         return { hsk: '', meaning: '', slang: '', usage: '' };
       }
 
-      // 优先匹配精校数据库
       if (RICH_PHRASE_DB[phrase]) {
         const item = RICH_PHRASE_DB[phrase];
         return {
@@ -674,7 +677,6 @@
         };
       }
 
-      // 实时调用 Google AI 翻译引擎
       let meaningResult = '释义获取中...';
       const googleRes = await fetchGoogleTranslate(phrase, targetLang);
       if (googleRes && googleRes.meaning) {
@@ -720,14 +722,14 @@
       };
     }
 
-    // 7. 获取汉字卡通插画与古文字（甲骨文优先，无则降级金文）
+    // 7. 获取汉字卡通插画与古文字/不同字体演变
     function getCharMediaData(char) {
       if (CHAR_MEDIA_DB[char]) {
         return CHAR_MEDIA_DB[char];
       }
       return {
         icon: null,
-        ancient: null
+        evolution: null
       };
     }
 
@@ -761,7 +763,7 @@
         const wordBlock = document.createElement('div');
         wordBlock.className = 'word-block';
 
-        // 词条顶部头部：左侧拼音语音 + 右侧集中展示 HSK等级、Google AI 多重释义、网络用法与语法结构
+        // 词条顶部头部
         wordBlock.innerHTML = `
           <div class="word-header">
             <div class="word-meta-left">
@@ -779,7 +781,7 @@
           </div>
         `;
 
-        // 逐字生成纯净字卡（单字不带任何释义，仅专属卡通图、古文字单链接、多音字纠偏与单列描红）
+        // 逐字生成纯净字卡：左(拼音/发音/笔顺) ➔ 中(田字格) ➔ 右(字体演变/配图，有则显示，无则空出)
         for (let cIdx = 0; cIdx < chars.length; cIdx++) {
           const char = chars[cIdx];
           const charPy = contextualPinyins[cIdx] || pinyin(char, { toneType: 'symbol' });
@@ -792,26 +794,26 @@
             <div class="pic-badge" title="${char} 的专属卡通配图">${mediaData.icon}</div>
           ` : '';
 
-          // 2. 古文字链接（甲骨文优先，若无则展示金文，均无则不展示）
-          const ancientHtml = mediaData.ancient ? `
-            <a class="ancient-link-badge" href="https://hanziyuan.net/#${encodeURIComponent(char)}" target="_blank" title="在字源网 (hanziyuan.net) 查看「${char}」的${mediaData.ancient.type}原图考据">
-              <div class="ancient-glyph">${mediaData.ancient.svg}</div>
-              <div class="ancient-label">${mediaData.ancient.type}</div>
-            </a>
-          ` : '';
+          // 2. 演变过程与不同字体（甲骨/金文/篆体等，有则带上，无则空着）
+          let evolutionHtml = '';
+          if (mediaData.evolution && mediaData.evolution.length > 0) {
+            const evoNodesHtml = mediaData.evolution.map((node, idx) => `
+              <a class="ancient-link-badge" href="https://hanziyuan.net/#${encodeURIComponent(char)}" target="_blank" title="在字源网查看「${char}」的${node.name}原图考据">
+                <div class="ancient-glyph">${node.type === 'svg' ? node.content : node.content}</div>
+                <div class="ancient-label">${node.name}</div>
+              </a>
+              ${idx < mediaData.evolution.length - 1 ? '<span class="evo-arrow">→</span>' : ''}
+            `).join('');
+
+            evolutionHtml = `<div class="font-evolution-container">${evoNodesHtml}</div>`;
+          }
 
           const card = document.createElement('div');
           card.className = 'char-card';
 
           card.innerHTML = `
-            <!-- 左侧：专属卡通插画 + 单一甲骨/金文演变链接 -->
-            <div class="char-left-zone">
-              ${picHtml}
-              ${ancientHtml}
-            </div>
-
-            <!-- 中间：单字多音字读音 + 笔顺演示 + 纠偏发音 -->
-            <div class="char-badge">
+            <!-- 1. 最左边：单字多音字读音 + 笔顺演示 + 纠偏发音 -->
+            <div class="char-badge-left">
               <div class="char-pinyin-small">${charPy}</div>
               <div class="btn-action-group">
                 <button class="btn-small-audio" onclick="speakCharWithPinyin('${char}', '${charPy}')" title="按当前语境拼音朗读该字">🔊</button>
@@ -819,11 +821,17 @@
               </div>
             </div>
 
-            <!-- 右侧：严格保持单列水平排列的米字格/田字格 -->
-            <div class="grid-list" id="grid-list-${globalGridIdx}"></div>
+            <!-- 2. 中间：田字格/米字格练习区（单行水平对齐） -->
+            <div class="grid-list-middle" id="grid-list-${globalGridIdx}"></div>
+
+            <!-- 3. 最右边：不同字体演变过程与配图（有则展示，无则空出） -->
+            <div class="char-right-zone">
+              ${evolutionHtml}
+              ${picHtml}
+            </div>
           `;
 
-          // 插入单列米字格（1示范黑字 + 2描红浅灰字 + 5空白练习格，共8格单行）
+          // 插入单行田字格/米字格（1示范黑字 + 2描红浅灰字 + 5空白练习格）
           const gridList = card.querySelector(`#grid-list-${globalGridIdx}`);
           const totalGrids = 8;
           const currentGrids = [];
